@@ -6,9 +6,9 @@
       "name": "@affinity-health/effect-sdk",
       "dependencies": {
         "@distilled.cloud/core": "1.0.0-rc.8",
+        "@effect/platform-bun": "4.0.0-rc.112",
       },
       "devDependencies": {
-        "@effect/platform-bun": "4.0.0-rc.112",
         "@types/bun": "1.4.0",
         "@typescript/native-preview": "7.0.0-dev.20260707.2",
         "effect": "4.0.0-rc.112",

@@ -11,6 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/affinity-health/affinity-effect-sdk.git"
   },
+  "bin": {
+    "affinity": "./dist/cli.mjs"
+  },
   "files": [
     "dist",
     "README.md",
@@ -30,6 +33,11 @@
       "types": "./dist/services/affinity.d.mts",
       "import": "./dist/services/affinity.mjs",
       "default": "./dist/services/affinity.mjs"
+    },
+    "./code": {
+      "types": "./dist/code/index.d.mts",
+      "import": "./dist/code/index.mjs",
+      "default": "./dist/code/index.mjs"
     }
   },
   "publishConfig": {
@@ -40,16 +48,16 @@
     "check": "bun run generate:check && vp check && bun test && bun run build && bun run package:check",
     "clean": "rm -rf dist",
     "convert": "bun scripts/convert.ts",
-    "generate": "bun run convert && bun scripts/generate.ts",
+    "generate": "bun run convert && bun scripts/generate.ts && bun scripts/generate-code.ts",
     "generate:check": "bun scripts/generate-check.ts",
     "package:check": "bun scripts/check-package.ts",
     "prepublishOnly": "bun run check"
   },
   "dependencies": {
-    "@distilled.cloud/core": "1.0.0-rc.8"
+    "@distilled.cloud/core": "1.0.0-rc.8",
+    "@effect/platform-bun": "4.0.0-rc.112"
   },
   "devDependencies": {
-    "@effect/platform-bun": "4.0.0-rc.112",
     "@types/bun": "1.4.0",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "effect": "4.0.0-rc.112",

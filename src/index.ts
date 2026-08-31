@@ -1,4 +1,5 @@
 export * from "./client.ts";
+export * as Code from "./code/index.ts";
 export * from "./credentials.ts";
 export * as Errors from "./errors.ts";
 export { AffinityProtocol, type AffinityOpContext, type AffinityOpError } from "./protocol.ts";

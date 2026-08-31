@@ -1,8 +1,8 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript client for the Affinity API. It generates typed operations and runtime schemas from Affinity's OpenAPI document.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 46 typed operations and runtime schemas from Affinity's OpenAPI document.
 
-This package is an early local prototype. It has not been published to npm.
+This package is an unpublished prototype.
 
 ## Install
 
@@ -10,7 +10,104 @@ This package is an early local prototype. It has not been published to npm.
 bun add @affinity-health/effect-sdk effect@rc
 ```
 
-## Use it in code mode
+Set the API key in the process environment. The CLI never accepts secrets as flags.
+
+```sh
+export AFFINITY_API_KEY=...
+```
+
+## Agent code mode
+
+Evaluate one asynchronous JavaScript expression:
+
+```sh
+affinity eval 'await affinity.getAccount({})'
+```
+
+List every callable operation without making a request:
+
+```sh
+affinity operations
+affinity operations --json
+```
+
+Pipe an expression over stdin and get compact JSON:
+
+```sh
+printf 'await affinity.listPractices({ limit: 10 })' | affinity eval - --json
+```
+
+For longer programs, default-export an `AgentProgram` from a TypeScript or JavaScript module:
+
+```ts
+import type { AgentProgram } from "@affinity-health/effect-sdk/code";
+
+const program: AgentProgram = async ({ affinity, log }) => {
+  log("Reading the first ten practices");
+  return affinity.listPractices({ limit: 10 });
+};
+
+export default program;
+```
+
+Run it with Bun:
+
+```sh
+affinity run program.ts --json
+```
+
+The runner puts the program's result on stdout. `log(...)`, diagnostics, and errors go to stderr, so agents can parse stdout without removing status messages.
+
+### Mutation policy
+
+Code sessions are read-only by default. Test-mode mutations require `--apply`:
+
+```sh
+affinity run setup-practice.ts --apply
+```
+
+Order creation, cancellation, and signing-session operations also require `--allow-clinical`. Test mode must use synthetic patient and prescription data.
+
+Live mutations require an exact second confirmation:
+
+```sh
+affinity run update-practice.ts \
+  --mode live \
+  --apply \
+  --confirm-live LIVE
+```
+
+The mode flag governs the runner's policy. The API key and server remain responsible for authorization and the actual Test or Live data boundary.
+
+Each session permits 100 operations by default, with a 30-second timeout per operation. Use `--max-requests` and `--timeout` to lower or raise those limits.
+
+The runner executes local code with the current operating-system user's permissions. It is not a sandbox. Run only code you trust. The runner removes `AFFINITY_API_KEY` from its process environment before evaluating agent code, but the injected `affinity` client remains authorized for the operations allowed by the session policy.
+
+## Await-friendly library
+
+Applications can create the same client without the CLI:
+
+```ts
+import { createCodeSession } from "@affinity-health/effect-sdk/code";
+
+const session = createCodeSession({
+  apiKey: process.env.AFFINITY_API_KEY!,
+  mode: "test",
+});
+
+try {
+  const account = await session.affinity.getAccount({});
+  console.log(account);
+} finally {
+  await session.dispose();
+}
+```
+
+Use `createCodeSession` for bounded work because it exposes `dispose()`. `createClient` is available for process-lifetime clients.
+
+## Raw Effect operations
+
+The package root exports the generated Effect operations directly:
 
 ```ts
 import { Effect } from "effect";
@@ -34,32 +131,30 @@ const patient = await Effect.runPromise(
     ),
   ),
 );
-
-console.log(patient);
 ```
 
-Operations return `Effect` values with typed success, failure, and service requirements. The package exports all 46 operations at its root and under `Operations`.
+Operations have typed success, failure, and service requirements. Credentials resolve for each request, and service keys stay redacted inside the Effect configuration.
 
 ## Configuration
 
-`layer` accepts:
+The library accepts:
 
 - `apiKey`, required
 - `apiBaseUrl`, defaulting to `https://api.joinaffinityai.com`
 - `apiVersion`, defaulting to `2026-08-11`
 - `actor`, an optional provider or user attribution
 
-Use `fromEnv` when a larger application already provides its HTTP client. It reads `AFFINITY_API_KEY`, `AFFINITY_API_BASE_URL`, and `AFFINITY_API_VERSION`.
+The CLI reads `AFFINITY_API_KEY`, `AFFINITY_API_BASE_URL`, `AFFINITY_API_VERSION`, `AFFINITY_ACTOR_ID`, `AFFINITY_ACTOR_TYPE`, and `AFFINITY_MODE`. Invocation flags take precedence over environment defaults for non-secret settings.
 
-The SDK has no telemetry. It supports any runtime with `fetch`, including Bun, Node.js 20 or newer, browsers, and workers. Service API keys must stay in trusted server-side code.
+The SDK has no telemetry. The library supports runtimes with `fetch`, including Bun, Node.js 20 or newer, browsers, and workers. The CLI requires Bun. Service API keys must stay in trusted server-side code.
 
 ## Regenerate
 
-The repository commits the official Affinity OpenAPI document and generated TypeScript. Run:
+The repository commits the official Affinity OpenAPI document and generated TypeScript:
 
 ```sh
 bun run generate
 bun run check
 ```
 
-Generation uses Distilled's OpenAPI to Smithy converter and Effect SDK generator. Do not edit `src/services` by hand.
+Generation uses Distilled's OpenAPI-to-Smithy converter and Effect SDK generator. It also builds the agent operation registry from the same OpenAPI paths. Do not edit `src/services` or `src/code/registry.ts` by hand.

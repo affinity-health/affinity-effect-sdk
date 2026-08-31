@@ -1,4 +1,8 @@
-const generatedFiles = ["src/services/affinity.ts", "src/services/index.ts"] as const;
+const generatedFiles = [
+  "src/code/registry.ts",
+  "src/services/affinity.ts",
+  "src/services/index.ts",
+] as const;
 
 const before = await Promise.all(
   generatedFiles.map(async (file) => [file, await Bun.file(file).text()] as const),
