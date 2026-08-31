@@ -8,6 +8,24 @@ import * as Retry from "../retry.ts";
 
 export type { AffinityOpError, AffinityOpContext };
 
+export class BadRequest
+  extends /*@__PURE__*/ T.applyErrorMatchers(
+    /*@__PURE__*/ S.TaggedError<BadRequest>()("BadRequest", {
+      code: S.Number,
+      message: S.String,
+    }).pipe(C.withBadRequestError),
+    [{ status: 400 }],
+  ) {}
+
+export class Conflict
+  extends /*@__PURE__*/ T.applyErrorMatchers(
+    /*@__PURE__*/ S.TaggedError<Conflict>()("Conflict", {
+      code: S.Number,
+      message: S.String,
+    }).pipe(C.withConflictError),
+    [{ status: 409 }],
+  ) {}
+
 export class Forbidden
   extends /*@__PURE__*/ T.applyErrorMatchers(
     /*@__PURE__*/ S.TaggedError<Forbidden>()("Forbidden", {
@@ -17,9 +35,64 @@ export class Forbidden
     [{ status: 403 }],
   ) {}
 
+export class NotFound
+  extends /*@__PURE__*/ T.applyErrorMatchers(
+    /*@__PURE__*/ S.TaggedError<NotFound>()("NotFound", {
+      code: S.Number,
+      message: S.String,
+    }).pipe(C.withBadRequestError),
+    [{ status: 404 }],
+  ) {}
+
+export interface ArchivePharmacyOrganizationPricingRequest {
+  pharmacyId: string;
+  organizationId: string;
+}
+export const ArchivePharmacyOrganizationPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+    organizationId: S.String.pipe(T.Label()),
+  }).pipe(
+    T.Http({
+      method: "POST",
+      uri: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}/archive",
+      code: 200,
+    }),
+  ),
+).annotate({
+  identifier: "ArchivePharmacyOrganizationPricingRequest",
+}) as any as S.Schema<ArchivePharmacyOrganizationPricingRequest>;
+
+export type ArchivePharmacyOrganizationPricingResponseObject =
+  "pharmacy_organization_pricing_archive";
+export const ArchivePharmacyOrganizationPricingResponseObject = /*@__PURE__*/ S.String;
+
+export type ArchivePharmacyOrganizationPricingResponseVersionsList = Array<number>;
+export const ArchivePharmacyOrganizationPricingResponseVersionsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<ArchivePharmacyOrganizationPricingResponseVersionsList>;
+
+export interface ArchivePharmacyOrganizationPricingResponse {
+  archived: boolean;
+  archivedCount: number;
+  object: ArchivePharmacyOrganizationPricingResponseObject;
+  organizationId: string;
+  versions: ArchivePharmacyOrganizationPricingResponseVersionsList;
+}
+export const ArchivePharmacyOrganizationPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    archived: S.Boolean,
+    archivedCount: S.Number,
+    object: ArchivePharmacyOrganizationPricingResponseObject,
+    organizationId: S.String,
+    versions: ArchivePharmacyOrganizationPricingResponseVersionsList,
+  }),
+).annotate({
+  identifier: "ArchivePharmacyOrganizationPricingResponse",
+}) as any as S.Schema<ArchivePharmacyOrganizationPricingResponse>;
+
 export interface CancelOrderRequest {
   orderId: string;
-  /** a string that will be trimmed */
   reason: string;
 }
 export const CancelOrderRequest = /*@__PURE__*/ S.suspend(() =>
@@ -29,156 +102,12 @@ export const CancelOrderRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v1/orders/{orderId}/cancel", code: 200 })),
 ).annotate({ identifier: "CancelOrderRequest" }) as any as S.Schema<CancelOrderRequest>;
 
-export type CancelOrderResponseFulfillmentsItemShippingDestinationType = "patient" | "practice";
-export const CancelOrderResponseFulfillmentsItemShippingDestinationType = /*@__PURE__*/ S.String;
-
-export type CancelOrderResponseFulfillmentsItemShippingMethod =
-  | "standard"
-  | "expedited"
-  | "overnight"
-  | "pickup"
-  | "local_delivery";
-export const CancelOrderResponseFulfillmentsItemShippingMethod = /*@__PURE__*/ S.String;
-
-export type CancelOrderResponseFulfillmentsItemShippingOptionCurrency = "USD";
-export const CancelOrderResponseFulfillmentsItemShippingOptionCurrency = /*@__PURE__*/ S.String;
-
-export type CancelOrderResponseFulfillmentsItemShippingOptionTemperature =
-  | "ambient"
-  | "refrigerated";
-export const CancelOrderResponseFulfillmentsItemShippingOptionTemperature = /*@__PURE__*/ S.String;
-
-export interface CancelOrderResponseFulfillmentsItemShippingOption {
-  amountCents: number;
-  currency: CancelOrderResponseFulfillmentsItemShippingOptionCurrency;
-  label: string;
-  serviceLevel: string;
-  temperature: CancelOrderResponseFulfillmentsItemShippingOptionTemperature;
-}
-export const CancelOrderResponseFulfillmentsItemShippingOption = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    amountCents: S.Number,
-    currency: CancelOrderResponseFulfillmentsItemShippingOptionCurrency,
-    label: S.String,
-    serviceLevel: S.String,
-    temperature: CancelOrderResponseFulfillmentsItemShippingOptionTemperature,
-  }),
-).annotate({
-  identifier: "CancelOrderResponseFulfillmentsItemShippingOption",
-}) as any as S.Schema<CancelOrderResponseFulfillmentsItemShippingOption>;
-
-export interface CancelOrderResponseFulfillmentsItemShipping {
-  destinationType: CancelOrderResponseFulfillmentsItemShippingDestinationType;
-  method: CancelOrderResponseFulfillmentsItemShippingMethod;
-  option: CancelOrderResponseFulfillmentsItemShippingOption | null;
-}
-export const CancelOrderResponseFulfillmentsItemShipping = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    destinationType: CancelOrderResponseFulfillmentsItemShippingDestinationType,
-    method: CancelOrderResponseFulfillmentsItemShippingMethod,
-    option: S.NullOr(CancelOrderResponseFulfillmentsItemShippingOption),
-  }),
-).annotate({
-  identifier: "CancelOrderResponseFulfillmentsItemShipping",
-}) as any as S.Schema<CancelOrderResponseFulfillmentsItemShipping>;
-
-export interface CancelOrderResponseFulfillmentsItem {
-  carrier: string | null;
-  compounderId: string | null;
-  createdAt: string;
-  id: string;
-  prescriptionId: string;
-  status: string;
-  trackingNumber: string | null;
-  trackingStatus: string | null;
-  shippedAt: string | null;
-  deliveredAt: string | null;
-  estimatedDeliveryAt: string | null;
-  shipping: CancelOrderResponseFulfillmentsItemShipping;
-  trackingUrl: string | null;
-  updatedAt: string;
-}
-export const CancelOrderResponseFulfillmentsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    carrier: S.NullOr(S.String),
-    compounderId: S.NullOr(S.String),
-    createdAt: S.String,
-    id: S.String,
-    prescriptionId: S.String,
-    status: S.String,
-    trackingNumber: S.NullOr(S.String),
-    trackingStatus: S.NullOr(S.String),
-    shippedAt: S.NullOr(S.String),
-    deliveredAt: S.NullOr(S.String),
-    estimatedDeliveryAt: S.NullOr(S.String),
-    shipping: CancelOrderResponseFulfillmentsItemShipping,
-    trackingUrl: S.NullOr(S.String),
-    updatedAt: S.String,
-  }),
-).annotate({
-  identifier: "CancelOrderResponseFulfillmentsItem",
-}) as any as S.Schema<CancelOrderResponseFulfillmentsItem>;
-
-export type CancelOrderResponseFulfillmentsList = Array<CancelOrderResponseFulfillmentsItem>;
-export const CancelOrderResponseFulfillmentsList = /*@__PURE__*/ S.Array(
-  CancelOrderResponseFulfillmentsItem,
-) as any as S.Schema<CancelOrderResponseFulfillmentsList>;
-
 export type CancelOrderResponseObject = "order";
 export const CancelOrderResponseObject = /*@__PURE__*/ S.String;
 
-export interface CancelOrderResponsePrescriptionsItem {
-  catalogItemId: string | null;
-  compounderId: string | null;
-  directions: string;
-  dosageForm: string | null;
-  id: string;
-  medicationName: string;
-  quantity: number;
-  quantityUnit: string;
-  refills: number;
-  status: string;
-  strength: string | null;
-}
-export const CancelOrderResponsePrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    catalogItemId: S.NullOr(S.String),
-    compounderId: S.NullOr(S.String),
-    directions: S.String,
-    dosageForm: S.NullOr(S.String),
-    id: S.String,
-    medicationName: S.String,
-    quantity: S.Number,
-    quantityUnit: S.String,
-    refills: S.Number,
-    status: S.String,
-    strength: S.NullOr(S.String),
-  }),
-).annotate({
-  identifier: "CancelOrderResponsePrescriptionsItem",
-}) as any as S.Schema<CancelOrderResponsePrescriptionsItem>;
-
-export type CancelOrderResponsePrescriptionsList = Array<CancelOrderResponsePrescriptionsItem>;
-export const CancelOrderResponsePrescriptionsList = /*@__PURE__*/ S.Array(
-  CancelOrderResponsePrescriptionsItem,
-) as any as S.Schema<CancelOrderResponsePrescriptionsList>;
-
-export type CancelOrderResponseStatus =
-  | "blocked"
-  | "cancelled"
-  | "delivered"
-  | "draft"
-  | "partially_submitted"
-  | "processing"
-  | "ready"
-  | "requires_provider_signature"
-  | "shipped"
-  | "submitted";
-export const CancelOrderResponseStatus = /*@__PURE__*/ S.String;
-
 export interface CancelOrderResponse {
   createdAt: string;
-  fulfillments: CancelOrderResponseFulfillmentsList;
+  fulfillments: unknown;
   id: string;
   livemode: boolean;
   object: CancelOrderResponseObject;
@@ -187,16 +116,16 @@ export interface CancelOrderResponse {
   patientName: string;
   patientState: string;
   practiceId: string;
-  prescriberName: string | null;
-  prescriberNpi: string | null;
-  prescriptions: CancelOrderResponsePrescriptionsList;
-  status: CancelOrderResponseStatus;
+  prescriberName: unknown;
+  prescriberNpi: unknown;
+  prescriptions: unknown;
+  status: unknown;
   updatedAt: string;
 }
 export const CancelOrderResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    fulfillments: CancelOrderResponseFulfillmentsList,
+    fulfillments: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
     object: CancelOrderResponseObject,
@@ -205,27 +134,27 @@ export const CancelOrderResponse = /*@__PURE__*/ S.suspend(() =>
     patientName: S.String,
     patientState: S.String,
     practiceId: S.String,
-    prescriberName: S.NullOr(S.String),
-    prescriberNpi: S.NullOr(S.String),
-    prescriptions: CancelOrderResponsePrescriptionsList,
-    status: CancelOrderResponseStatus,
+    prescriberName: S.Unknown,
+    prescriberNpi: S.Unknown,
+    prescriptions: S.Unknown,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "CancelOrderResponse" }) as any as S.Schema<CancelOrderResponse>;
 
 export interface CreateComponentSessionRequestComponentsPrescriptionComposerFeatures {
-  changePatient?: boolean;
-  createDraft?: boolean;
-  sign?: boolean;
-  viewHistory?: boolean;
+  changePatient?: boolean | null;
+  createDraft?: boolean | null;
+  sign?: boolean | null;
+  viewHistory?: boolean | null;
 }
 export const CreateComponentSessionRequestComponentsPrescriptionComposerFeatures =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
-      changePatient: S.optional(S.Boolean),
-      createDraft: S.optional(S.Boolean),
-      sign: S.optional(S.Boolean),
-      viewHistory: S.optional(S.Boolean),
+      changePatient: S.optional(S.NullOr(S.Boolean)),
+      createDraft: S.optional(S.NullOr(S.Boolean)),
+      sign: S.optional(S.NullOr(S.Boolean)),
+      viewHistory: S.optional(S.NullOr(S.Boolean)),
     }),
   ).annotate({
     identifier: "CreateComponentSessionRequestComponentsPrescriptionComposerFeatures",
@@ -246,11 +175,13 @@ export const CreateComponentSessionRequestComponentsPrescriptionComposer = /*@__
 }) as any as S.Schema<CreateComponentSessionRequestComponentsPrescriptionComposer>;
 
 export interface CreateComponentSessionRequestComponents {
-  prescriptionComposer?: CreateComponentSessionRequestComponentsPrescriptionComposer;
+  prescriptionComposer?: CreateComponentSessionRequestComponentsPrescriptionComposer | null;
 }
 export const CreateComponentSessionRequestComponents = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    prescriptionComposer: S.optional(CreateComponentSessionRequestComponentsPrescriptionComposer),
+    prescriptionComposer: S.optional(
+      S.NullOr(CreateComponentSessionRequestComponentsPrescriptionComposer),
+    ),
   }),
 ).annotate({
   identifier: "CreateComponentSessionRequestComponents",
@@ -275,19 +206,17 @@ export type CreateComponentSessionRequestContextPatientSelection = "fixed" | "in
 export const CreateComponentSessionRequestContextPatientSelection = /*@__PURE__*/ S.String;
 
 export interface CreateComponentSessionRequestContext {
-  /** a string that will be trimmed */
-  encounterExternalId?: string;
-  /** a string that will be trimmed */
-  patientExternalId?: string;
-  patientId?: string;
-  patientSelection?: CreateComponentSessionRequestContextPatientSelection | (string & {});
+  encounterExternalId?: string | null;
+  patientExternalId?: string | null;
+  patientId?: string | null;
+  patientSelection?: CreateComponentSessionRequestContextPatientSelection | (string & {}) | null;
 }
 export const CreateComponentSessionRequestContext = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    encounterExternalId: S.optional(S.String),
-    patientExternalId: S.optional(S.String),
-    patientId: S.optional(S.String),
-    patientSelection: S.optional(CreateComponentSessionRequestContextPatientSelection),
+    encounterExternalId: S.optional(S.NullOr(S.String)),
+    patientExternalId: S.optional(S.NullOr(S.String)),
+    patientId: S.optional(S.NullOr(S.String)),
+    patientSelection: S.optional(S.NullOr(CreateComponentSessionRequestContextPatientSelection)),
   }),
 ).annotate({
   identifier: "CreateComponentSessionRequestContext",
@@ -298,8 +227,9 @@ export interface CreateComponentSessionRequest {
   components: CreateComponentSessionRequestComponents;
   consent: CreateComponentSessionRequestConsent;
   context: CreateComponentSessionRequestContext;
-  membershipId?: string;
+  membershipId?: string | null;
   practiceId: string;
+  /** The pmap_ ID returned as id by POST /v1/provider-mappings. */
   providerMappingId: string;
   userId: string;
 }
@@ -309,7 +239,7 @@ export const CreateComponentSessionRequest = /*@__PURE__*/ S.suspend(() =>
     components: CreateComponentSessionRequestComponents,
     consent: CreateComponentSessionRequestConsent,
     context: CreateComponentSessionRequestContext,
-    membershipId: S.optional(S.String),
+    membershipId: S.optional(S.NullOr(S.String)),
     practiceId: S.String,
     providerMappingId: S.String,
     userId: S.String,
@@ -347,10 +277,11 @@ export const CreateHostedSessionRequestFlow = /*@__PURE__*/ S.String;
 export interface CreateHostedSessionRequest {
   consent: CreateComponentSessionRequestConsent;
   flow: CreateHostedSessionRequestFlow | (string & {});
-  membershipId?: string;
-  patientId?: string;
+  membershipId?: string | null;
+  patientId?: string | null;
   practiceId: string;
-  orderId?: string;
+  orderId?: string | null;
+  /** The pmap_ ID returned as id by POST /v1/provider-mappings. */
   providerMappingId: string;
   returnUrl?: string | null;
   userId: string;
@@ -359,10 +290,10 @@ export const CreateHostedSessionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     consent: CreateComponentSessionRequestConsent,
     flow: CreateHostedSessionRequestFlow,
-    membershipId: S.optional(S.String),
-    patientId: S.optional(S.String),
+    membershipId: S.optional(S.NullOr(S.String)),
+    patientId: S.optional(S.NullOr(S.String)),
     practiceId: S.String,
-    orderId: S.optional(S.String),
+    orderId: S.optional(S.NullOr(S.String)),
     providerMappingId: S.String,
     returnUrl: S.optional(S.NullOr(S.String)),
     userId: S.String,
@@ -409,7 +340,6 @@ export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCo
   category:
     | CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReasonCategory
     | (string & {});
-  /** a string that will be trimmed */
   context: string;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReason =
@@ -432,7 +362,6 @@ export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCurren
 
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesItem {
   code: string;
-  /** a string that will be trimmed */
   display: string;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesItem =
@@ -452,19 +381,30 @@ export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagno
     CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesItem,
   ) as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesList>;
 
+export type CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValueCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValueCase1 =
+  /*@__PURE__*/ S.String;
+
+export type CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValue =
+  | number
+  | CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValueCase1;
+export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValue =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValue>;
+
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItem {
-  /** a string that will be trimmed */
   display: string;
-  /** a string that will be trimmed */
   unit: string;
-  value: number;
+  value: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValue;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItem =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       display: S.String,
       unit: S.String,
-      value: S.Number,
+      value: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItemValue,
     }),
   ).annotate({
     identifier: "CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsItem",
@@ -478,25 +418,27 @@ export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObserv
   ) as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsList>;
 
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical {
-  compoundingReason?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReason;
-  currentMedications?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCurrentMedicationsList;
-  diagnoses?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesList;
-  observations?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsList;
+  compoundingReason?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReason | null;
+  currentMedications?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCurrentMedicationsList | null;
+  diagnoses?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesList | null;
+  observations?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsList | null;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       compoundingReason: S.optional(
-        CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReason,
+        S.NullOr(CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCompoundingReason),
       ),
       currentMedications: S.optional(
-        CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCurrentMedicationsList,
+        S.NullOr(
+          CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalCurrentMedicationsList,
+        ),
       ),
       diagnoses: S.optional(
-        CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesList,
+        S.NullOr(CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalDiagnosesList),
       ),
       observations: S.optional(
-        CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsList,
+        S.NullOr(CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinicalObservationsList),
       ),
     }),
   ).annotate({
@@ -504,84 +446,85 @@ export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical =
   }) as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical>;
 
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing {
-  dispenseUponAcceptance?: boolean;
-  /** a string that will be trimmed */
-  pharmacyNotes?: string;
-  requestedFillDate?: string;
-  substitutionPermitted?: boolean;
+  dispenseUponAcceptance?: boolean | null;
+  pharmacyNotes?: string | null;
+  requestedFillDate?: string | null;
+  substitutionPermitted?: boolean | null;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
-      dispenseUponAcceptance: S.optional(S.Boolean),
-      pharmacyNotes: S.optional(S.String),
-      requestedFillDate: S.optional(S.String),
-      substitutionPermitted: S.optional(S.Boolean),
+      dispenseUponAcceptance: S.optional(S.NullOr(S.Boolean)),
+      pharmacyNotes: S.optional(S.NullOr(S.String)),
+      requestedFillDate: S.optional(S.NullOr(S.String)),
+      substitutionPermitted: S.optional(S.NullOr(S.Boolean)),
     }),
   ).annotate({
     identifier: "CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing",
   }) as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing>;
 
+export type CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantityCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantityCase1 =
+  /*@__PURE__*/ S.String;
+
+export type CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantity =
+  | number
+  | CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantityCase1;
+export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantity =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantity>;
+
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig {
-  /** a string that will be trimmed */
   dose: string;
-  /** a string that will be trimmed */
   doseUnit: string;
-  /** a string that will be trimmed */
-  duration?: string;
-  /** a string that will be trimmed */
+  duration?: string | null;
   frequency: string;
-  /** a string that will be trimmed */
-  indication?: string;
-  /** a string that will be trimmed */
-  maxDailyUse?: string;
-  prn?: boolean;
-  /** a string that will be trimmed */
+  indication?: string | null;
+  maxDailyUse?: string | null;
+  prn?: boolean | null;
   route: string;
-  /** a string that will be trimmed */
-  titrationSchedule?: string;
+  titrationSchedule?: string | null;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       dose: S.String,
       doseUnit: S.String,
-      duration: S.optional(S.String),
+      duration: S.optional(S.NullOr(S.String)),
       frequency: S.String,
-      indication: S.optional(S.String),
-      maxDailyUse: S.optional(S.String),
-      prn: S.optional(S.Boolean),
+      indication: S.optional(S.NullOr(S.String)),
+      maxDailyUse: S.optional(S.NullOr(S.String)),
+      prn: S.optional(S.NullOr(S.Boolean)),
       route: S.String,
-      titrationSchedule: S.optional(S.String),
+      titrationSchedule: S.optional(S.NullOr(S.String)),
     }),
   ).annotate({
     identifier: "CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig",
   }) as any as S.Schema<CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig>;
 
 export interface CreateOrdersRequestPatientOrdersItemPrescriptionsItem {
-  clinical?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical;
-  /** a string that will be trimmed */
-  compounderId?: string;
+  clinical?: CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical | null;
+  compounderId?: string | null;
   daysSupply: number;
   dispensing: CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing;
-  /** a string that will be trimmed */
   directions: string;
   medicationId: string;
-  quantity: number;
-  /** a string that will be trimmed */
+  quantity: CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantity;
   quantityUnit: string;
   refills: number;
   structuredSig: CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig;
 }
 export const CreateOrdersRequestPatientOrdersItemPrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    clinical: S.optional(CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical),
-    compounderId: S.optional(S.String),
+    clinical: S.optional(S.NullOr(CreateOrdersRequestPatientOrdersItemPrescriptionsItemClinical)),
+    compounderId: S.optional(S.NullOr(S.String)),
     daysSupply: S.Number,
     dispensing: CreateOrdersRequestPatientOrdersItemPrescriptionsItemDispensing,
     directions: S.String,
     medicationId: S.String,
-    quantity: S.Number,
+    quantity: CreateOrdersRequestPatientOrdersItemPrescriptionsItemQuantity,
     quantityUnit: S.String,
     refills: S.Number,
     structuredSig: CreateOrdersRequestPatientOrdersItemPrescriptionsItemStructuredSig,
@@ -646,7 +589,7 @@ export interface CreateOrdersResponseOrdersItemPrescriptionsItem {
   medicationId: string | null;
   medicationName: string;
   object: CreateOrdersResponseOrdersItemPrescriptionsItemObject;
-  quantity: number;
+  quantity: unknown;
   quantityUnit: string;
   refills: number;
   status: CreateOrdersResponseOrdersItemPrescriptionsItemStatus;
@@ -659,7 +602,7 @@ export const CreateOrdersResponseOrdersItemPrescriptionsItem = /*@__PURE__*/ S.s
     medicationId: S.NullOr(S.String),
     medicationName: S.String,
     object: CreateOrdersResponseOrdersItemPrescriptionsItemObject,
-    quantity: S.Number,
+    quantity: S.Unknown,
     quantityUnit: S.String,
     refills: S.Number,
     status: CreateOrdersResponseOrdersItemPrescriptionsItemStatus,
@@ -731,7 +674,7 @@ export const CreateOrderSigningSessionRequestConsent = CreateComponentSessionReq
 
 export interface CreateOrderSigningSessionRequest {
   consent: CreateComponentSessionRequestConsent;
-  membershipId?: string;
+  membershipId?: string | null;
   orderId: string;
   practiceId: string;
   providerMappingId: string;
@@ -741,7 +684,7 @@ export interface CreateOrderSigningSessionRequest {
 export const CreateOrderSigningSessionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     consent: CreateComponentSessionRequestConsent,
-    membershipId: S.optional(S.String),
+    membershipId: S.optional(S.NullOr(S.String)),
     orderId: S.String,
     practiceId: S.String,
     providerMappingId: S.String,
@@ -778,16 +721,12 @@ export type CreatePatientRequestAddressCountry = "US";
 export const CreatePatientRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreatePatientRequestAddress {
-  /** a string that will be trimmed */
   city: string;
-  /** a string that will be trimmed */
   line1: string;
   line2?: string | null;
-  /** a string that will be trimmed */
   postalCode: string;
-  /** a string that will be trimmed */
   state: string;
-  country?: CreatePatientRequestAddressCountry | (string & {});
+  country?: CreatePatientRequestAddressCountry | (string & {}) | null;
 }
 export const CreatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -796,25 +735,187 @@ export const CreatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
     line2: S.optional(S.NullOr(S.String)),
     postalCode: S.String,
     state: S.String,
-    country: S.optional(CreatePatientRequestAddressCountry),
+    country: S.optional(S.NullOr(CreatePatientRequestAddressCountry)),
   }),
 ).annotate({
   identifier: "CreatePatientRequestAddress",
 }) as any as S.Schema<CreatePatientRequestAddress>;
 
+export type CreatePatientRequestClinicalProfileCurrentMedicationsList = Array<string>;
+export const CreatePatientRequestClinicalProfileCurrentMedicationsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<CreatePatientRequestClinicalProfileCurrentMedicationsList>;
+
+export type CreatePatientRequestClinicalProfileHeightInchesCase1 = "Infinity" | "-Infinity" | "NaN";
+export const CreatePatientRequestClinicalProfileHeightInchesCase1 = /*@__PURE__*/ S.String;
+
+export type CreatePatientRequestClinicalProfileHeightInches =
+  | number
+  | CreatePatientRequestClinicalProfileHeightInchesCase1;
+export const CreatePatientRequestClinicalProfileHeightInches =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreatePatientRequestClinicalProfileHeightInches>;
+
+export type CreatePatientRequestClinicalProfileWeightPoundsCase1 = "Infinity" | "-Infinity" | "NaN";
+export const CreatePatientRequestClinicalProfileWeightPoundsCase1 = /*@__PURE__*/ S.String;
+
+export type CreatePatientRequestClinicalProfileWeightPounds =
+  | number
+  | CreatePatientRequestClinicalProfileWeightPoundsCase1;
+export const CreatePatientRequestClinicalProfileWeightPounds =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreatePatientRequestClinicalProfileWeightPounds>;
+
+export interface CreatePatientRequestClinicalProfile {
+  currentMedications: CreatePatientRequestClinicalProfileCurrentMedicationsList;
+  heightInches?: CreatePatientRequestClinicalProfileHeightInches | null;
+  reviewedAt?: string | null;
+  weightPounds?: CreatePatientRequestClinicalProfileWeightPounds | null;
+}
+export const CreatePatientRequestClinicalProfile = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    currentMedications: CreatePatientRequestClinicalProfileCurrentMedicationsList,
+    heightInches: S.optional(S.NullOr(CreatePatientRequestClinicalProfileHeightInches)),
+    reviewedAt: S.optional(S.NullOr(S.String)),
+    weightPounds: S.optional(S.NullOr(CreatePatientRequestClinicalProfileWeightPounds)),
+  }),
+).annotate({
+  identifier: "CreatePatientRequestClinicalProfile",
+}) as any as S.Schema<CreatePatientRequestClinicalProfile>;
+
+export interface CreatePatientRequestExternalIdentitiesItem {
+  source: string;
+  value: string;
+}
+export const CreatePatientRequestExternalIdentitiesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    source: S.String,
+    value: S.String,
+  }),
+).annotate({
+  identifier: "CreatePatientRequestExternalIdentitiesItem",
+}) as any as S.Schema<CreatePatientRequestExternalIdentitiesItem>;
+
+export type CreatePatientRequestExternalIdentitiesList =
+  Array<CreatePatientRequestExternalIdentitiesItem>;
+export const CreatePatientRequestExternalIdentitiesList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestExternalIdentitiesItem,
+) as any as S.Schema<CreatePatientRequestExternalIdentitiesList>;
+
+export interface CreatePatientRequestAddressesItemAddress {
+  city: string;
+  country?: string | null;
+  line1: string;
+  line2?: string | null;
+  postalCode: string;
+  state: string;
+}
+export const CreatePatientRequestAddressesItemAddress = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    city: S.String,
+    country: S.optional(S.NullOr(S.String)),
+    line1: S.String,
+    line2: S.optional(S.NullOr(S.String)),
+    postalCode: S.String,
+    state: S.String,
+  }),
+).annotate({
+  identifier: "CreatePatientRequestAddressesItemAddress",
+}) as any as S.Schema<CreatePatientRequestAddressesItemAddress>;
+
+export interface CreatePatientRequestAddressesItem {
+  address: CreatePatientRequestAddressesItemAddress;
+  label: string;
+  preferredShipping: boolean;
+  recipientName: string | null;
+}
+export const CreatePatientRequestAddressesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    address: CreatePatientRequestAddressesItemAddress,
+    label: S.String,
+    preferredShipping: S.Boolean,
+    recipientName: S.NullOr(S.String),
+  }),
+).annotate({
+  identifier: "CreatePatientRequestAddressesItem",
+}) as any as S.Schema<CreatePatientRequestAddressesItem>;
+
+export type CreatePatientRequestAddressesList = Array<CreatePatientRequestAddressesItem>;
+export const CreatePatientRequestAddressesList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestAddressesItem,
+) as any as S.Schema<CreatePatientRequestAddressesList>;
+
+export interface CreatePatientRequestEncountersItem {
+  notes: string | null;
+  occurredAt: string;
+  providerName: string | null;
+  type: string;
+}
+export const CreatePatientRequestEncountersItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    notes: S.NullOr(S.String),
+    occurredAt: S.String,
+    providerName: S.NullOr(S.String),
+    type: S.String,
+  }),
+).annotate({
+  identifier: "CreatePatientRequestEncountersItem",
+}) as any as S.Schema<CreatePatientRequestEncountersItem>;
+
+export type CreatePatientRequestEncountersList = Array<CreatePatientRequestEncountersItem>;
+export const CreatePatientRequestEncountersList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestEncountersItem,
+) as any as S.Schema<CreatePatientRequestEncountersList>;
+
 export type CreatePatientRequestGender = "f" | "m" | "o" | "u";
 export const CreatePatientRequestGender = /*@__PURE__*/ S.String;
 
-export type CreatePatientRequestMetadataMap = { [key: string]: unknown | undefined };
-export const CreatePatientRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreatePatientRequestMetadataMap>;
+export type CreatePatientRequestMeasurementsItemHeightCentimetersCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const CreatePatientRequestMeasurementsItemHeightCentimetersCase1 = /*@__PURE__*/ S.String;
+
+export type CreatePatientRequestMeasurementsItemHeightCentimeters =
+  | number
+  | CreatePatientRequestMeasurementsItemHeightCentimetersCase1;
+export const CreatePatientRequestMeasurementsItemHeightCentimeters =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreatePatientRequestMeasurementsItemHeightCentimeters>;
+
+export type CreatePatientRequestMeasurementsItemWeightKilogramsCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const CreatePatientRequestMeasurementsItemWeightKilogramsCase1 = /*@__PURE__*/ S.String;
+
+export type CreatePatientRequestMeasurementsItemWeightKilograms =
+  | number
+  | CreatePatientRequestMeasurementsItemWeightKilogramsCase1;
+export const CreatePatientRequestMeasurementsItemWeightKilograms =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<CreatePatientRequestMeasurementsItemWeightKilograms>;
+
+export interface CreatePatientRequestMeasurementsItem {
+  heightCentimeters: CreatePatientRequestMeasurementsItemHeightCentimeters | null;
+  recordedAt: string;
+  source: string;
+  weightKilograms: CreatePatientRequestMeasurementsItemWeightKilograms | null;
+}
+export const CreatePatientRequestMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    heightCentimeters: S.NullOr(CreatePatientRequestMeasurementsItemHeightCentimeters),
+    recordedAt: S.String,
+    source: S.String,
+    weightKilograms: S.NullOr(CreatePatientRequestMeasurementsItemWeightKilograms),
+  }),
+).annotate({
+  identifier: "CreatePatientRequestMeasurementsItem",
+}) as any as S.Schema<CreatePatientRequestMeasurementsItem>;
+
+export type CreatePatientRequestMeasurementsList = Array<CreatePatientRequestMeasurementsItem>;
+export const CreatePatientRequestMeasurementsList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestMeasurementsItem,
+) as any as S.Schema<CreatePatientRequestMeasurementsList>;
 
 export interface CreatePatientRequestName {
-  /** a string that will be trimmed */
   first: string;
-  /** a string that will be trimmed */
   last: string;
   middle?: string | null;
   preferred?: string | null;
@@ -828,156 +929,126 @@ export const CreatePatientRequestName = /*@__PURE__*/ S.suspend(() =>
   }),
 ).annotate({ identifier: "CreatePatientRequestName" }) as any as S.Schema<CreatePatientRequestName>;
 
+export type CreatePatientRequestProgramsItemStatus = "active" | "completed" | "paused";
+export const CreatePatientRequestProgramsItemStatus = /*@__PURE__*/ S.String;
+
+export interface CreatePatientRequestProgramsItem {
+  endedAt: string | null;
+  name: string;
+  startedAt: string;
+  status: CreatePatientRequestProgramsItemStatus | (string & {});
+}
+export const CreatePatientRequestProgramsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    endedAt: S.NullOr(S.String),
+    name: S.String,
+    startedAt: S.String,
+    status: CreatePatientRequestProgramsItemStatus,
+  }),
+).annotate({
+  identifier: "CreatePatientRequestProgramsItem",
+}) as any as S.Schema<CreatePatientRequestProgramsItem>;
+
+export type CreatePatientRequestProgramsList = Array<CreatePatientRequestProgramsItem>;
+export const CreatePatientRequestProgramsList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestProgramsItem,
+) as any as S.Schema<CreatePatientRequestProgramsList>;
+
 export interface CreatePatientRequest {
   practiceId: string;
   address: CreatePatientRequestAddress;
+  clinicalProfile?: CreatePatientRequestClinicalProfile | null;
   dateOfBirth: string;
   email?: string | null;
-  /** a string that will be trimmed */
-  externalId: string;
-  gender?: CreatePatientRequestGender | (string & {});
-  metadata?: CreatePatientRequestMetadataMap;
+  externalIdentities?: CreatePatientRequestExternalIdentitiesList | null;
+  addresses?: CreatePatientRequestAddressesList | null;
+  encounters?: CreatePatientRequestEncountersList | null;
+  gender?: CreatePatientRequestGender | (string & {}) | null;
+  metadata?: unknown | null;
+  medicalRecordNumber?: string | null;
+  measurements?: CreatePatientRequestMeasurementsList | null;
   name: CreatePatientRequestName;
-  /** a string that will be trimmed */
   phone: string;
+  programs?: CreatePatientRequestProgramsList | null;
 }
 export const CreatePatientRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     address: CreatePatientRequestAddress,
+    clinicalProfile: S.optional(S.NullOr(CreatePatientRequestClinicalProfile)),
     dateOfBirth: S.String,
     email: S.optional(S.NullOr(S.String)),
-    externalId: S.String,
-    gender: S.optional(CreatePatientRequestGender),
-    metadata: S.optional(CreatePatientRequestMetadataMap),
+    externalIdentities: S.optional(S.NullOr(CreatePatientRequestExternalIdentitiesList)),
+    addresses: S.optional(S.NullOr(CreatePatientRequestAddressesList)),
+    encounters: S.optional(S.NullOr(CreatePatientRequestEncountersList)),
+    gender: S.optional(S.NullOr(CreatePatientRequestGender)),
+    metadata: S.optional(S.NullOr(S.Unknown)),
+    medicalRecordNumber: S.optional(S.NullOr(S.String)),
+    measurements: S.optional(S.NullOr(CreatePatientRequestMeasurementsList)),
     name: CreatePatientRequestName,
     phone: S.String,
+    programs: S.optional(S.NullOr(CreatePatientRequestProgramsList)),
   }).pipe(T.Http({ method: "POST", uri: "/v1/practices/{practiceId}/patients", code: 200 })),
 ).annotate({ identifier: "CreatePatientRequest" }) as any as S.Schema<CreatePatientRequest>;
-
-export interface CreatePatientResponseAddress {
-  /** a string that will be trimmed */
-  city: string;
-  /** a string that will be trimmed */
-  country?: string;
-  /** a string that will be trimmed */
-  line1: string;
-  line2?: string | null;
-  /** a string that will be trimmed */
-  postalCode: string;
-  /** a string that will be trimmed */
-  state: string;
-}
-export const CreatePatientResponseAddress = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    city: S.String,
-    country: S.optional(S.String),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
-    postalCode: S.String,
-    state: S.String,
-  }),
-).annotate({
-  identifier: "CreatePatientResponseAddress",
-}) as any as S.Schema<CreatePatientResponseAddress>;
-
-export type CreatePatientResponseAllergyReviewStatus = "not_reviewed" | "no_known" | "recorded";
-export const CreatePatientResponseAllergyReviewStatus = /*@__PURE__*/ S.String;
-
-export interface CreatePatientResponseAllergySummaryItem {
-  reaction: string | null;
-  substance: string;
-}
-export const CreatePatientResponseAllergySummaryItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    reaction: S.NullOr(S.String),
-    substance: S.String,
-  }),
-).annotate({
-  identifier: "CreatePatientResponseAllergySummaryItem",
-}) as any as S.Schema<CreatePatientResponseAllergySummaryItem>;
-
-export type CreatePatientResponseAllergySummaryList =
-  Array<CreatePatientResponseAllergySummaryItem>;
-export const CreatePatientResponseAllergySummaryList = /*@__PURE__*/ S.Array(
-  CreatePatientResponseAllergySummaryItem,
-) as any as S.Schema<CreatePatientResponseAllergySummaryList>;
-
-export type CreatePatientResponseGender = "f" | "m" | "o" | "u";
-export const CreatePatientResponseGender = /*@__PURE__*/ S.String;
-
-export type CreatePatientResponseMetadataMap = { [key: string]: unknown | undefined };
-export const CreatePatientResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreatePatientResponseMetadataMap>;
-
-export interface CreatePatientResponseName {
-  first: string;
-  last: string;
-  middle: string | null;
-  preferred: string | null;
-}
-export const CreatePatientResponseName = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    first: S.String,
-    last: S.String,
-    middle: S.NullOr(S.String),
-    preferred: S.NullOr(S.String),
-  }),
-).annotate({
-  identifier: "CreatePatientResponseName",
-}) as any as S.Schema<CreatePatientResponseName>;
 
 export type CreatePatientResponseObject = "patient";
 export const CreatePatientResponseObject = /*@__PURE__*/ S.String;
 
-export type CreatePatientResponseStatus = "active" | "inactive" | "needs_review";
-export const CreatePatientResponseStatus = /*@__PURE__*/ S.String;
-
 export interface CreatePatientResponse {
-  address: CreatePatientResponseAddress;
-  allergyReviewStatus: CreatePatientResponseAllergyReviewStatus;
-  allergySummary: CreatePatientResponseAllergySummaryList;
+  address: unknown;
+  allergyReviewStatus: unknown;
+  allergySummary: unknown;
   createdAt: string;
+  clinicalProfile: unknown;
   dateOfBirth: string;
-  email: string | null;
-  externalId: string;
-  gender: CreatePatientResponseGender;
+  email: unknown;
+  externalIdentities: unknown;
+  addresses: unknown;
+  encounters: unknown;
+  gender: unknown;
   id: string;
   livemode: boolean;
-  metadata: CreatePatientResponseMetadataMap;
-  name: CreatePatientResponseName;
+  metadata: unknown;
+  medicalRecordNumber: unknown;
+  measurements: unknown;
+  name: unknown;
   object: CreatePatientResponseObject;
   phone: string;
+  programs: unknown;
   practiceId: string;
-  status: CreatePatientResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const CreatePatientResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: CreatePatientResponseAddress,
-    allergyReviewStatus: CreatePatientResponseAllergyReviewStatus,
-    allergySummary: CreatePatientResponseAllergySummaryList,
+    address: S.Unknown,
+    allergyReviewStatus: S.Unknown,
+    allergySummary: S.Unknown,
     createdAt: S.String,
+    clinicalProfile: S.Unknown,
     dateOfBirth: S.String,
-    email: S.NullOr(S.String),
-    externalId: S.String,
-    gender: CreatePatientResponseGender,
+    email: S.Unknown,
+    externalIdentities: S.Unknown,
+    addresses: S.Unknown,
+    encounters: S.Unknown,
+    gender: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
-    metadata: CreatePatientResponseMetadataMap,
-    name: CreatePatientResponseName,
+    metadata: S.Unknown,
+    medicalRecordNumber: S.Unknown,
+    measurements: S.Unknown,
+    name: S.Unknown,
     object: CreatePatientResponseObject,
     phone: S.String,
+    programs: S.Unknown,
     practiceId: S.String,
-    status: CreatePatientResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "CreatePatientResponse" }) as any as S.Schema<CreatePatientResponse>;
 
-export type CreatePracticeRequestAddress = CreatePatientResponseAddress;
-export const CreatePracticeRequestAddress = CreatePatientResponseAddress;
+export type CreatePracticeRequestAddress = CreatePatientRequestAddressesItemAddress;
+export const CreatePracticeRequestAddress = CreatePatientRequestAddressesItemAddress;
 
 export interface CreatePracticeRequestAttestations {
   authorizedPracticeRelationship: boolean;
@@ -998,7 +1069,6 @@ export const CreatePracticeRequestAttestations = /*@__PURE__*/ S.suspend(() =>
 
 export interface CreatePracticeRequestComplianceContact {
   email: string;
-  /** a string that will be trimmed */
   name: string;
   phone?: string | null;
 }
@@ -1012,12 +1082,6 @@ export const CreatePracticeRequestComplianceContact = /*@__PURE__*/ S.suspend(()
   identifier: "CreatePracticeRequestComplianceContact",
 }) as any as S.Schema<CreatePracticeRequestComplianceContact>;
 
-export type CreatePracticeRequestMetadataMap = { [key: string]: unknown | undefined };
-export const CreatePracticeRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreatePracticeRequestMetadataMap>;
-
 export type CreatePracticeRequestPrescribersItemLicenseStatesList = Array<string>;
 export const CreatePracticeRequestPrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
   S.String,
@@ -1026,7 +1090,6 @@ export const CreatePracticeRequestPrescribersItemLicenseStatesList = /*@__PURE__
 export interface CreatePracticeRequestPrescribersItem {
   credentials?: string | null;
   licenseStates: CreatePracticeRequestPrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
   name: string;
   npi: string;
 }
@@ -1050,133 +1113,72 @@ export type CreatePracticeRequestPrimaryContact = CreatePracticeRequestComplianc
 export const CreatePracticeRequestPrimaryContact = CreatePracticeRequestComplianceContact;
 
 export interface CreatePracticeRequest {
-  address: CreatePatientResponseAddress;
+  address: CreatePatientRequestAddressesItemAddress;
   attestations: CreatePracticeRequestAttestations;
   complianceContact?: CreatePracticeRequestComplianceContact | null;
   externalId?: string | null;
   legalName?: string | null;
-  metadata?: CreatePracticeRequestMetadataMap;
-  /** a string that will be trimmed */
+  metadata?: unknown | null;
   name: string;
-  prescribers?: CreatePracticeRequestPrescribersList;
+  prescribers?: CreatePracticeRequestPrescribersList | null;
   primaryContact?: CreatePracticeRequestComplianceContact | null;
   supportEmail?: string | null;
   supportPhone?: string | null;
-  /** a string that will be trimmed */
-  timezone?: string;
+  timezone?: string | null;
 }
 export const CreatePracticeRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: CreatePatientResponseAddress,
+    address: CreatePatientRequestAddressesItemAddress,
     attestations: CreatePracticeRequestAttestations,
     complianceContact: S.optional(S.NullOr(CreatePracticeRequestComplianceContact)),
     externalId: S.optional(S.NullOr(S.String)),
     legalName: S.optional(S.NullOr(S.String)),
-    metadata: S.optional(CreatePracticeRequestMetadataMap),
+    metadata: S.optional(S.NullOr(S.Unknown)),
     name: S.String,
-    prescribers: S.optional(CreatePracticeRequestPrescribersList),
+    prescribers: S.optional(S.NullOr(CreatePracticeRequestPrescribersList)),
     primaryContact: S.optional(S.NullOr(CreatePracticeRequestComplianceContact)),
     supportEmail: S.optional(S.NullOr(S.String)),
     supportPhone: S.optional(S.NullOr(S.String)),
-    timezone: S.optional(S.String),
+    timezone: S.optional(S.NullOr(S.String)),
   }).pipe(T.Http({ method: "POST", uri: "/v1/practices", code: 200 })),
 ).annotate({ identifier: "CreatePracticeRequest" }) as any as S.Schema<CreatePracticeRequest>;
-
-export type CreatePracticeResponseAddress = CreatePatientResponseAddress;
-export const CreatePracticeResponseAddress = CreatePatientResponseAddress;
-
-export type CreatePracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-export const CreatePracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-
-export type CreatePracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-export const CreatePracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-
-export interface CreatePracticeResponseContacts {
-  compliance: CreatePracticeRequestComplianceContact | null;
-  primary: CreatePracticeRequestComplianceContact | null;
-}
-export const CreatePracticeResponseContacts = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    compliance: S.NullOr(CreatePracticeRequestComplianceContact),
-    primary: S.NullOr(CreatePracticeRequestComplianceContact),
-  }),
-).annotate({
-  identifier: "CreatePracticeResponseContacts",
-}) as any as S.Schema<CreatePracticeResponseContacts>;
-
-export type CreatePracticeResponseMetadataMap = { [key: string]: unknown | undefined };
-export const CreatePracticeResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreatePracticeResponseMetadataMap>;
 
 export type CreatePracticeResponseObject = "practice";
 export const CreatePracticeResponseObject = /*@__PURE__*/ S.String;
 
-export type CreatePracticeResponsePrescribersItemLicenseStatesList = Array<string>;
-export const CreatePracticeResponsePrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<CreatePracticeResponsePrescribersItemLicenseStatesList>;
-
-export interface CreatePracticeResponsePrescribersItem {
-  credentials?: string | null;
-  licenseStates: CreatePracticeResponsePrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
-  name: string;
-  npi: string;
-}
-export const CreatePracticeResponsePrescribersItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    credentials: S.optional(S.NullOr(S.String)),
-    licenseStates: CreatePracticeResponsePrescribersItemLicenseStatesList,
-    name: S.String,
-    npi: S.String,
-  }),
-).annotate({
-  identifier: "CreatePracticeResponsePrescribersItem",
-}) as any as S.Schema<CreatePracticeResponsePrescribersItem>;
-
-export type CreatePracticeResponsePrescribersList = Array<CreatePracticeResponsePrescribersItem>;
-export const CreatePracticeResponsePrescribersList = /*@__PURE__*/ S.Array(
-  CreatePracticeResponsePrescribersItem,
-) as any as S.Schema<CreatePracticeResponsePrescribersList>;
-
-export type CreatePracticeResponseProductionAccess = "approved" | "not_applicable" | "pending";
-export const CreatePracticeResponseProductionAccess = /*@__PURE__*/ S.String;
-
 export interface CreatePracticeResponse {
-  address: CreatePatientResponseAddress | null;
-  contacts: CreatePracticeResponseContacts;
+  address: unknown;
+  contacts: unknown;
   createdAt: string;
-  externalId: string | null;
+  externalId: unknown;
   id: string;
-  legalName: string | null;
+  legalName: unknown;
   livemode: boolean;
-  metadata: CreatePracticeResponseMetadataMap;
+  metadata: unknown;
   name: string;
   object: CreatePracticeResponseObject;
-  prescribers: CreatePracticeResponsePrescribersList;
-  productionAccess: CreatePracticeResponseProductionAccess;
-  supportEmail: string | null;
-  supportPhone: string | null;
+  prescribers: unknown;
+  productionAccess: unknown;
+  supportEmail: unknown;
+  supportPhone: unknown;
   timezone: string;
 }
 export const CreatePracticeResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: S.NullOr(CreatePatientResponseAddress),
-    contacts: CreatePracticeResponseContacts,
+    address: S.Unknown,
+    contacts: S.Unknown,
     createdAt: S.String,
-    externalId: S.NullOr(S.String),
+    externalId: S.Unknown,
     id: S.String,
-    legalName: S.NullOr(S.String),
+    legalName: S.Unknown,
     livemode: S.Boolean,
-    metadata: CreatePracticeResponseMetadataMap,
+    metadata: S.Unknown,
     name: S.String,
     object: CreatePracticeResponseObject,
-    prescribers: CreatePracticeResponsePrescribersList,
-    productionAccess: CreatePracticeResponseProductionAccess,
-    supportEmail: S.NullOr(S.String),
-    supportPhone: S.NullOr(S.String),
+    prescribers: S.Unknown,
+    productionAccess: S.Unknown,
+    supportEmail: S.Unknown,
+    supportPhone: S.Unknown,
     timezone: S.String,
   }),
 ).annotate({ identifier: "CreatePracticeResponse" }) as any as S.Schema<CreatePracticeResponse>;
@@ -1184,7 +1186,6 @@ export const CreatePracticeResponse = /*@__PURE__*/ S.suspend(() =>
 export interface CreatePracticeMembershipRequest {
   practiceId: string;
   roleId: string;
-  /** a string that will be trimmed */
   termsVersion: string;
   userId: string;
 }
@@ -1202,27 +1203,24 @@ export const CreatePracticeMembershipRequest = /*@__PURE__*/ S.suspend(() =>
 export type CreatePracticeMembershipResponseObject = "membership";
 export const CreatePracticeMembershipResponseObject = /*@__PURE__*/ S.String;
 
-export type CreatePracticeMembershipResponseStatus = "active" | "pending" | "revoked";
-export const CreatePracticeMembershipResponseStatus = /*@__PURE__*/ S.String;
-
 export interface CreatePracticeMembershipResponse {
-  acceptedAt: string | null;
+  acceptedAt: unknown;
   id: string;
   object: CreatePracticeMembershipResponseObject;
   practiceId: string;
   roleId: string;
-  status: CreatePracticeMembershipResponseStatus;
+  status: unknown;
   termsVersion: string;
   userId: string;
 }
 export const CreatePracticeMembershipResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    acceptedAt: S.NullOr(S.String),
+    acceptedAt: S.Unknown,
     id: S.String,
     object: CreatePracticeMembershipResponseObject,
     practiceId: S.String,
     roleId: S.String,
-    status: CreatePracticeMembershipResponseStatus,
+    status: S.Unknown,
     termsVersion: S.String,
     userId: S.String,
   }),
@@ -1237,16 +1235,14 @@ export const CreatePracticeRoleRequestPermissionsList = /*@__PURE__*/ S.Array(
 
 export interface CreatePracticeRoleRequest {
   practiceId: string;
-  /** a string that will be trimmed */
-  description?: string;
-  /** a string that will be trimmed */
+  description?: string | null;
   name: string;
   permissions: CreatePracticeRoleRequestPermissionsList;
 }
 export const CreatePracticeRoleRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
-    description: S.optional(S.String),
+    description: S.optional(S.NullOr(S.String)),
     name: S.String,
     permissions: CreatePracticeRoleRequestPermissionsList,
   }).pipe(T.Http({ method: "POST", uri: "/v1/practices/{practiceId}/roles", code: 200 })),
@@ -1257,17 +1253,12 @@ export const CreatePracticeRoleRequest = /*@__PURE__*/ S.suspend(() =>
 export type CreatePracticeRoleResponseObject = "role";
 export const CreatePracticeRoleResponseObject = /*@__PURE__*/ S.String;
 
-export type CreatePracticeRoleResponsePermissionsList = Array<string>;
-export const CreatePracticeRoleResponsePermissionsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<CreatePracticeRoleResponsePermissionsList>;
-
 export interface CreatePracticeRoleResponse {
   description: string;
   id: string;
   name: string;
   object: CreatePracticeRoleResponseObject;
-  permissions: CreatePracticeRoleResponsePermissionsList;
+  permissions: unknown;
   protected: boolean;
 }
 export const CreatePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
@@ -1276,7 +1267,7 @@ export const CreatePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     name: S.String,
     object: CreatePracticeRoleResponseObject,
-    permissions: CreatePracticeRoleResponsePermissionsList,
+    permissions: S.Unknown,
     protected: S.Boolean,
   }),
 ).annotate({
@@ -1300,10 +1291,11 @@ export interface CreateProviderMappingRequest {
   attestations: CreateProviderMappingRequestAttestations;
   credentials?: string | null;
   externalId: string;
-  /** a string that will be trimmed */
   name: string;
   npi: string;
+  /** The Affinity practice where this provider is authorized to act. */
   practiceId: string;
+  /** The Affinity user record for the person your platform authenticated. */
   userId: string;
 }
 export const CreateProviderMappingRequest = /*@__PURE__*/ S.suspend(() =>
@@ -1323,25 +1315,23 @@ export const CreateProviderMappingRequest = /*@__PURE__*/ S.suspend(() =>
 export type CreateProviderMappingResponseObject = "provider_mapping";
 export const CreateProviderMappingResponseObject = /*@__PURE__*/ S.String;
 
-/** The mapping's verification state. Prescribing sessions require verified status. */
-export type CreateProviderMappingResponseStatus = "pending" | "verified" | "revoked";
-export const CreateProviderMappingResponseStatus = /*@__PURE__*/ S.String;
-
 export interface CreateProviderMappingResponse {
   createdAt: string;
   /** Your platform's stable identifier for this provider. */
   externalId: string;
+  /** The Affinity provider mapping ID. Store this pmap_ value and send it as providerMappingId when you create component or hosted sessions. */
   id: string;
   livemode: boolean;
   /** The provider's 10-digit individual NPI. */
   npi: string;
   object: CreateProviderMappingResponseObject;
+  /** The Affinity practice where this provider is authorized to act. */
   practiceId: string;
-  /** The mapping's verification state. Prescribing sessions require verified status. */
-  status: CreateProviderMappingResponseStatus;
+  status: unknown;
   updatedAt: string;
+  /** The Affinity user record for the person your platform authenticated. */
   userId: string;
-  verifiedAt: string | null;
+  verifiedAt: unknown;
 }
 export const CreateProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -1352,72 +1342,56 @@ export const CreateProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
     npi: S.String,
     object: CreateProviderMappingResponseObject,
     practiceId: S.String,
-    status: CreateProviderMappingResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
     userId: S.String,
-    verifiedAt: S.NullOr(S.String),
+    verifiedAt: S.Unknown,
   }),
 ).annotate({
   identifier: "CreateProviderMappingResponse",
 }) as any as S.Schema<CreateProviderMappingResponse>;
 
-export type CreateUserRequestMetadataMap = { [key: string]: unknown | undefined };
-export const CreateUserRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreateUserRequestMetadataMap>;
-
 export interface CreateUserRequest {
   email?: string | null;
-  /** a string that will be trimmed */
   externalId: string;
-  metadata?: CreateUserRequestMetadataMap;
+  metadata?: unknown | null;
   name?: string | null;
 }
 export const CreateUserRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     email: S.optional(S.NullOr(S.String)),
     externalId: S.String,
-    metadata: S.optional(CreateUserRequestMetadataMap),
+    metadata: S.optional(S.NullOr(S.Unknown)),
     name: S.optional(S.NullOr(S.String)),
   }).pipe(T.Http({ method: "POST", uri: "/v1/users", code: 200 })),
 ).annotate({ identifier: "CreateUserRequest" }) as any as S.Schema<CreateUserRequest>;
 
-export type CreateUserResponseMetadataMap = { [key: string]: unknown | undefined };
-export const CreateUserResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<CreateUserResponseMetadataMap>;
-
 export type CreateUserResponseObject = "user";
 export const CreateUserResponseObject = /*@__PURE__*/ S.String;
 
-export type CreateUserResponseStatus = "active" | "deactivated";
-export const CreateUserResponseStatus = /*@__PURE__*/ S.String;
-
 export interface CreateUserResponse {
   createdAt: string;
-  email: string | null;
+  email: unknown;
   externalId: string;
   id: string;
   livemode: boolean;
-  metadata: CreateUserResponseMetadataMap;
-  name: string | null;
+  metadata: unknown;
+  name: unknown;
   object: CreateUserResponseObject;
-  status: CreateUserResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const CreateUserResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    email: S.NullOr(S.String),
+    email: S.Unknown,
     externalId: S.String,
     id: S.String,
     livemode: S.Boolean,
-    metadata: CreateUserResponseMetadataMap,
-    name: S.NullOr(S.String),
+    metadata: S.Unknown,
+    name: S.Unknown,
     object: CreateUserResponseObject,
-    status: CreateUserResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "CreateUserResponse" }) as any as S.Schema<CreateUserResponse>;
@@ -1431,17 +1405,16 @@ export const CreateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.
 ) as any as S.Schema<CreateWebhookEndpointRequestSubscribedEventsList>;
 
 export interface CreateWebhookEndpointRequest {
-  /** a string that will be trimmed */
-  description?: string;
-  payloadStyle?: CreateWebhookEndpointRequestPayloadStyle | (string & {});
-  subscribedEvents?: CreateWebhookEndpointRequestSubscribedEventsList;
+  description?: string | null;
+  payloadStyle?: CreateWebhookEndpointRequestPayloadStyle | (string & {}) | null;
+  subscribedEvents?: CreateWebhookEndpointRequestSubscribedEventsList | null;
   url: string;
 }
 export const CreateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    description: S.optional(S.String),
-    payloadStyle: S.optional(CreateWebhookEndpointRequestPayloadStyle),
-    subscribedEvents: S.optional(CreateWebhookEndpointRequestSubscribedEventsList),
+    description: S.optional(S.NullOr(S.String)),
+    payloadStyle: S.optional(S.NullOr(CreateWebhookEndpointRequestPayloadStyle)),
+    subscribedEvents: S.optional(S.NullOr(CreateWebhookEndpointRequestSubscribedEventsList)),
     url: S.String,
   }).pipe(T.Http({ method: "POST", uri: "/v1/webhook-endpoints", code: 200 })),
 ).annotate({
@@ -1451,17 +1424,6 @@ export const CreateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
 export type CreateWebhookEndpointResponseObject = "webhook_endpoint";
 export const CreateWebhookEndpointResponseObject = /*@__PURE__*/ S.String;
 
-export type CreateWebhookEndpointResponsePayloadStyle = "thin" | "snapshot";
-export const CreateWebhookEndpointResponsePayloadStyle = /*@__PURE__*/ S.String;
-
-export type CreateWebhookEndpointResponseStatus = "active" | "suspended" | "disabled";
-export const CreateWebhookEndpointResponseStatus = /*@__PURE__*/ S.String;
-
-export type CreateWebhookEndpointResponseSubscribedEventsList = Array<string>;
-export const CreateWebhookEndpointResponseSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<CreateWebhookEndpointResponseSubscribedEventsList>;
-
 export interface CreateWebhookEndpointResponse {
   apiVersion: string;
   consecutiveFailures: number;
@@ -1470,9 +1432,9 @@ export interface CreateWebhookEndpointResponse {
   id: string;
   livemode: boolean;
   object: CreateWebhookEndpointResponseObject;
-  payloadStyle: CreateWebhookEndpointResponsePayloadStyle;
-  status: CreateWebhookEndpointResponseStatus;
-  subscribedEvents: CreateWebhookEndpointResponseSubscribedEventsList;
+  payloadStyle: unknown;
+  status: unknown;
+  subscribedEvents: unknown;
   updatedAt: string;
   url: string;
   signingSecret: string;
@@ -1486,9 +1448,9 @@ export const CreateWebhookEndpointResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     livemode: S.Boolean,
     object: CreateWebhookEndpointResponseObject,
-    payloadStyle: CreateWebhookEndpointResponsePayloadStyle,
-    status: CreateWebhookEndpointResponseStatus,
-    subscribedEvents: CreateWebhookEndpointResponseSubscribedEventsList,
+    payloadStyle: S.Unknown,
+    status: S.Unknown,
+    subscribedEvents: S.Unknown,
     updatedAt: S.String,
     url: S.String,
     signingSecret: S.String,
@@ -1515,17 +1477,12 @@ export const DeletePracticeRoleRequest = /*@__PURE__*/ S.suspend(() =>
 export type DeletePracticeRoleResponseObject = "role";
 export const DeletePracticeRoleResponseObject = /*@__PURE__*/ S.String;
 
-export type DeletePracticeRoleResponsePermissionsList = Array<string>;
-export const DeletePracticeRoleResponsePermissionsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<DeletePracticeRoleResponsePermissionsList>;
-
 export interface DeletePracticeRoleResponse {
   description: string;
   id: string;
   name: string;
   object: DeletePracticeRoleResponseObject;
-  permissions: DeletePracticeRoleResponsePermissionsList;
+  permissions: unknown;
   protected: boolean;
 }
 export const DeletePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
@@ -1534,7 +1491,7 @@ export const DeletePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     name: S.String,
     object: DeletePracticeRoleResponseObject,
-    permissions: DeletePracticeRoleResponsePermissionsList,
+    permissions: S.Unknown,
     protected: S.Boolean,
   }),
 ).annotate({
@@ -1555,17 +1512,6 @@ export const DeleteWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
 export type DeleteWebhookEndpointResponseObject = "webhook_endpoint";
 export const DeleteWebhookEndpointResponseObject = /*@__PURE__*/ S.String;
 
-export type DeleteWebhookEndpointResponsePayloadStyle = "thin" | "snapshot";
-export const DeleteWebhookEndpointResponsePayloadStyle = /*@__PURE__*/ S.String;
-
-export type DeleteWebhookEndpointResponseStatus = "active" | "suspended" | "disabled";
-export const DeleteWebhookEndpointResponseStatus = /*@__PURE__*/ S.String;
-
-export type DeleteWebhookEndpointResponseSubscribedEventsList = Array<string>;
-export const DeleteWebhookEndpointResponseSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<DeleteWebhookEndpointResponseSubscribedEventsList>;
-
 export interface DeleteWebhookEndpointResponse {
   apiVersion: string;
   consecutiveFailures: number;
@@ -1574,9 +1520,9 @@ export interface DeleteWebhookEndpointResponse {
   id: string;
   livemode: boolean;
   object: DeleteWebhookEndpointResponseObject;
-  payloadStyle: DeleteWebhookEndpointResponsePayloadStyle;
-  status: DeleteWebhookEndpointResponseStatus;
-  subscribedEvents: DeleteWebhookEndpointResponseSubscribedEventsList;
+  payloadStyle: unknown;
+  status: unknown;
+  subscribedEvents: unknown;
   updatedAt: string;
   url: string;
 }
@@ -1589,9 +1535,9 @@ export const DeleteWebhookEndpointResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     livemode: S.Boolean,
     object: DeleteWebhookEndpointResponseObject,
-    payloadStyle: DeleteWebhookEndpointResponsePayloadStyle,
-    status: DeleteWebhookEndpointResponseStatus,
-    subscribedEvents: DeleteWebhookEndpointResponseSubscribedEventsList,
+    payloadStyle: S.Unknown,
+    status: S.Unknown,
+    subscribedEvents: S.Unknown,
     updatedAt: S.String,
     url: S.String,
   }),
@@ -1705,19 +1651,19 @@ export const GetAccountResponseOperatingMode = /*@__PURE__*/ S.String;
 
 export interface GetAccountResponseUser {
   email: string;
-  emailVerified?: boolean;
+  emailVerified?: boolean | null;
   image: string | null;
   name: string;
-  twoFactorEnabled?: boolean;
+  twoFactorEnabled?: boolean | null;
   userId: string;
 }
 export const GetAccountResponseUser = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     email: S.String,
-    emailVerified: S.optional(S.Boolean),
+    emailVerified: S.optional(S.NullOr(S.Boolean)),
     image: S.NullOr(S.String),
     name: S.String,
-    twoFactorEnabled: S.optional(S.Boolean),
+    twoFactorEnabled: S.optional(S.NullOr(S.Boolean)),
     userId: S.String,
   }),
 ).annotate({ identifier: "GetAccountResponseUser" }) as any as S.Schema<GetAccountResponseUser>;
@@ -1819,126 +1765,12 @@ export const GetOrderRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/orders/{orderId}", code: 200 })),
 ).annotate({ identifier: "GetOrderRequest" }) as any as S.Schema<GetOrderRequest>;
 
-export type GetOrderResponseFulfillmentsItemShippingDestinationType = "patient" | "practice";
-export const GetOrderResponseFulfillmentsItemShippingDestinationType = /*@__PURE__*/ S.String;
-
-export type GetOrderResponseFulfillmentsItemShippingMethod =
-  | "standard"
-  | "expedited"
-  | "overnight"
-  | "pickup"
-  | "local_delivery";
-export const GetOrderResponseFulfillmentsItemShippingMethod = /*@__PURE__*/ S.String;
-
-export type GetOrderResponseFulfillmentsItemShippingOptionCurrency = "USD";
-export const GetOrderResponseFulfillmentsItemShippingOptionCurrency = /*@__PURE__*/ S.String;
-
-export type GetOrderResponseFulfillmentsItemShippingOptionTemperature = "ambient" | "refrigerated";
-export const GetOrderResponseFulfillmentsItemShippingOptionTemperature = /*@__PURE__*/ S.String;
-
-export interface GetOrderResponseFulfillmentsItemShippingOption {
-  amountCents: number;
-  currency: GetOrderResponseFulfillmentsItemShippingOptionCurrency;
-  label: string;
-  serviceLevel: string;
-  temperature: GetOrderResponseFulfillmentsItemShippingOptionTemperature;
-}
-export const GetOrderResponseFulfillmentsItemShippingOption = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    amountCents: S.Number,
-    currency: GetOrderResponseFulfillmentsItemShippingOptionCurrency,
-    label: S.String,
-    serviceLevel: S.String,
-    temperature: GetOrderResponseFulfillmentsItemShippingOptionTemperature,
-  }),
-).annotate({
-  identifier: "GetOrderResponseFulfillmentsItemShippingOption",
-}) as any as S.Schema<GetOrderResponseFulfillmentsItemShippingOption>;
-
-export interface GetOrderResponseFulfillmentsItemShipping {
-  destinationType: GetOrderResponseFulfillmentsItemShippingDestinationType;
-  method: GetOrderResponseFulfillmentsItemShippingMethod;
-  option: GetOrderResponseFulfillmentsItemShippingOption | null;
-}
-export const GetOrderResponseFulfillmentsItemShipping = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    destinationType: GetOrderResponseFulfillmentsItemShippingDestinationType,
-    method: GetOrderResponseFulfillmentsItemShippingMethod,
-    option: S.NullOr(GetOrderResponseFulfillmentsItemShippingOption),
-  }),
-).annotate({
-  identifier: "GetOrderResponseFulfillmentsItemShipping",
-}) as any as S.Schema<GetOrderResponseFulfillmentsItemShipping>;
-
-export interface GetOrderResponseFulfillmentsItem {
-  carrier: string | null;
-  compounderId: string | null;
-  createdAt: string;
-  id: string;
-  prescriptionId: string;
-  status: string;
-  trackingNumber: string | null;
-  trackingStatus: string | null;
-  shippedAt: string | null;
-  deliveredAt: string | null;
-  estimatedDeliveryAt: string | null;
-  shipping: GetOrderResponseFulfillmentsItemShipping;
-  trackingUrl: string | null;
-  updatedAt: string;
-}
-export const GetOrderResponseFulfillmentsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    carrier: S.NullOr(S.String),
-    compounderId: S.NullOr(S.String),
-    createdAt: S.String,
-    id: S.String,
-    prescriptionId: S.String,
-    status: S.String,
-    trackingNumber: S.NullOr(S.String),
-    trackingStatus: S.NullOr(S.String),
-    shippedAt: S.NullOr(S.String),
-    deliveredAt: S.NullOr(S.String),
-    estimatedDeliveryAt: S.NullOr(S.String),
-    shipping: GetOrderResponseFulfillmentsItemShipping,
-    trackingUrl: S.NullOr(S.String),
-    updatedAt: S.String,
-  }),
-).annotate({
-  identifier: "GetOrderResponseFulfillmentsItem",
-}) as any as S.Schema<GetOrderResponseFulfillmentsItem>;
-
-export type GetOrderResponseFulfillmentsList = Array<GetOrderResponseFulfillmentsItem>;
-export const GetOrderResponseFulfillmentsList = /*@__PURE__*/ S.Array(
-  GetOrderResponseFulfillmentsItem,
-) as any as S.Schema<GetOrderResponseFulfillmentsList>;
-
 export type GetOrderResponseObject = "order";
 export const GetOrderResponseObject = /*@__PURE__*/ S.String;
 
-export type GetOrderResponsePrescriptionsItem = CancelOrderResponsePrescriptionsItem;
-export const GetOrderResponsePrescriptionsItem = CancelOrderResponsePrescriptionsItem;
-
-export type GetOrderResponsePrescriptionsList = Array<CancelOrderResponsePrescriptionsItem>;
-export const GetOrderResponsePrescriptionsList = /*@__PURE__*/ S.Array(
-  CancelOrderResponsePrescriptionsItem,
-) as any as S.Schema<GetOrderResponsePrescriptionsList>;
-
-export type GetOrderResponseStatus =
-  | "blocked"
-  | "cancelled"
-  | "delivered"
-  | "draft"
-  | "partially_submitted"
-  | "processing"
-  | "ready"
-  | "requires_provider_signature"
-  | "shipped"
-  | "submitted";
-export const GetOrderResponseStatus = /*@__PURE__*/ S.String;
-
 export interface GetOrderResponse {
   createdAt: string;
-  fulfillments: GetOrderResponseFulfillmentsList;
+  fulfillments: unknown;
   id: string;
   livemode: boolean;
   object: GetOrderResponseObject;
@@ -1947,16 +1779,16 @@ export interface GetOrderResponse {
   patientName: string;
   patientState: string;
   practiceId: string;
-  prescriberName: string | null;
-  prescriberNpi: string | null;
-  prescriptions: GetOrderResponsePrescriptionsList;
-  status: GetOrderResponseStatus;
+  prescriberName: unknown;
+  prescriberNpi: unknown;
+  prescriptions: unknown;
+  status: unknown;
   updatedAt: string;
 }
 export const GetOrderResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    fulfillments: GetOrderResponseFulfillmentsList,
+    fulfillments: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
     object: GetOrderResponseObject,
@@ -1965,10 +1797,10 @@ export const GetOrderResponse = /*@__PURE__*/ S.suspend(() =>
     patientName: S.String,
     patientState: S.String,
     practiceId: S.String,
-    prescriberName: S.NullOr(S.String),
-    prescriberNpi: S.NullOr(S.String),
-    prescriptions: GetOrderResponsePrescriptionsList,
-    status: GetOrderResponseStatus,
+    prescriberName: S.Unknown,
+    prescriberNpi: S.Unknown,
+    prescriptions: S.Unknown,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "GetOrderResponse" }) as any as S.Schema<GetOrderResponse>;
@@ -1986,75 +1818,58 @@ export const GetPatientRequest = /*@__PURE__*/ S.suspend(() =>
   ),
 ).annotate({ identifier: "GetPatientRequest" }) as any as S.Schema<GetPatientRequest>;
 
-export type GetPatientResponseAddress = CreatePatientResponseAddress;
-export const GetPatientResponseAddress = CreatePatientResponseAddress;
-
-export type GetPatientResponseAllergyReviewStatus = "not_reviewed" | "no_known" | "recorded";
-export const GetPatientResponseAllergyReviewStatus = /*@__PURE__*/ S.String;
-
-export type GetPatientResponseAllergySummaryItem = CreatePatientResponseAllergySummaryItem;
-export const GetPatientResponseAllergySummaryItem = CreatePatientResponseAllergySummaryItem;
-
-export type GetPatientResponseAllergySummaryList = Array<CreatePatientResponseAllergySummaryItem>;
-export const GetPatientResponseAllergySummaryList = /*@__PURE__*/ S.Array(
-  CreatePatientResponseAllergySummaryItem,
-) as any as S.Schema<GetPatientResponseAllergySummaryList>;
-
-export type GetPatientResponseGender = "f" | "m" | "o" | "u";
-export const GetPatientResponseGender = /*@__PURE__*/ S.String;
-
-export type GetPatientResponseMetadataMap = { [key: string]: unknown | undefined };
-export const GetPatientResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<GetPatientResponseMetadataMap>;
-
-export type GetPatientResponseName = CreatePatientResponseName;
-export const GetPatientResponseName = CreatePatientResponseName;
-
 export type GetPatientResponseObject = "patient";
 export const GetPatientResponseObject = /*@__PURE__*/ S.String;
 
-export type GetPatientResponseStatus = "active" | "inactive" | "needs_review";
-export const GetPatientResponseStatus = /*@__PURE__*/ S.String;
-
 export interface GetPatientResponse {
-  address: CreatePatientResponseAddress;
-  allergyReviewStatus: GetPatientResponseAllergyReviewStatus;
-  allergySummary: GetPatientResponseAllergySummaryList;
+  address: unknown;
+  allergyReviewStatus: unknown;
+  allergySummary: unknown;
   createdAt: string;
+  clinicalProfile: unknown;
   dateOfBirth: string;
-  email: string | null;
-  externalId: string;
-  gender: GetPatientResponseGender;
+  email: unknown;
+  externalIdentities: unknown;
+  addresses: unknown;
+  encounters: unknown;
+  gender: unknown;
   id: string;
   livemode: boolean;
-  metadata: GetPatientResponseMetadataMap;
-  name: CreatePatientResponseName;
+  metadata: unknown;
+  medicalRecordNumber: unknown;
+  measurements: unknown;
+  name: unknown;
   object: GetPatientResponseObject;
   phone: string;
+  programs: unknown;
   practiceId: string;
-  status: GetPatientResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const GetPatientResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: CreatePatientResponseAddress,
-    allergyReviewStatus: GetPatientResponseAllergyReviewStatus,
-    allergySummary: GetPatientResponseAllergySummaryList,
+    address: S.Unknown,
+    allergyReviewStatus: S.Unknown,
+    allergySummary: S.Unknown,
     createdAt: S.String,
+    clinicalProfile: S.Unknown,
     dateOfBirth: S.String,
-    email: S.NullOr(S.String),
-    externalId: S.String,
-    gender: GetPatientResponseGender,
+    email: S.Unknown,
+    externalIdentities: S.Unknown,
+    addresses: S.Unknown,
+    encounters: S.Unknown,
+    gender: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
-    metadata: GetPatientResponseMetadataMap,
-    name: CreatePatientResponseName,
+    metadata: S.Unknown,
+    medicalRecordNumber: S.Unknown,
+    measurements: S.Unknown,
+    name: S.Unknown,
     object: GetPatientResponseObject,
     phone: S.String,
+    programs: S.Unknown,
     practiceId: S.String,
-    status: GetPatientResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "GetPatientResponse" }) as any as S.Schema<GetPatientResponse>;
@@ -2078,116 +1893,14 @@ export const GetPatientAllergiesRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetPatientAllergiesRequest",
 }) as any as S.Schema<GetPatientAllergiesRequest>;
 
-export type GetPatientAllergiesResponseAllergiesItemCategory =
-  | "drug"
-  | "food"
-  | "insect"
-  | "latex"
-  | "mold"
-  | "pet"
-  | "pollen"
-  | "environmental"
-  | "biologic"
-  | "other";
-export const GetPatientAllergiesResponseAllergiesItemCategory = /*@__PURE__*/ S.String;
-
-export type GetPatientAllergiesResponseAllergiesItemCodeSystem = "rxnorm" | "snomed-ct";
-export const GetPatientAllergiesResponseAllergiesItemCodeSystem = /*@__PURE__*/ S.String;
-
-export type GetPatientAllergiesResponseAllergiesItemReactionsItemCodeSystem = "snomed-ct";
-export const GetPatientAllergiesResponseAllergiesItemReactionsItemCodeSystem =
-  /*@__PURE__*/ S.String;
-
-export interface GetPatientAllergiesResponseAllergiesItemReactionsItem {
-  code: string | null;
-  codeSystem: GetPatientAllergiesResponseAllergiesItemReactionsItemCodeSystem | null;
-  display: string;
-}
-export const GetPatientAllergiesResponseAllergiesItemReactionsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    code: S.NullOr(S.String),
-    codeSystem: S.NullOr(GetPatientAllergiesResponseAllergiesItemReactionsItemCodeSystem),
-    display: S.String,
-  }),
-).annotate({
-  identifier: "GetPatientAllergiesResponseAllergiesItemReactionsItem",
-}) as any as S.Schema<GetPatientAllergiesResponseAllergiesItemReactionsItem>;
-
-export type GetPatientAllergiesResponseAllergiesItemReactionsList =
-  Array<GetPatientAllergiesResponseAllergiesItemReactionsItem>;
-export const GetPatientAllergiesResponseAllergiesItemReactionsList = /*@__PURE__*/ S.Array(
-  GetPatientAllergiesResponseAllergiesItemReactionsItem,
-) as any as S.Schema<GetPatientAllergiesResponseAllergiesItemReactionsList>;
-
-export type GetPatientAllergiesResponseAllergiesItemSeverity =
-  | "mild"
-  | "moderate"
-  | "severe"
-  | "unknown";
-export const GetPatientAllergiesResponseAllergiesItemSeverity = /*@__PURE__*/ S.String;
-
-export type GetPatientAllergiesResponseAllergiesItemSource =
-  | "Doctor"
-  | "Patient"
-  | "Patient Agent/Guardian"
-  | "Pharmacist";
-export const GetPatientAllergiesResponseAllergiesItemSource = /*@__PURE__*/ S.String;
-
-export type GetPatientAllergiesResponseAllergiesItemType = "allergy" | "intolerance";
-export const GetPatientAllergiesResponseAllergiesItemType = /*@__PURE__*/ S.String;
-
-export type GetPatientAllergiesResponseAllergiesItemVerificationStatus =
-  | "unconfirmed"
-  | "presumed"
-  | "confirmed";
-export const GetPatientAllergiesResponseAllergiesItemVerificationStatus = /*@__PURE__*/ S.String;
-
-export interface GetPatientAllergiesResponseAllergiesItem {
-  category: GetPatientAllergiesResponseAllergiesItemCategory;
-  code: string | null;
-  codeSystem: GetPatientAllergiesResponseAllergiesItemCodeSystem | null;
-  id: string;
-  reactions: GetPatientAllergiesResponseAllergiesItemReactionsList;
-  severity: GetPatientAllergiesResponseAllergiesItemSeverity | null;
-  source: GetPatientAllergiesResponseAllergiesItemSource;
-  substance: string;
-  type: GetPatientAllergiesResponseAllergiesItemType | null;
-  verificationStatus: GetPatientAllergiesResponseAllergiesItemVerificationStatus;
-}
-export const GetPatientAllergiesResponseAllergiesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    category: GetPatientAllergiesResponseAllergiesItemCategory,
-    code: S.NullOr(S.String),
-    codeSystem: S.NullOr(GetPatientAllergiesResponseAllergiesItemCodeSystem),
-    id: S.String,
-    reactions: GetPatientAllergiesResponseAllergiesItemReactionsList,
-    severity: S.NullOr(GetPatientAllergiesResponseAllergiesItemSeverity),
-    source: GetPatientAllergiesResponseAllergiesItemSource,
-    substance: S.String,
-    type: S.NullOr(GetPatientAllergiesResponseAllergiesItemType),
-    verificationStatus: GetPatientAllergiesResponseAllergiesItemVerificationStatus,
-  }),
-).annotate({
-  identifier: "GetPatientAllergiesResponseAllergiesItem",
-}) as any as S.Schema<GetPatientAllergiesResponseAllergiesItem>;
-
-export type GetPatientAllergiesResponseAllergiesList =
-  Array<GetPatientAllergiesResponseAllergiesItem>;
-export const GetPatientAllergiesResponseAllergiesList = /*@__PURE__*/ S.Array(
-  GetPatientAllergiesResponseAllergiesItem,
-) as any as S.Schema<GetPatientAllergiesResponseAllergiesList>;
-
-export type GetPatientAllergiesResponseReviewStatus = "not_reviewed" | "no_known" | "recorded";
-export const GetPatientAllergiesResponseReviewStatus = /*@__PURE__*/ S.String;
-
 export interface GetPatientAllergiesResponse {
-  allergies: GetPatientAllergiesResponseAllergiesList;
-  reviewStatus: GetPatientAllergiesResponseReviewStatus;
+  allergies: unknown;
+  reviewStatus: unknown;
 }
 export const GetPatientAllergiesResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    allergies: GetPatientAllergiesResponseAllergiesList,
-    reviewStatus: GetPatientAllergiesResponseReviewStatus,
+    allergies: S.Unknown,
+    reviewStatus: S.Unknown,
   }),
 ).annotate({
   identifier: "GetPatientAllergiesResponse",
@@ -2202,91 +1915,42 @@ export const GetPracticeRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/practices/{practiceId}", code: 200 })),
 ).annotate({ identifier: "GetPracticeRequest" }) as any as S.Schema<GetPracticeRequest>;
 
-export type GetPracticeResponseAddress = CreatePatientResponseAddress;
-export const GetPracticeResponseAddress = CreatePatientResponseAddress;
-
-export type GetPracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-export const GetPracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-
-export type GetPracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-export const GetPracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-
-export type GetPracticeResponseContacts = CreatePracticeResponseContacts;
-export const GetPracticeResponseContacts = CreatePracticeResponseContacts;
-
-export type GetPracticeResponseMetadataMap = { [key: string]: unknown | undefined };
-export const GetPracticeResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<GetPracticeResponseMetadataMap>;
-
 export type GetPracticeResponseObject = "practice";
 export const GetPracticeResponseObject = /*@__PURE__*/ S.String;
 
-export type GetPracticeResponsePrescribersItemLicenseStatesList = Array<string>;
-export const GetPracticeResponsePrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<GetPracticeResponsePrescribersItemLicenseStatesList>;
-
-export interface GetPracticeResponsePrescribersItem {
-  credentials?: string | null;
-  licenseStates: GetPracticeResponsePrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
-  name: string;
-  npi: string;
-}
-export const GetPracticeResponsePrescribersItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    credentials: S.optional(S.NullOr(S.String)),
-    licenseStates: GetPracticeResponsePrescribersItemLicenseStatesList,
-    name: S.String,
-    npi: S.String,
-  }),
-).annotate({
-  identifier: "GetPracticeResponsePrescribersItem",
-}) as any as S.Schema<GetPracticeResponsePrescribersItem>;
-
-export type GetPracticeResponsePrescribersList = Array<GetPracticeResponsePrescribersItem>;
-export const GetPracticeResponsePrescribersList = /*@__PURE__*/ S.Array(
-  GetPracticeResponsePrescribersItem,
-) as any as S.Schema<GetPracticeResponsePrescribersList>;
-
-export type GetPracticeResponseProductionAccess = "approved" | "not_applicable" | "pending";
-export const GetPracticeResponseProductionAccess = /*@__PURE__*/ S.String;
-
 export interface GetPracticeResponse {
-  address: CreatePatientResponseAddress | null;
-  contacts: CreatePracticeResponseContacts;
+  address: unknown;
+  contacts: unknown;
   createdAt: string;
-  externalId: string | null;
+  externalId: unknown;
   id: string;
-  legalName: string | null;
+  legalName: unknown;
   livemode: boolean;
-  metadata: GetPracticeResponseMetadataMap;
+  metadata: unknown;
   name: string;
   object: GetPracticeResponseObject;
-  prescribers: GetPracticeResponsePrescribersList;
-  productionAccess: GetPracticeResponseProductionAccess;
-  supportEmail: string | null;
-  supportPhone: string | null;
+  prescribers: unknown;
+  productionAccess: unknown;
+  supportEmail: unknown;
+  supportPhone: unknown;
   timezone: string;
 }
 export const GetPracticeResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: S.NullOr(CreatePatientResponseAddress),
-    contacts: CreatePracticeResponseContacts,
+    address: S.Unknown,
+    contacts: S.Unknown,
     createdAt: S.String,
-    externalId: S.NullOr(S.String),
+    externalId: S.Unknown,
     id: S.String,
-    legalName: S.NullOr(S.String),
+    legalName: S.Unknown,
     livemode: S.Boolean,
-    metadata: GetPracticeResponseMetadataMap,
+    metadata: S.Unknown,
     name: S.String,
     object: GetPracticeResponseObject,
-    prescribers: GetPracticeResponsePrescribersList,
-    productionAccess: GetPracticeResponseProductionAccess,
-    supportEmail: S.NullOr(S.String),
-    supportPhone: S.NullOr(S.String),
+    prescribers: S.Unknown,
+    productionAccess: S.Unknown,
+    supportEmail: S.Unknown,
+    supportPhone: S.Unknown,
     timezone: S.String,
   }),
 ).annotate({ identifier: "GetPracticeResponse" }) as any as S.Schema<GetPracticeResponse>;
@@ -2305,25 +1969,23 @@ export const GetProviderMappingRequest = /*@__PURE__*/ S.suspend(() =>
 export type GetProviderMappingResponseObject = "provider_mapping";
 export const GetProviderMappingResponseObject = /*@__PURE__*/ S.String;
 
-/** The mapping's verification state. Prescribing sessions require verified status. */
-export type GetProviderMappingResponseStatus = "pending" | "verified" | "revoked";
-export const GetProviderMappingResponseStatus = /*@__PURE__*/ S.String;
-
 export interface GetProviderMappingResponse {
   createdAt: string;
   /** Your platform's stable identifier for this provider. */
   externalId: string;
+  /** The Affinity provider mapping ID. Store this pmap_ value and send it as providerMappingId when you create component or hosted sessions. */
   id: string;
   livemode: boolean;
   /** The provider's 10-digit individual NPI. */
   npi: string;
   object: GetProviderMappingResponseObject;
+  /** The Affinity practice where this provider is authorized to act. */
   practiceId: string;
-  /** The mapping's verification state. Prescribing sessions require verified status. */
-  status: GetProviderMappingResponseStatus;
+  status: unknown;
   updatedAt: string;
+  /** The Affinity user record for the person your platform authenticated. */
   userId: string;
-  verifiedAt: string | null;
+  verifiedAt: unknown;
 }
 export const GetProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -2334,10 +1996,10 @@ export const GetProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
     npi: S.String,
     object: GetProviderMappingResponseObject,
     practiceId: S.String,
-    status: GetProviderMappingResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
     userId: S.String,
-    verifiedAt: S.NullOr(S.String),
+    verifiedAt: S.Unknown,
   }),
 ).annotate({
   identifier: "GetProviderMappingResponse",
@@ -2352,41 +2014,32 @@ export const GetUserRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/users/{userId}", code: 200 })),
 ).annotate({ identifier: "GetUserRequest" }) as any as S.Schema<GetUserRequest>;
 
-export type GetUserResponseMetadataMap = { [key: string]: unknown | undefined };
-export const GetUserResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<GetUserResponseMetadataMap>;
-
 export type GetUserResponseObject = "user";
 export const GetUserResponseObject = /*@__PURE__*/ S.String;
 
-export type GetUserResponseStatus = "active" | "deactivated";
-export const GetUserResponseStatus = /*@__PURE__*/ S.String;
-
 export interface GetUserResponse {
   createdAt: string;
-  email: string | null;
+  email: unknown;
   externalId: string;
   id: string;
   livemode: boolean;
-  metadata: GetUserResponseMetadataMap;
-  name: string | null;
+  metadata: unknown;
+  name: unknown;
   object: GetUserResponseObject;
-  status: GetUserResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const GetUserResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    email: S.NullOr(S.String),
+    email: S.Unknown,
     externalId: S.String,
     id: S.String,
     livemode: S.Boolean,
-    metadata: GetUserResponseMetadataMap,
-    name: S.NullOr(S.String),
+    metadata: S.Unknown,
+    name: S.Unknown,
     object: GetUserResponseObject,
-    status: GetUserResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "GetUserResponse" }) as any as S.Schema<GetUserResponse>;
@@ -2403,85 +2056,6 @@ export const GetWebhookEventRequest = /*@__PURE__*/ S.suspend(() =>
 export type GetWebhookEventResponseObject = "webhook_event";
 export const GetWebhookEventResponseObject = /*@__PURE__*/ S.String;
 
-export type GetWebhookEventResponseStatus = "delivered" | "failed" | "pending";
-export const GetWebhookEventResponseStatus = /*@__PURE__*/ S.String;
-
-export type GetWebhookEventResponseAttemptsItemTrigger = "automatic" | "manual" | "test";
-export const GetWebhookEventResponseAttemptsItemTrigger = /*@__PURE__*/ S.String;
-
-export interface GetWebhookEventResponseAttemptsItem {
-  attemptNumber: number;
-  completedAt: string | null;
-  durationMs: number | null;
-  errorCode: string | null;
-  errorMessage: string | null;
-  id: string;
-  requestedAt: string;
-  responseStatus: number | null;
-  trigger: GetWebhookEventResponseAttemptsItemTrigger;
-}
-export const GetWebhookEventResponseAttemptsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    attemptNumber: S.Number,
-    completedAt: S.NullOr(S.String),
-    durationMs: S.NullOr(S.Number),
-    errorCode: S.NullOr(S.String),
-    errorMessage: S.NullOr(S.String),
-    id: S.String,
-    requestedAt: S.String,
-    responseStatus: S.NullOr(S.Number),
-    trigger: GetWebhookEventResponseAttemptsItemTrigger,
-  }),
-).annotate({
-  identifier: "GetWebhookEventResponseAttemptsItem",
-}) as any as S.Schema<GetWebhookEventResponseAttemptsItem>;
-
-export type GetWebhookEventResponseAttemptsList = Array<GetWebhookEventResponseAttemptsItem>;
-export const GetWebhookEventResponseAttemptsList = /*@__PURE__*/ S.Array(
-  GetWebhookEventResponseAttemptsItem,
-) as any as S.Schema<GetWebhookEventResponseAttemptsList>;
-
-export type GetWebhookEventResponseDeliveriesItemStatus =
-  | "delivered"
-  | "failed"
-  | "pending"
-  | "retrying";
-export const GetWebhookEventResponseDeliveriesItemStatus = /*@__PURE__*/ S.String;
-
-export interface GetWebhookEventResponseDeliveriesItem {
-  automaticAttemptCount: number;
-  endpointId: string;
-  id: string;
-  lastErrorCode: string | null;
-  lastErrorMessage: string | null;
-  nextAttemptAt: string | null;
-  status: GetWebhookEventResponseDeliveriesItemStatus;
-}
-export const GetWebhookEventResponseDeliveriesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    automaticAttemptCount: S.Number,
-    endpointId: S.String,
-    id: S.String,
-    lastErrorCode: S.NullOr(S.String),
-    lastErrorMessage: S.NullOr(S.String),
-    nextAttemptAt: S.NullOr(S.String),
-    status: GetWebhookEventResponseDeliveriesItemStatus,
-  }),
-).annotate({
-  identifier: "GetWebhookEventResponseDeliveriesItem",
-}) as any as S.Schema<GetWebhookEventResponseDeliveriesItem>;
-
-export type GetWebhookEventResponseDeliveriesList = Array<GetWebhookEventResponseDeliveriesItem>;
-export const GetWebhookEventResponseDeliveriesList = /*@__PURE__*/ S.Array(
-  GetWebhookEventResponseDeliveriesItem,
-) as any as S.Schema<GetWebhookEventResponseDeliveriesList>;
-
-export type GetWebhookEventResponsePayloadMap = { [key: string]: unknown | undefined };
-export const GetWebhookEventResponsePayloadMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<GetWebhookEventResponsePayloadMap>;
-
 export interface GetWebhookEventResponse {
   apiVersion: string;
   createdAt: string;
@@ -2491,10 +2065,10 @@ export interface GetWebhookEventResponse {
   object: GetWebhookEventResponseObject;
   resourceId: string;
   resourceType: string;
-  status: GetWebhookEventResponseStatus;
-  attempts: GetWebhookEventResponseAttemptsList;
-  deliveries: GetWebhookEventResponseDeliveriesList;
-  payload: GetWebhookEventResponsePayloadMap;
+  status: unknown;
+  attempts: unknown;
+  deliveries: unknown;
+  payload: unknown;
 }
 export const GetWebhookEventResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -2506,10 +2080,10 @@ export const GetWebhookEventResponse = /*@__PURE__*/ S.suspend(() =>
     object: GetWebhookEventResponseObject,
     resourceId: S.String,
     resourceType: S.String,
-    status: GetWebhookEventResponseStatus,
-    attempts: GetWebhookEventResponseAttemptsList,
-    deliveries: GetWebhookEventResponseDeliveriesList,
-    payload: GetWebhookEventResponsePayloadMap,
+    status: S.Unknown,
+    attempts: S.Unknown,
+    deliveries: S.Unknown,
+    payload: S.Unknown,
   }),
 ).annotate({ identifier: "GetWebhookEventResponse" }) as any as S.Schema<GetWebhookEventResponse>;
 
@@ -2636,6 +2210,13 @@ export const ListCatalogItemsResponseDataItemAllowedStatesList = /*@__PURE__*/ S
   S.String,
 ) as any as S.Schema<ListCatalogItemsResponseDataItemAllowedStatesList>;
 
+export type ListCatalogItemsResponseDataItemAvailability =
+  | "available"
+  | "backordered"
+  | "unavailable"
+  | "unknown";
+export const ListCatalogItemsResponseDataItemAvailability = /*@__PURE__*/ S.String;
+
 export type ListCatalogItemsResponseDataItemImageUrlsList = Array<string>;
 export const ListCatalogItemsResponseDataItemImageUrlsList = /*@__PURE__*/ S.Array(
   S.String,
@@ -2652,18 +2233,18 @@ export const ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDays
   ) as any as S.Schema<ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDaysSupplyList>;
 
 export interface ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesItem {
-  daysSupply?: number;
+  daysSupply?: number | null;
   label: string;
   unit: string;
-  value: number;
+  value: unknown;
 }
 export const ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesItem =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
-      daysSupply: S.optional(S.Number),
+      daysSupply: S.optional(S.NullOr(S.Number)),
       label: S.String,
       unit: S.String,
-      value: S.Number,
+      value: S.Unknown,
     }),
   ).annotate({
     identifier: "ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesItem",
@@ -2714,13 +2295,13 @@ export const ListCatalogItemsResponseDataItemPrescriptionRequirementsControlledS
 
 export interface ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity {
   unit: string;
-  value: number;
+  value: unknown;
 }
 export const ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       unit: S.String,
-      value: S.Number,
+      value: S.Unknown,
     }),
   ).annotate({
     identifier: "ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity",
@@ -2764,17 +2345,17 @@ export const ListCatalogItemsResponseDataItemPrescriptionRequirementsSubstitutio
   /*@__PURE__*/ S.String;
 
 export interface ListCatalogItemsResponseDataItemPrescriptionRequirements {
-  allowedDaysSupply?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDaysSupplyList;
-  allowedQuantities?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesList;
-  allowedReasonCategories?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedReasonCategoriesList;
+  allowedDaysSupply?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDaysSupplyList | null;
+  allowedQuantities?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesList | null;
+  allowedReasonCategories?: ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedReasonCategoriesList | null;
   compoundingReason: ListCatalogItemsResponseDataItemPrescriptionRequirementsCompoundingReason;
-  controlledSchedule?: ListCatalogItemsResponseDataItemPrescriptionRequirementsControlledSchedule;
-  defaultDaysSupply?: number;
-  defaultQuantity?: ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity;
-  defaultSigs?: ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultSigsList;
+  controlledSchedule?: ListCatalogItemsResponseDataItemPrescriptionRequirementsControlledSchedule | null;
+  defaultDaysSupply?: number | null;
+  defaultQuantity?: ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity | null;
+  defaultSigs?: ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultSigsList | null;
   diagnosis: ListCatalogItemsResponseDataItemPrescriptionRequirementsDiagnosis;
-  maxRefills?: number;
-  notes?: ListCatalogItemsResponseDataItemPrescriptionRequirementsNotesList;
+  maxRefills?: number | null;
+  notes?: ListCatalogItemsResponseDataItemPrescriptionRequirementsNotesList | null;
   pharmacyNotes: ListCatalogItemsResponseDataItemPrescriptionRequirementsPharmacyNotes;
   refills: ListCatalogItemsResponseDataItemPrescriptionRequirementsRefills;
   substitution: ListCatalogItemsResponseDataItemPrescriptionRequirementsSubstitution;
@@ -2783,28 +2364,32 @@ export const ListCatalogItemsResponseDataItemPrescriptionRequirements = /*@__PUR
   () =>
     S.Struct({
       allowedDaysSupply: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDaysSupplyList,
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedDaysSupplyList),
       ),
       allowedQuantities: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesList,
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedQuantitiesList),
       ),
       allowedReasonCategories: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedReasonCategoriesList,
+        S.NullOr(
+          ListCatalogItemsResponseDataItemPrescriptionRequirementsAllowedReasonCategoriesList,
+        ),
       ),
       compoundingReason: ListCatalogItemsResponseDataItemPrescriptionRequirementsCompoundingReason,
       controlledSchedule: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsControlledSchedule,
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsControlledSchedule),
       ),
-      defaultDaysSupply: S.optional(S.Number),
+      defaultDaysSupply: S.optional(S.NullOr(S.Number)),
       defaultQuantity: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity,
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultQuantity),
       ),
       defaultSigs: S.optional(
-        ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultSigsList,
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsDefaultSigsList),
       ),
       diagnosis: ListCatalogItemsResponseDataItemPrescriptionRequirementsDiagnosis,
-      maxRefills: S.optional(S.Number),
-      notes: S.optional(ListCatalogItemsResponseDataItemPrescriptionRequirementsNotesList),
+      maxRefills: S.optional(S.NullOr(S.Number)),
+      notes: S.optional(
+        S.NullOr(ListCatalogItemsResponseDataItemPrescriptionRequirementsNotesList),
+      ),
       pharmacyNotes: ListCatalogItemsResponseDataItemPrescriptionRequirementsPharmacyNotes,
       refills: ListCatalogItemsResponseDataItemPrescriptionRequirementsRefills,
       substitution: ListCatalogItemsResponseDataItemPrescriptionRequirementsSubstitution,
@@ -2900,7 +2485,9 @@ export const ListCatalogItemsResponseDataItemShippingOptionsList = /*@__PURE__*/
 
 export interface ListCatalogItemsResponseDataItem {
   allowedStates: ListCatalogItemsResponseDataItemAllowedStatesList;
+  availability: ListCatalogItemsResponseDataItemAvailability;
   catalogKind: string;
+  category: string | null;
   coldShip: boolean;
   compounderId: string;
   compounderName: string;
@@ -2926,7 +2513,9 @@ export interface ListCatalogItemsResponseDataItem {
 export const ListCatalogItemsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     allowedStates: ListCatalogItemsResponseDataItemAllowedStatesList,
+    availability: ListCatalogItemsResponseDataItemAvailability,
     catalogKind: S.String,
+    category: S.NullOr(S.String),
     coldShip: S.Boolean,
     compounderId: S.String,
     compounderName: S.String,
@@ -3027,11 +2616,15 @@ export const ListCompoundersResponseDataItemFacilityLocationsList = /*@__PURE__*
 export type ListCompoundersResponseDataItemObject = "compounder";
 export const ListCompoundersResponseDataItemObject = /*@__PURE__*/ S.String;
 
+export type ListCompoundersResponseDataItemProfileRating = number | unknown;
+export const ListCompoundersResponseDataItemProfileRating =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<ListCompoundersResponseDataItemProfileRating>;
+
 export interface ListCompoundersResponseDataItemProfile {
   description: string;
   effectiveAt: string;
   monthlyPrescriptionVolume: number | null;
-  rating: number | null;
+  rating: ListCompoundersResponseDataItemProfileRating | null;
   ratingBasis: string | null;
   ratingReviewCount: number | null;
   recommendedRank: number | null;
@@ -3041,7 +2634,7 @@ export const ListCompoundersResponseDataItemProfile = /*@__PURE__*/ S.suspend(()
     description: S.String,
     effectiveAt: S.String,
     monthlyPrescriptionVolume: S.NullOr(S.Number),
-    rating: S.NullOr(S.Number),
+    rating: S.NullOr(ListCompoundersResponseDataItemProfileRating),
     ratingBasis: S.NullOr(S.String),
     ratingReviewCount: S.NullOr(S.Number),
     recommendedRank: S.NullOr(S.Number),
@@ -3202,12 +2795,6 @@ export const ListOrderEventsRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/orders/{orderId}/events", code: 200 })),
 ).annotate({ identifier: "ListOrderEventsRequest" }) as any as S.Schema<ListOrderEventsRequest>;
 
-export type ListOrderEventsResponseDataItemMetadataMap = { [key: string]: unknown | undefined };
-export const ListOrderEventsResponseDataItemMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<ListOrderEventsResponseDataItemMetadataMap>;
-
 export type ListOrderEventsResponseDataItemObject = "event";
 export const ListOrderEventsResponseDataItemObject = /*@__PURE__*/ S.String;
 
@@ -3216,7 +2803,7 @@ export interface ListOrderEventsResponseDataItem {
   eventType: string;
   id: string;
   message: string;
-  metadata: ListOrderEventsResponseDataItemMetadataMap;
+  metadata: unknown;
   object: ListOrderEventsResponseDataItemObject;
 }
 export const ListOrderEventsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
@@ -3225,7 +2812,7 @@ export const ListOrderEventsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
     eventType: S.String,
     id: S.String,
     message: S.String,
-    metadata: ListOrderEventsResponseDataItemMetadataMap,
+    metadata: S.Unknown,
     object: ListOrderEventsResponseDataItemObject,
   }),
 ).annotate({
@@ -3289,136 +2876,12 @@ export const ListOrdersRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/orders", code: 200 })),
 ).annotate({ identifier: "ListOrdersRequest" }) as any as S.Schema<ListOrdersRequest>;
 
-export type ListOrdersResponseDataItemFulfillmentsItemShippingDestinationType =
-  | "patient"
-  | "practice";
-export const ListOrdersResponseDataItemFulfillmentsItemShippingDestinationType =
-  /*@__PURE__*/ S.String;
-
-export type ListOrdersResponseDataItemFulfillmentsItemShippingMethod =
-  | "standard"
-  | "expedited"
-  | "overnight"
-  | "pickup"
-  | "local_delivery";
-export const ListOrdersResponseDataItemFulfillmentsItemShippingMethod = /*@__PURE__*/ S.String;
-
-export type ListOrdersResponseDataItemFulfillmentsItemShippingOptionCurrency = "USD";
-export const ListOrdersResponseDataItemFulfillmentsItemShippingOptionCurrency =
-  /*@__PURE__*/ S.String;
-
-export type ListOrdersResponseDataItemFulfillmentsItemShippingOptionTemperature =
-  | "ambient"
-  | "refrigerated";
-export const ListOrdersResponseDataItemFulfillmentsItemShippingOptionTemperature =
-  /*@__PURE__*/ S.String;
-
-export interface ListOrdersResponseDataItemFulfillmentsItemShippingOption {
-  amountCents: number;
-  currency: ListOrdersResponseDataItemFulfillmentsItemShippingOptionCurrency;
-  label: string;
-  serviceLevel: string;
-  temperature: ListOrdersResponseDataItemFulfillmentsItemShippingOptionTemperature;
-}
-export const ListOrdersResponseDataItemFulfillmentsItemShippingOption = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      amountCents: S.Number,
-      currency: ListOrdersResponseDataItemFulfillmentsItemShippingOptionCurrency,
-      label: S.String,
-      serviceLevel: S.String,
-      temperature: ListOrdersResponseDataItemFulfillmentsItemShippingOptionTemperature,
-    }),
-).annotate({
-  identifier: "ListOrdersResponseDataItemFulfillmentsItemShippingOption",
-}) as any as S.Schema<ListOrdersResponseDataItemFulfillmentsItemShippingOption>;
-
-export interface ListOrdersResponseDataItemFulfillmentsItemShipping {
-  destinationType: ListOrdersResponseDataItemFulfillmentsItemShippingDestinationType;
-  method: ListOrdersResponseDataItemFulfillmentsItemShippingMethod;
-  option: ListOrdersResponseDataItemFulfillmentsItemShippingOption | null;
-}
-export const ListOrdersResponseDataItemFulfillmentsItemShipping = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    destinationType: ListOrdersResponseDataItemFulfillmentsItemShippingDestinationType,
-    method: ListOrdersResponseDataItemFulfillmentsItemShippingMethod,
-    option: S.NullOr(ListOrdersResponseDataItemFulfillmentsItemShippingOption),
-  }),
-).annotate({
-  identifier: "ListOrdersResponseDataItemFulfillmentsItemShipping",
-}) as any as S.Schema<ListOrdersResponseDataItemFulfillmentsItemShipping>;
-
-export interface ListOrdersResponseDataItemFulfillmentsItem {
-  carrier: string | null;
-  compounderId: string | null;
-  createdAt: string;
-  id: string;
-  prescriptionId: string;
-  status: string;
-  trackingNumber: string | null;
-  trackingStatus: string | null;
-  shippedAt: string | null;
-  deliveredAt: string | null;
-  estimatedDeliveryAt: string | null;
-  shipping: ListOrdersResponseDataItemFulfillmentsItemShipping;
-  trackingUrl: string | null;
-  updatedAt: string;
-}
-export const ListOrdersResponseDataItemFulfillmentsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    carrier: S.NullOr(S.String),
-    compounderId: S.NullOr(S.String),
-    createdAt: S.String,
-    id: S.String,
-    prescriptionId: S.String,
-    status: S.String,
-    trackingNumber: S.NullOr(S.String),
-    trackingStatus: S.NullOr(S.String),
-    shippedAt: S.NullOr(S.String),
-    deliveredAt: S.NullOr(S.String),
-    estimatedDeliveryAt: S.NullOr(S.String),
-    shipping: ListOrdersResponseDataItemFulfillmentsItemShipping,
-    trackingUrl: S.NullOr(S.String),
-    updatedAt: S.String,
-  }),
-).annotate({
-  identifier: "ListOrdersResponseDataItemFulfillmentsItem",
-}) as any as S.Schema<ListOrdersResponseDataItemFulfillmentsItem>;
-
-export type ListOrdersResponseDataItemFulfillmentsList =
-  Array<ListOrdersResponseDataItemFulfillmentsItem>;
-export const ListOrdersResponseDataItemFulfillmentsList = /*@__PURE__*/ S.Array(
-  ListOrdersResponseDataItemFulfillmentsItem,
-) as any as S.Schema<ListOrdersResponseDataItemFulfillmentsList>;
-
 export type ListOrdersResponseDataItemObject = "order";
 export const ListOrdersResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListOrdersResponseDataItemPrescriptionsItem = CancelOrderResponsePrescriptionsItem;
-export const ListOrdersResponseDataItemPrescriptionsItem = CancelOrderResponsePrescriptionsItem;
-
-export type ListOrdersResponseDataItemPrescriptionsList =
-  Array<CancelOrderResponsePrescriptionsItem>;
-export const ListOrdersResponseDataItemPrescriptionsList = /*@__PURE__*/ S.Array(
-  CancelOrderResponsePrescriptionsItem,
-) as any as S.Schema<ListOrdersResponseDataItemPrescriptionsList>;
-
-export type ListOrdersResponseDataItemStatus =
-  | "blocked"
-  | "cancelled"
-  | "delivered"
-  | "draft"
-  | "partially_submitted"
-  | "processing"
-  | "ready"
-  | "requires_provider_signature"
-  | "shipped"
-  | "submitted";
-export const ListOrdersResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListOrdersResponseDataItem {
   createdAt: string;
-  fulfillments: ListOrdersResponseDataItemFulfillmentsList;
+  fulfillments: unknown;
   id: string;
   livemode: boolean;
   object: ListOrdersResponseDataItemObject;
@@ -3427,16 +2890,16 @@ export interface ListOrdersResponseDataItem {
   patientName: string;
   patientState: string;
   practiceId: string;
-  prescriberName: string | null;
-  prescriberNpi: string | null;
-  prescriptions: ListOrdersResponseDataItemPrescriptionsList;
-  status: ListOrdersResponseDataItemStatus;
+  prescriberName: unknown;
+  prescriberNpi: unknown;
+  prescriptions: unknown;
+  status: unknown;
   updatedAt: string;
 }
 export const ListOrdersResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    fulfillments: ListOrdersResponseDataItemFulfillmentsList,
+    fulfillments: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
     object: ListOrdersResponseDataItemObject,
@@ -3445,10 +2908,10 @@ export const ListOrdersResponseDataItem = /*@__PURE__*/ S.suspend(() =>
     patientName: S.String,
     patientState: S.String,
     practiceId: S.String,
-    prescriberName: S.NullOr(S.String),
-    prescriberNpi: S.NullOr(S.String),
-    prescriptions: ListOrdersResponseDataItemPrescriptionsList,
-    status: ListOrdersResponseDataItemStatus,
+    prescriberName: S.Unknown,
+    prescriberNpi: S.Unknown,
+    prescriptions: S.Unknown,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({
@@ -3481,98 +2944,86 @@ export const ListOrdersResponse = /*@__PURE__*/ S.suspend(() =>
   }),
 ).annotate({ identifier: "ListOrdersResponse" }) as any as S.Schema<ListOrdersResponse>;
 
+export type ListPatientsRequestStatus = "active" | "inactive";
+export const ListPatientsRequestStatus = /*@__PURE__*/ S.String;
+
 export interface ListPatientsRequest {
   practiceId: string;
   endingBefore?: string;
+  lastOrderAfter?: string;
+  lastOrderBefore?: string;
   limit?: number;
+  program?: string;
   query?: string;
   startingAfter?: string;
+  status?: ListPatientsRequestStatus | (string & {});
 }
 export const ListPatientsRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     endingBefore: S.optional(S.String.pipe(T.Query())),
+    lastOrderAfter: S.optional(S.String.pipe(T.Query())),
+    lastOrderBefore: S.optional(S.String.pipe(T.Query())),
     limit: S.optional(S.Number.pipe(T.Query())),
+    program: S.optional(S.String.pipe(T.Query())),
     query: S.optional(S.String.pipe(T.Query())),
     startingAfter: S.optional(S.String.pipe(T.Query())),
+    status: S.optional(ListPatientsRequestStatus.pipe(T.Query())),
   }).pipe(T.Http({ method: "GET", uri: "/v1/practices/{practiceId}/patients", code: 200 })),
 ).annotate({ identifier: "ListPatientsRequest" }) as any as S.Schema<ListPatientsRequest>;
-
-export type ListPatientsResponseDataItemAddress = CreatePatientResponseAddress;
-export const ListPatientsResponseDataItemAddress = CreatePatientResponseAddress;
-
-export type ListPatientsResponseDataItemAllergyReviewStatus =
-  | "not_reviewed"
-  | "no_known"
-  | "recorded";
-export const ListPatientsResponseDataItemAllergyReviewStatus = /*@__PURE__*/ S.String;
-
-export type ListPatientsResponseDataItemAllergySummaryItem =
-  CreatePatientResponseAllergySummaryItem;
-export const ListPatientsResponseDataItemAllergySummaryItem =
-  CreatePatientResponseAllergySummaryItem;
-
-export type ListPatientsResponseDataItemAllergySummaryList =
-  Array<CreatePatientResponseAllergySummaryItem>;
-export const ListPatientsResponseDataItemAllergySummaryList = /*@__PURE__*/ S.Array(
-  CreatePatientResponseAllergySummaryItem,
-) as any as S.Schema<ListPatientsResponseDataItemAllergySummaryList>;
-
-export type ListPatientsResponseDataItemGender = "f" | "m" | "o" | "u";
-export const ListPatientsResponseDataItemGender = /*@__PURE__*/ S.String;
-
-export type ListPatientsResponseDataItemMetadataMap = { [key: string]: unknown | undefined };
-export const ListPatientsResponseDataItemMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<ListPatientsResponseDataItemMetadataMap>;
-
-export type ListPatientsResponseDataItemName = CreatePatientResponseName;
-export const ListPatientsResponseDataItemName = CreatePatientResponseName;
 
 export type ListPatientsResponseDataItemObject = "patient";
 export const ListPatientsResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListPatientsResponseDataItemStatus = "active" | "inactive" | "needs_review";
-export const ListPatientsResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListPatientsResponseDataItem {
-  address: CreatePatientResponseAddress;
-  allergyReviewStatus: ListPatientsResponseDataItemAllergyReviewStatus;
-  allergySummary: ListPatientsResponseDataItemAllergySummaryList;
+  address: unknown;
+  allergyReviewStatus: unknown;
+  allergySummary: unknown;
   createdAt: string;
+  clinicalProfile: unknown;
   dateOfBirth: string;
-  email: string | null;
-  externalId: string;
-  gender: ListPatientsResponseDataItemGender;
+  email: unknown;
+  externalIdentities: unknown;
+  addresses: unknown;
+  encounters: unknown;
+  gender: unknown;
   id: string;
   livemode: boolean;
-  metadata: ListPatientsResponseDataItemMetadataMap;
-  name: CreatePatientResponseName;
+  metadata: unknown;
+  medicalRecordNumber: unknown;
+  measurements: unknown;
+  name: unknown;
   object: ListPatientsResponseDataItemObject;
   phone: string;
+  programs: unknown;
   practiceId: string;
-  status: ListPatientsResponseDataItemStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const ListPatientsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: CreatePatientResponseAddress,
-    allergyReviewStatus: ListPatientsResponseDataItemAllergyReviewStatus,
-    allergySummary: ListPatientsResponseDataItemAllergySummaryList,
+    address: S.Unknown,
+    allergyReviewStatus: S.Unknown,
+    allergySummary: S.Unknown,
     createdAt: S.String,
+    clinicalProfile: S.Unknown,
     dateOfBirth: S.String,
-    email: S.NullOr(S.String),
-    externalId: S.String,
-    gender: ListPatientsResponseDataItemGender,
+    email: S.Unknown,
+    externalIdentities: S.Unknown,
+    addresses: S.Unknown,
+    encounters: S.Unknown,
+    gender: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
-    metadata: ListPatientsResponseDataItemMetadataMap,
-    name: CreatePatientResponseName,
+    metadata: S.Unknown,
+    medicalRecordNumber: S.Unknown,
+    measurements: S.Unknown,
+    name: S.Unknown,
     object: ListPatientsResponseDataItemObject,
     phone: S.String,
+    programs: S.Unknown,
     practiceId: S.String,
-    status: ListPatientsResponseDataItemStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({
@@ -3622,27 +3073,24 @@ export const ListPracticeMembershipsRequest = /*@__PURE__*/ S.suspend(() =>
 export type ListPracticeMembershipsResponseDataItemObject = "membership";
 export const ListPracticeMembershipsResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListPracticeMembershipsResponseDataItemStatus = "active" | "pending" | "revoked";
-export const ListPracticeMembershipsResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListPracticeMembershipsResponseDataItem {
-  acceptedAt: string | null;
+  acceptedAt: unknown;
   id: string;
   object: ListPracticeMembershipsResponseDataItemObject;
   practiceId: string;
   roleId: string;
-  status: ListPracticeMembershipsResponseDataItemStatus;
+  status: unknown;
   termsVersion: string;
   userId: string;
 }
 export const ListPracticeMembershipsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    acceptedAt: S.NullOr(S.String),
+    acceptedAt: S.Unknown,
     id: S.String,
     object: ListPracticeMembershipsResponseDataItemObject,
     practiceId: S.String,
     roleId: S.String,
-    status: ListPracticeMembershipsResponseDataItemStatus,
+    status: S.Unknown,
     termsVersion: S.String,
     userId: S.String,
   }),
@@ -3694,17 +3142,12 @@ export const ListPracticeRolesRequest = /*@__PURE__*/ S.suspend(() =>
 export type ListPracticeRolesResponseDataItemObject = "role";
 export const ListPracticeRolesResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListPracticeRolesResponseDataItemPermissionsList = Array<string>;
-export const ListPracticeRolesResponseDataItemPermissionsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<ListPracticeRolesResponseDataItemPermissionsList>;
-
 export interface ListPracticeRolesResponseDataItem {
   description: string;
   id: string;
   name: string;
   object: ListPracticeRolesResponseDataItemObject;
-  permissions: ListPracticeRolesResponseDataItemPermissionsList;
+  permissions: unknown;
   protected: boolean;
 }
 export const ListPracticeRolesResponseDataItem = /*@__PURE__*/ S.suspend(() =>
@@ -3713,7 +3156,7 @@ export const ListPracticeRolesResponseDataItem = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     name: S.String,
     object: ListPracticeRolesResponseDataItemObject,
-    permissions: ListPracticeRolesResponseDataItemPermissionsList,
+    permissions: S.Unknown,
     protected: S.Boolean,
   }),
 ).annotate({
@@ -3758,97 +3201,42 @@ export const ListPracticesRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/practices", code: 200 })),
 ).annotate({ identifier: "ListPracticesRequest" }) as any as S.Schema<ListPracticesRequest>;
 
-export type ListPracticesResponseDataItemAddress = CreatePatientResponseAddress;
-export const ListPracticesResponseDataItemAddress = CreatePatientResponseAddress;
-
-export type ListPracticesResponseDataItemContactsCompliance =
-  CreatePracticeRequestComplianceContact;
-export const ListPracticesResponseDataItemContactsCompliance =
-  CreatePracticeRequestComplianceContact;
-
-export type ListPracticesResponseDataItemContactsPrimary = CreatePracticeRequestComplianceContact;
-export const ListPracticesResponseDataItemContactsPrimary = CreatePracticeRequestComplianceContact;
-
-export type ListPracticesResponseDataItemContacts = CreatePracticeResponseContacts;
-export const ListPracticesResponseDataItemContacts = CreatePracticeResponseContacts;
-
-export type ListPracticesResponseDataItemMetadataMap = { [key: string]: unknown | undefined };
-export const ListPracticesResponseDataItemMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<ListPracticesResponseDataItemMetadataMap>;
-
 export type ListPracticesResponseDataItemObject = "practice";
 export const ListPracticesResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListPracticesResponseDataItemPrescribersItemLicenseStatesList = Array<string>;
-export const ListPracticesResponseDataItemPrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<ListPracticesResponseDataItemPrescribersItemLicenseStatesList>;
-
-export interface ListPracticesResponseDataItemPrescribersItem {
-  credentials?: string | null;
-  licenseStates: ListPracticesResponseDataItemPrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
-  name: string;
-  npi: string;
-}
-export const ListPracticesResponseDataItemPrescribersItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    credentials: S.optional(S.NullOr(S.String)),
-    licenseStates: ListPracticesResponseDataItemPrescribersItemLicenseStatesList,
-    name: S.String,
-    npi: S.String,
-  }),
-).annotate({
-  identifier: "ListPracticesResponseDataItemPrescribersItem",
-}) as any as S.Schema<ListPracticesResponseDataItemPrescribersItem>;
-
-export type ListPracticesResponseDataItemPrescribersList =
-  Array<ListPracticesResponseDataItemPrescribersItem>;
-export const ListPracticesResponseDataItemPrescribersList = /*@__PURE__*/ S.Array(
-  ListPracticesResponseDataItemPrescribersItem,
-) as any as S.Schema<ListPracticesResponseDataItemPrescribersList>;
-
-export type ListPracticesResponseDataItemProductionAccess =
-  | "approved"
-  | "not_applicable"
-  | "pending";
-export const ListPracticesResponseDataItemProductionAccess = /*@__PURE__*/ S.String;
-
 export interface ListPracticesResponseDataItem {
-  address: CreatePatientResponseAddress | null;
-  contacts: CreatePracticeResponseContacts;
+  address: unknown;
+  contacts: unknown;
   createdAt: string;
-  externalId: string | null;
+  externalId: unknown;
   id: string;
-  legalName: string | null;
+  legalName: unknown;
   livemode: boolean;
-  metadata: ListPracticesResponseDataItemMetadataMap;
+  metadata: unknown;
   name: string;
   object: ListPracticesResponseDataItemObject;
-  prescribers: ListPracticesResponseDataItemPrescribersList;
-  productionAccess: ListPracticesResponseDataItemProductionAccess;
-  supportEmail: string | null;
-  supportPhone: string | null;
+  prescribers: unknown;
+  productionAccess: unknown;
+  supportEmail: unknown;
+  supportPhone: unknown;
   timezone: string;
 }
 export const ListPracticesResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: S.NullOr(CreatePatientResponseAddress),
-    contacts: CreatePracticeResponseContacts,
+    address: S.Unknown,
+    contacts: S.Unknown,
     createdAt: S.String,
-    externalId: S.NullOr(S.String),
+    externalId: S.Unknown,
     id: S.String,
-    legalName: S.NullOr(S.String),
+    legalName: S.Unknown,
     livemode: S.Boolean,
-    metadata: ListPracticesResponseDataItemMetadataMap,
+    metadata: S.Unknown,
     name: S.String,
     object: ListPracticesResponseDataItemObject,
-    prescribers: ListPracticesResponseDataItemPrescribersList,
-    productionAccess: ListPracticesResponseDataItemProductionAccess,
-    supportEmail: S.NullOr(S.String),
-    supportPhone: S.NullOr(S.String),
+    prescribers: S.Unknown,
+    productionAccess: S.Unknown,
+    supportEmail: S.Unknown,
+    supportPhone: S.Unknown,
     timezone: S.String,
   }),
 ).annotate({
@@ -3908,25 +3296,23 @@ export const ListProviderMappingsRequest = /*@__PURE__*/ S.suspend(() =>
 export type ListProviderMappingsResponseDataItemObject = "provider_mapping";
 export const ListProviderMappingsResponseDataItemObject = /*@__PURE__*/ S.String;
 
-/** The mapping's verification state. Prescribing sessions require verified status. */
-export type ListProviderMappingsResponseDataItemStatus = "pending" | "verified" | "revoked";
-export const ListProviderMappingsResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListProviderMappingsResponseDataItem {
   createdAt: string;
   /** Your platform's stable identifier for this provider. */
   externalId: string;
+  /** The Affinity provider mapping ID. Store this pmap_ value and send it as providerMappingId when you create component or hosted sessions. */
   id: string;
   livemode: boolean;
   /** The provider's 10-digit individual NPI. */
   npi: string;
   object: ListProviderMappingsResponseDataItemObject;
+  /** The Affinity practice where this provider is authorized to act. */
   practiceId: string;
-  /** The mapping's verification state. Prescribing sessions require verified status. */
-  status: ListProviderMappingsResponseDataItemStatus;
+  status: unknown;
   updatedAt: string;
+  /** The Affinity user record for the person your platform authenticated. */
   userId: string;
-  verifiedAt: string | null;
+  verifiedAt: unknown;
 }
 export const ListProviderMappingsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -3937,10 +3323,10 @@ export const ListProviderMappingsResponseDataItem = /*@__PURE__*/ S.suspend(() =
     npi: S.String,
     object: ListProviderMappingsResponseDataItemObject,
     practiceId: S.String,
-    status: ListProviderMappingsResponseDataItemStatus,
+    status: S.Unknown,
     updatedAt: S.String,
     userId: S.String,
-    verifiedAt: S.NullOr(S.String),
+    verifiedAt: S.Unknown,
   }),
 ).annotate({
   identifier: "ListProviderMappingsResponseDataItem",
@@ -4052,41 +3438,32 @@ export const ListUsersRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/users", code: 200 })),
 ).annotate({ identifier: "ListUsersRequest" }) as any as S.Schema<ListUsersRequest>;
 
-export type ListUsersResponseDataItemMetadataMap = { [key: string]: unknown | undefined };
-export const ListUsersResponseDataItemMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<ListUsersResponseDataItemMetadataMap>;
-
 export type ListUsersResponseDataItemObject = "user";
 export const ListUsersResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListUsersResponseDataItemStatus = "active" | "deactivated";
-export const ListUsersResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListUsersResponseDataItem {
   createdAt: string;
-  email: string | null;
+  email: unknown;
   externalId: string;
   id: string;
   livemode: boolean;
-  metadata: ListUsersResponseDataItemMetadataMap;
-  name: string | null;
+  metadata: unknown;
+  name: unknown;
   object: ListUsersResponseDataItemObject;
-  status: ListUsersResponseDataItemStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const ListUsersResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    email: S.NullOr(S.String),
+    email: S.Unknown,
     externalId: S.String,
     id: S.String,
     livemode: S.Boolean,
-    metadata: ListUsersResponseDataItemMetadataMap,
-    name: S.NullOr(S.String),
+    metadata: S.Unknown,
+    name: S.Unknown,
     object: ListUsersResponseDataItemObject,
-    status: ListUsersResponseDataItemStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({
@@ -4137,17 +3514,6 @@ export const ListWebhookEndpointsRequest = /*@__PURE__*/ S.suspend(() =>
 export type ListWebhookEndpointsResponseDataItemObject = "webhook_endpoint";
 export const ListWebhookEndpointsResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListWebhookEndpointsResponseDataItemPayloadStyle = "thin" | "snapshot";
-export const ListWebhookEndpointsResponseDataItemPayloadStyle = /*@__PURE__*/ S.String;
-
-export type ListWebhookEndpointsResponseDataItemStatus = "active" | "suspended" | "disabled";
-export const ListWebhookEndpointsResponseDataItemStatus = /*@__PURE__*/ S.String;
-
-export type ListWebhookEndpointsResponseDataItemSubscribedEventsList = Array<string>;
-export const ListWebhookEndpointsResponseDataItemSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<ListWebhookEndpointsResponseDataItemSubscribedEventsList>;
-
 export interface ListWebhookEndpointsResponseDataItem {
   apiVersion: string;
   consecutiveFailures: number;
@@ -4156,9 +3522,9 @@ export interface ListWebhookEndpointsResponseDataItem {
   id: string;
   livemode: boolean;
   object: ListWebhookEndpointsResponseDataItemObject;
-  payloadStyle: ListWebhookEndpointsResponseDataItemPayloadStyle;
-  status: ListWebhookEndpointsResponseDataItemStatus;
-  subscribedEvents: ListWebhookEndpointsResponseDataItemSubscribedEventsList;
+  payloadStyle: unknown;
+  status: unknown;
+  subscribedEvents: unknown;
   updatedAt: string;
   url: string;
 }
@@ -4171,9 +3537,9 @@ export const ListWebhookEndpointsResponseDataItem = /*@__PURE__*/ S.suspend(() =
     id: S.String,
     livemode: S.Boolean,
     object: ListWebhookEndpointsResponseDataItemObject,
-    payloadStyle: ListWebhookEndpointsResponseDataItemPayloadStyle,
-    status: ListWebhookEndpointsResponseDataItemStatus,
-    subscribedEvents: ListWebhookEndpointsResponseDataItemSubscribedEventsList,
+    payloadStyle: S.Unknown,
+    status: S.Unknown,
+    subscribedEvents: S.Unknown,
     updatedAt: S.String,
     url: S.String,
   }),
@@ -4230,9 +3596,6 @@ export const ListWebhookEventsRequest = /*@__PURE__*/ S.suspend(() =>
 export type ListWebhookEventsResponseDataItemObject = "webhook_event";
 export const ListWebhookEventsResponseDataItemObject = /*@__PURE__*/ S.String;
 
-export type ListWebhookEventsResponseDataItemStatus = "delivered" | "failed" | "pending";
-export const ListWebhookEventsResponseDataItemStatus = /*@__PURE__*/ S.String;
-
 export interface ListWebhookEventsResponseDataItem {
   apiVersion: string;
   createdAt: string;
@@ -4242,7 +3605,7 @@ export interface ListWebhookEventsResponseDataItem {
   object: ListWebhookEventsResponseDataItemObject;
   resourceId: string;
   resourceType: string;
-  status: ListWebhookEventsResponseDataItemStatus;
+  status: unknown;
 }
 export const ListWebhookEventsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -4254,7 +3617,7 @@ export const ListWebhookEventsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
     object: ListWebhookEventsResponseDataItemObject,
     resourceId: S.String,
     resourceType: S.String,
-    status: ListWebhookEventsResponseDataItemStatus,
+    status: S.Unknown,
   }),
 ).annotate({
   identifier: "ListWebhookEventsResponseDataItem",
@@ -4288,6 +3651,394 @@ export const ListWebhookEventsResponse = /*@__PURE__*/ S.suspend(() =>
   identifier: "ListWebhookEventsResponse",
 }) as any as S.Schema<ListWebhookEventsResponse>;
 
+export interface PublishPharmacyCatalogPricingRequest {
+  pharmacyId: string;
+  baseRevision?: number | null;
+}
+export const PublishPharmacyCatalogPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+    baseRevision: S.optional(S.NullOr(S.Number)),
+  }).pipe(
+    T.Http({
+      method: "POST",
+      uri: "/v1/pharmacies/{pharmacyId}/catalog-pricing/publish",
+      code: 200,
+    }),
+  ),
+).annotate({
+  identifier: "PublishPharmacyCatalogPricingRequest",
+}) as any as S.Schema<PublishPharmacyCatalogPricingRequest>;
+
+export interface PublishPharmacyCatalogPricingResponseVersions {
+  independentClinic: number;
+  telehealth: number;
+}
+export const PublishPharmacyCatalogPricingResponseVersions = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    independentClinic: S.Number,
+    telehealth: S.Number,
+  }),
+).annotate({
+  identifier: "PublishPharmacyCatalogPricingResponseVersions",
+}) as any as S.Schema<PublishPharmacyCatalogPricingResponseVersions>;
+
+export interface PublishPharmacyCatalogPricingResponse {
+  changedCostCount: number;
+  itemCount: number;
+  publishedRevision: number;
+  versions: PublishPharmacyCatalogPricingResponseVersions;
+}
+export const PublishPharmacyCatalogPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    changedCostCount: S.Number,
+    itemCount: S.Number,
+    publishedRevision: S.Number,
+    versions: PublishPharmacyCatalogPricingResponseVersions,
+  }),
+).annotate({
+  identifier: "PublishPharmacyCatalogPricingResponse",
+}) as any as S.Schema<PublishPharmacyCatalogPricingResponse>;
+
+export interface PublishPharmacyOrganizationPricingRequestItemsItem {
+  marketplaceUnitPriceCents: number | null;
+  providerItemKey: string;
+}
+export const PublishPharmacyOrganizationPricingRequestItemsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    marketplaceUnitPriceCents: S.NullOr(S.Number),
+    providerItemKey: S.String,
+  }),
+).annotate({
+  identifier: "PublishPharmacyOrganizationPricingRequestItemsItem",
+}) as any as S.Schema<PublishPharmacyOrganizationPricingRequestItemsItem>;
+
+export type PublishPharmacyOrganizationPricingRequestItemsList =
+  Array<PublishPharmacyOrganizationPricingRequestItemsItem>;
+export const PublishPharmacyOrganizationPricingRequestItemsList = /*@__PURE__*/ S.Array(
+  PublishPharmacyOrganizationPricingRequestItemsItem,
+) as any as S.Schema<PublishPharmacyOrganizationPricingRequestItemsList>;
+
+export type PublishPharmacyOrganizationPricingRequestMode = "merge" | "replace";
+export const PublishPharmacyOrganizationPricingRequestMode = /*@__PURE__*/ S.String;
+
+export interface PublishPharmacyOrganizationPricingRequest {
+  pharmacyId: string;
+  organizationId: string;
+  items: PublishPharmacyOrganizationPricingRequestItemsList;
+  mode?: PublishPharmacyOrganizationPricingRequestMode | (string & {}) | null;
+  name?: string | null;
+  sourceReference?: string | null;
+}
+export const PublishPharmacyOrganizationPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+    organizationId: S.String.pipe(T.Label()),
+    items: PublishPharmacyOrganizationPricingRequestItemsList,
+    mode: S.optional(S.NullOr(PublishPharmacyOrganizationPricingRequestMode)),
+    name: S.optional(S.NullOr(S.String)),
+    sourceReference: S.optional(S.NullOr(S.String)),
+  }).pipe(
+    T.Http({
+      method: "PUT",
+      uri: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
+      code: 200,
+    }),
+  ),
+).annotate({
+  identifier: "PublishPharmacyOrganizationPricingRequest",
+}) as any as S.Schema<PublishPharmacyOrganizationPricingRequest>;
+
+export type PublishPharmacyOrganizationPricingResponseObject =
+  "pharmacy_organization_pricing_publish";
+export const PublishPharmacyOrganizationPricingResponseObject = /*@__PURE__*/ S.String;
+
+export interface PublishPharmacyOrganizationPricingResponse {
+  itemCount: number;
+  object: PublishPharmacyOrganizationPricingResponseObject;
+  organizationId: string;
+  priceBookId: string;
+  version: number;
+}
+export const PublishPharmacyOrganizationPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    itemCount: S.Number,
+    object: PublishPharmacyOrganizationPricingResponseObject,
+    organizationId: S.String,
+    priceBookId: S.String,
+    version: S.Number,
+  }),
+).annotate({
+  identifier: "PublishPharmacyOrganizationPricingResponse",
+}) as any as S.Schema<PublishPharmacyOrganizationPricingResponse>;
+
+export interface ReadPharmacyCatalogPricingRequest {
+  pharmacyId: string;
+}
+export const ReadPharmacyCatalogPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+  }).pipe(T.Http({ method: "GET", uri: "/v1/pharmacies/{pharmacyId}/catalog-pricing", code: 200 })),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingRequest",
+}) as any as S.Schema<ReadPharmacyCatalogPricingRequest>;
+
+export interface ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents {
+  independentClinic: number | null;
+  telehealth: number | null;
+}
+export const ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents =
+  /*@__PURE__*/ S.suspend(() =>
+    S.Struct({
+      independentClinic: S.NullOr(S.Number),
+      telehealth: S.NullOr(S.Number),
+    }),
+  ).annotate({
+    identifier: "ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents",
+  }) as any as S.Schema<ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents>;
+
+export type ReadPharmacyCatalogPricingResponseItemsItemCatalogKind = "otc" | "prescription";
+export const ReadPharmacyCatalogPricingResponseItemsItemCatalogKind = /*@__PURE__*/ S.String;
+
+export interface ReadPharmacyCatalogPricingResponseItemsItem {
+  affinityPriceCents: ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents;
+  catalogKind: ReadPharmacyCatalogPricingResponseItemsItemCatalogKind;
+  hasDraftPricingChange: boolean;
+  isActive: boolean;
+  isOrderable: boolean;
+  name: string;
+  providerItemKey: string;
+  strength: string | null;
+  unit: string | null;
+  vendorCostCents: number | null;
+  draftMarketplaceUnitPriceCents: number | null;
+  draftVendorCostCents: number | null;
+}
+export const ReadPharmacyCatalogPricingResponseItemsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    affinityPriceCents: ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents,
+    catalogKind: ReadPharmacyCatalogPricingResponseItemsItemCatalogKind,
+    hasDraftPricingChange: S.Boolean,
+    isActive: S.Boolean,
+    isOrderable: S.Boolean,
+    name: S.String,
+    providerItemKey: S.String,
+    strength: S.NullOr(S.String),
+    unit: S.NullOr(S.String),
+    vendorCostCents: S.NullOr(S.Number),
+    draftMarketplaceUnitPriceCents: S.NullOr(S.Number),
+    draftVendorCostCents: S.NullOr(S.Number),
+  }),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingResponseItemsItem",
+}) as any as S.Schema<ReadPharmacyCatalogPricingResponseItemsItem>;
+
+export type ReadPharmacyCatalogPricingResponseItemsList =
+  Array<ReadPharmacyCatalogPricingResponseItemsItem>;
+export const ReadPharmacyCatalogPricingResponseItemsList = /*@__PURE__*/ S.Array(
+  ReadPharmacyCatalogPricingResponseItemsItem,
+) as any as S.Schema<ReadPharmacyCatalogPricingResponseItemsList>;
+
+export type ReadPharmacyCatalogPricingResponseObject = "pharmacy_catalog_pricing";
+export const ReadPharmacyCatalogPricingResponseObject = /*@__PURE__*/ S.String;
+
+export interface ReadPharmacyCatalogPricingResponsePharmacy {
+  id: string;
+  name: string;
+}
+export const ReadPharmacyCatalogPricingResponsePharmacy = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    name: S.String,
+  }),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingResponsePharmacy",
+}) as any as S.Schema<ReadPharmacyCatalogPricingResponsePharmacy>;
+
+export type ReadPharmacyCatalogPricingResponseProvider = ReadPharmacyCatalogPricingResponsePharmacy;
+export const ReadPharmacyCatalogPricingResponseProvider =
+  ReadPharmacyCatalogPricingResponsePharmacy;
+
+export type ReadPharmacyCatalogPricingResponseVersions =
+  ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents;
+export const ReadPharmacyCatalogPricingResponseVersions =
+  ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents;
+
+export interface ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy {
+  id: string;
+  type: string;
+}
+export const ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    type: S.String,
+  }),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy",
+}) as any as S.Schema<ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy>;
+
+export interface ReadPharmacyCatalogPricingResponseWorkspace {
+  changeCount: number;
+  revision: number;
+  sourceReference: string | null;
+  updatedAt: string;
+  updatedBy: ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy;
+}
+export const ReadPharmacyCatalogPricingResponseWorkspace = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    changeCount: S.Number,
+    revision: S.Number,
+    sourceReference: S.NullOr(S.String),
+    updatedAt: S.String,
+    updatedBy: ReadPharmacyCatalogPricingResponseWorkspaceUpdatedBy,
+  }),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingResponseWorkspace",
+}) as any as S.Schema<ReadPharmacyCatalogPricingResponseWorkspace>;
+
+export interface ReadPharmacyCatalogPricingResponse {
+  items: ReadPharmacyCatalogPricingResponseItemsList;
+  object: ReadPharmacyCatalogPricingResponseObject;
+  pharmacy: ReadPharmacyCatalogPricingResponsePharmacy;
+  provider: ReadPharmacyCatalogPricingResponsePharmacy;
+  versions: ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents;
+  workspace: ReadPharmacyCatalogPricingResponseWorkspace | null;
+}
+export const ReadPharmacyCatalogPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    items: ReadPharmacyCatalogPricingResponseItemsList,
+    object: ReadPharmacyCatalogPricingResponseObject,
+    pharmacy: ReadPharmacyCatalogPricingResponsePharmacy,
+    provider: ReadPharmacyCatalogPricingResponsePharmacy,
+    versions: ReadPharmacyCatalogPricingResponseItemsItemAffinityPriceCents,
+    workspace: S.NullOr(ReadPharmacyCatalogPricingResponseWorkspace),
+  }),
+).annotate({
+  identifier: "ReadPharmacyCatalogPricingResponse",
+}) as any as S.Schema<ReadPharmacyCatalogPricingResponse>;
+
+export interface ReadPharmacyOrganizationPricingRequest {
+  pharmacyId: string;
+  organizationId: string;
+}
+export const ReadPharmacyOrganizationPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+    organizationId: S.String.pipe(T.Label()),
+  }).pipe(
+    T.Http({
+      method: "GET",
+      uri: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
+      code: 200,
+    }),
+  ),
+).annotate({
+  identifier: "ReadPharmacyOrganizationPricingRequest",
+}) as any as S.Schema<ReadPharmacyOrganizationPricingRequest>;
+
+export interface ReadPharmacyOrganizationPricingResponseActiveBook {
+  id: string;
+  name: string;
+  version: number;
+}
+export const ReadPharmacyOrganizationPricingResponseActiveBook = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    name: S.String,
+    version: S.Number,
+  }),
+).annotate({
+  identifier: "ReadPharmacyOrganizationPricingResponseActiveBook",
+}) as any as S.Schema<ReadPharmacyOrganizationPricingResponseActiveBook>;
+
+export type ReadPharmacyOrganizationPricingResponseItemsItemCatalogKind = "otc" | "prescription";
+export const ReadPharmacyOrganizationPricingResponseItemsItemCatalogKind = /*@__PURE__*/ S.String;
+
+export interface ReadPharmacyOrganizationPricingResponseItemsItem {
+  catalogKind: ReadPharmacyOrganizationPricingResponseItemsItemCatalogKind;
+  isActive: boolean;
+  isOrderable: boolean;
+  marketplaceUnitPriceCents: number | null;
+  name: string;
+  providerItemKey: string;
+  strength: string | null;
+  unit: string | null;
+  vendorCostCents: number | null;
+}
+export const ReadPharmacyOrganizationPricingResponseItemsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    catalogKind: ReadPharmacyOrganizationPricingResponseItemsItemCatalogKind,
+    isActive: S.Boolean,
+    isOrderable: S.Boolean,
+    marketplaceUnitPriceCents: S.NullOr(S.Number),
+    name: S.String,
+    providerItemKey: S.String,
+    strength: S.NullOr(S.String),
+    unit: S.NullOr(S.String),
+    vendorCostCents: S.NullOr(S.Number),
+  }),
+).annotate({
+  identifier: "ReadPharmacyOrganizationPricingResponseItemsItem",
+}) as any as S.Schema<ReadPharmacyOrganizationPricingResponseItemsItem>;
+
+export type ReadPharmacyOrganizationPricingResponseItemsList =
+  Array<ReadPharmacyOrganizationPricingResponseItemsItem>;
+export const ReadPharmacyOrganizationPricingResponseItemsList = /*@__PURE__*/ S.Array(
+  ReadPharmacyOrganizationPricingResponseItemsItem,
+) as any as S.Schema<ReadPharmacyOrganizationPricingResponseItemsList>;
+
+export type ReadPharmacyOrganizationPricingResponseObject = "pharmacy_organization_pricing";
+export const ReadPharmacyOrganizationPricingResponseObject = /*@__PURE__*/ S.String;
+
+export type ReadPharmacyOrganizationPricingResponseOrganizationKind = "practice" | "platform";
+export const ReadPharmacyOrganizationPricingResponseOrganizationKind = /*@__PURE__*/ S.String;
+
+export interface ReadPharmacyOrganizationPricingResponseOrganization {
+  id: string;
+  kind: ReadPharmacyOrganizationPricingResponseOrganizationKind;
+  name: string;
+}
+export const ReadPharmacyOrganizationPricingResponseOrganization = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    kind: ReadPharmacyOrganizationPricingResponseOrganizationKind,
+    name: S.String,
+  }),
+).annotate({
+  identifier: "ReadPharmacyOrganizationPricingResponseOrganization",
+}) as any as S.Schema<ReadPharmacyOrganizationPricingResponseOrganization>;
+
+export type ReadPharmacyOrganizationPricingResponsePharmacy =
+  ReadPharmacyCatalogPricingResponsePharmacy;
+export const ReadPharmacyOrganizationPricingResponsePharmacy =
+  ReadPharmacyCatalogPricingResponsePharmacy;
+
+export type ReadPharmacyOrganizationPricingResponseProvider =
+  ReadPharmacyCatalogPricingResponsePharmacy;
+export const ReadPharmacyOrganizationPricingResponseProvider =
+  ReadPharmacyCatalogPricingResponsePharmacy;
+
+export interface ReadPharmacyOrganizationPricingResponse {
+  activeBook: ReadPharmacyOrganizationPricingResponseActiveBook | null;
+  items: ReadPharmacyOrganizationPricingResponseItemsList;
+  object: ReadPharmacyOrganizationPricingResponseObject;
+  organization: ReadPharmacyOrganizationPricingResponseOrganization;
+  pharmacy: ReadPharmacyCatalogPricingResponsePharmacy;
+  provider: ReadPharmacyCatalogPricingResponsePharmacy;
+}
+export const ReadPharmacyOrganizationPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    activeBook: S.NullOr(ReadPharmacyOrganizationPricingResponseActiveBook),
+    items: ReadPharmacyOrganizationPricingResponseItemsList,
+    object: ReadPharmacyOrganizationPricingResponseObject,
+    organization: ReadPharmacyOrganizationPricingResponseOrganization,
+    pharmacy: ReadPharmacyCatalogPricingResponsePharmacy,
+    provider: ReadPharmacyCatalogPricingResponsePharmacy,
+  }),
+).annotate({
+  identifier: "ReadPharmacyOrganizationPricingResponse",
+}) as any as S.Schema<ReadPharmacyOrganizationPricingResponse>;
+
 export type ReplacePatientAllergiesRequestAllergiesItemCategory =
   | "drug"
   | "food"
@@ -4314,7 +4065,6 @@ export interface ReplacePatientAllergiesRequestAllergiesItemReactionsItem {
     | ReplacePatientAllergiesRequestAllergiesItemReactionsItemCodeSystem
     | (string & {})
     | null;
-  /** a string that will be trimmed */
   display: string;
 }
 export const ReplacePatientAllergiesRequestAllergiesItemReactionsItem = /*@__PURE__*/ S.suspend(
@@ -4366,7 +4116,6 @@ export interface ReplacePatientAllergiesRequestAllergiesItem {
   reactions: ReplacePatientAllergiesRequestAllergiesItemReactionsList;
   severity?: ReplacePatientAllergiesRequestAllergiesItemSeverity | (string & {}) | null;
   source: ReplacePatientAllergiesRequestAllergiesItemSource | (string & {});
-  /** a string that will be trimmed */
   substance: string;
   type: ReplacePatientAllergiesRequestAllergiesItemType | (string & {}) | null;
   verificationStatus: ReplacePatientAllergiesRequestAllergiesItemVerificationStatus | (string & {});
@@ -4419,118 +4168,14 @@ export const ReplacePatientAllergiesRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "ReplacePatientAllergiesRequest",
 }) as any as S.Schema<ReplacePatientAllergiesRequest>;
 
-export type ReplacePatientAllergiesResponseAllergiesItemCategory =
-  | "drug"
-  | "food"
-  | "insect"
-  | "latex"
-  | "mold"
-  | "pet"
-  | "pollen"
-  | "environmental"
-  | "biologic"
-  | "other";
-export const ReplacePatientAllergiesResponseAllergiesItemCategory = /*@__PURE__*/ S.String;
-
-export type ReplacePatientAllergiesResponseAllergiesItemCodeSystem = "rxnorm" | "snomed-ct";
-export const ReplacePatientAllergiesResponseAllergiesItemCodeSystem = /*@__PURE__*/ S.String;
-
-export type ReplacePatientAllergiesResponseAllergiesItemReactionsItemCodeSystem = "snomed-ct";
-export const ReplacePatientAllergiesResponseAllergiesItemReactionsItemCodeSystem =
-  /*@__PURE__*/ S.String;
-
-export interface ReplacePatientAllergiesResponseAllergiesItemReactionsItem {
-  code: string | null;
-  codeSystem: ReplacePatientAllergiesResponseAllergiesItemReactionsItemCodeSystem | null;
-  display: string;
-}
-export const ReplacePatientAllergiesResponseAllergiesItemReactionsItem = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      code: S.NullOr(S.String),
-      codeSystem: S.NullOr(ReplacePatientAllergiesResponseAllergiesItemReactionsItemCodeSystem),
-      display: S.String,
-    }),
-).annotate({
-  identifier: "ReplacePatientAllergiesResponseAllergiesItemReactionsItem",
-}) as any as S.Schema<ReplacePatientAllergiesResponseAllergiesItemReactionsItem>;
-
-export type ReplacePatientAllergiesResponseAllergiesItemReactionsList =
-  Array<ReplacePatientAllergiesResponseAllergiesItemReactionsItem>;
-export const ReplacePatientAllergiesResponseAllergiesItemReactionsList = /*@__PURE__*/ S.Array(
-  ReplacePatientAllergiesResponseAllergiesItemReactionsItem,
-) as any as S.Schema<ReplacePatientAllergiesResponseAllergiesItemReactionsList>;
-
-export type ReplacePatientAllergiesResponseAllergiesItemSeverity =
-  | "mild"
-  | "moderate"
-  | "severe"
-  | "unknown";
-export const ReplacePatientAllergiesResponseAllergiesItemSeverity = /*@__PURE__*/ S.String;
-
-export type ReplacePatientAllergiesResponseAllergiesItemSource =
-  | "Doctor"
-  | "Patient"
-  | "Patient Agent/Guardian"
-  | "Pharmacist";
-export const ReplacePatientAllergiesResponseAllergiesItemSource = /*@__PURE__*/ S.String;
-
-export type ReplacePatientAllergiesResponseAllergiesItemType = "allergy" | "intolerance";
-export const ReplacePatientAllergiesResponseAllergiesItemType = /*@__PURE__*/ S.String;
-
-export type ReplacePatientAllergiesResponseAllergiesItemVerificationStatus =
-  | "unconfirmed"
-  | "presumed"
-  | "confirmed";
-export const ReplacePatientAllergiesResponseAllergiesItemVerificationStatus =
-  /*@__PURE__*/ S.String;
-
-export interface ReplacePatientAllergiesResponseAllergiesItem {
-  category: ReplacePatientAllergiesResponseAllergiesItemCategory;
-  code: string | null;
-  codeSystem: ReplacePatientAllergiesResponseAllergiesItemCodeSystem | null;
-  id: string;
-  reactions: ReplacePatientAllergiesResponseAllergiesItemReactionsList;
-  severity: ReplacePatientAllergiesResponseAllergiesItemSeverity | null;
-  source: ReplacePatientAllergiesResponseAllergiesItemSource;
-  substance: string;
-  type: ReplacePatientAllergiesResponseAllergiesItemType | null;
-  verificationStatus: ReplacePatientAllergiesResponseAllergiesItemVerificationStatus;
-}
-export const ReplacePatientAllergiesResponseAllergiesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    category: ReplacePatientAllergiesResponseAllergiesItemCategory,
-    code: S.NullOr(S.String),
-    codeSystem: S.NullOr(ReplacePatientAllergiesResponseAllergiesItemCodeSystem),
-    id: S.String,
-    reactions: ReplacePatientAllergiesResponseAllergiesItemReactionsList,
-    severity: S.NullOr(ReplacePatientAllergiesResponseAllergiesItemSeverity),
-    source: ReplacePatientAllergiesResponseAllergiesItemSource,
-    substance: S.String,
-    type: S.NullOr(ReplacePatientAllergiesResponseAllergiesItemType),
-    verificationStatus: ReplacePatientAllergiesResponseAllergiesItemVerificationStatus,
-  }),
-).annotate({
-  identifier: "ReplacePatientAllergiesResponseAllergiesItem",
-}) as any as S.Schema<ReplacePatientAllergiesResponseAllergiesItem>;
-
-export type ReplacePatientAllergiesResponseAllergiesList =
-  Array<ReplacePatientAllergiesResponseAllergiesItem>;
-export const ReplacePatientAllergiesResponseAllergiesList = /*@__PURE__*/ S.Array(
-  ReplacePatientAllergiesResponseAllergiesItem,
-) as any as S.Schema<ReplacePatientAllergiesResponseAllergiesList>;
-
-export type ReplacePatientAllergiesResponseReviewStatus = "not_reviewed" | "no_known" | "recorded";
-export const ReplacePatientAllergiesResponseReviewStatus = /*@__PURE__*/ S.String;
-
 export interface ReplacePatientAllergiesResponse {
-  allergies: ReplacePatientAllergiesResponseAllergiesList;
-  reviewStatus: ReplacePatientAllergiesResponseReviewStatus;
+  allergies: unknown;
+  reviewStatus: unknown;
 }
 export const ReplacePatientAllergiesResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    allergies: ReplacePatientAllergiesResponseAllergiesList,
-    reviewStatus: ReplacePatientAllergiesResponseReviewStatus,
+    allergies: S.Unknown,
+    reviewStatus: S.Unknown,
   }),
 ).annotate({
   identifier: "ReplacePatientAllergiesResponse",
@@ -4550,86 +4195,6 @@ export const ReplayWebhookEventRequest = /*@__PURE__*/ S.suspend(() =>
 export type ReplayWebhookEventResponseObject = "webhook_event";
 export const ReplayWebhookEventResponseObject = /*@__PURE__*/ S.String;
 
-export type ReplayWebhookEventResponseStatus = "delivered" | "failed" | "pending";
-export const ReplayWebhookEventResponseStatus = /*@__PURE__*/ S.String;
-
-export type ReplayWebhookEventResponseAttemptsItemTrigger = "automatic" | "manual" | "test";
-export const ReplayWebhookEventResponseAttemptsItemTrigger = /*@__PURE__*/ S.String;
-
-export interface ReplayWebhookEventResponseAttemptsItem {
-  attemptNumber: number;
-  completedAt: string | null;
-  durationMs: number | null;
-  errorCode: string | null;
-  errorMessage: string | null;
-  id: string;
-  requestedAt: string;
-  responseStatus: number | null;
-  trigger: ReplayWebhookEventResponseAttemptsItemTrigger;
-}
-export const ReplayWebhookEventResponseAttemptsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    attemptNumber: S.Number,
-    completedAt: S.NullOr(S.String),
-    durationMs: S.NullOr(S.Number),
-    errorCode: S.NullOr(S.String),
-    errorMessage: S.NullOr(S.String),
-    id: S.String,
-    requestedAt: S.String,
-    responseStatus: S.NullOr(S.Number),
-    trigger: ReplayWebhookEventResponseAttemptsItemTrigger,
-  }),
-).annotate({
-  identifier: "ReplayWebhookEventResponseAttemptsItem",
-}) as any as S.Schema<ReplayWebhookEventResponseAttemptsItem>;
-
-export type ReplayWebhookEventResponseAttemptsList = Array<ReplayWebhookEventResponseAttemptsItem>;
-export const ReplayWebhookEventResponseAttemptsList = /*@__PURE__*/ S.Array(
-  ReplayWebhookEventResponseAttemptsItem,
-) as any as S.Schema<ReplayWebhookEventResponseAttemptsList>;
-
-export type ReplayWebhookEventResponseDeliveriesItemStatus =
-  | "delivered"
-  | "failed"
-  | "pending"
-  | "retrying";
-export const ReplayWebhookEventResponseDeliveriesItemStatus = /*@__PURE__*/ S.String;
-
-export interface ReplayWebhookEventResponseDeliveriesItem {
-  automaticAttemptCount: number;
-  endpointId: string;
-  id: string;
-  lastErrorCode: string | null;
-  lastErrorMessage: string | null;
-  nextAttemptAt: string | null;
-  status: ReplayWebhookEventResponseDeliveriesItemStatus;
-}
-export const ReplayWebhookEventResponseDeliveriesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    automaticAttemptCount: S.Number,
-    endpointId: S.String,
-    id: S.String,
-    lastErrorCode: S.NullOr(S.String),
-    lastErrorMessage: S.NullOr(S.String),
-    nextAttemptAt: S.NullOr(S.String),
-    status: ReplayWebhookEventResponseDeliveriesItemStatus,
-  }),
-).annotate({
-  identifier: "ReplayWebhookEventResponseDeliveriesItem",
-}) as any as S.Schema<ReplayWebhookEventResponseDeliveriesItem>;
-
-export type ReplayWebhookEventResponseDeliveriesList =
-  Array<ReplayWebhookEventResponseDeliveriesItem>;
-export const ReplayWebhookEventResponseDeliveriesList = /*@__PURE__*/ S.Array(
-  ReplayWebhookEventResponseDeliveriesItem,
-) as any as S.Schema<ReplayWebhookEventResponseDeliveriesList>;
-
-export type ReplayWebhookEventResponsePayloadMap = { [key: string]: unknown | undefined };
-export const ReplayWebhookEventResponsePayloadMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<ReplayWebhookEventResponsePayloadMap>;
-
 export interface ReplayWebhookEventResponse {
   apiVersion: string;
   createdAt: string;
@@ -4639,10 +4204,10 @@ export interface ReplayWebhookEventResponse {
   object: ReplayWebhookEventResponseObject;
   resourceId: string;
   resourceType: string;
-  status: ReplayWebhookEventResponseStatus;
-  attempts: ReplayWebhookEventResponseAttemptsList;
-  deliveries: ReplayWebhookEventResponseDeliveriesList;
-  payload: ReplayWebhookEventResponsePayloadMap;
+  status: unknown;
+  attempts: unknown;
+  deliveries: unknown;
+  payload: unknown;
 }
 export const ReplayWebhookEventResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -4654,10 +4219,10 @@ export const ReplayWebhookEventResponse = /*@__PURE__*/ S.suspend(() =>
     object: ReplayWebhookEventResponseObject,
     resourceId: S.String,
     resourceType: S.String,
-    status: ReplayWebhookEventResponseStatus,
-    attempts: ReplayWebhookEventResponseAttemptsList,
-    deliveries: ReplayWebhookEventResponseDeliveriesList,
-    payload: ReplayWebhookEventResponsePayloadMap,
+    status: S.Unknown,
+    attempts: S.Unknown,
+    deliveries: S.Unknown,
+    payload: S.Unknown,
   }),
 ).annotate({
   identifier: "ReplayWebhookEventResponse",
@@ -4679,17 +4244,6 @@ export const RotateWebhookEndpointSecretRequest = /*@__PURE__*/ S.suspend(() =>
 export type RotateWebhookEndpointSecretResponseObject = "webhook_endpoint";
 export const RotateWebhookEndpointSecretResponseObject = /*@__PURE__*/ S.String;
 
-export type RotateWebhookEndpointSecretResponsePayloadStyle = "thin" | "snapshot";
-export const RotateWebhookEndpointSecretResponsePayloadStyle = /*@__PURE__*/ S.String;
-
-export type RotateWebhookEndpointSecretResponseStatus = "active" | "suspended" | "disabled";
-export const RotateWebhookEndpointSecretResponseStatus = /*@__PURE__*/ S.String;
-
-export type RotateWebhookEndpointSecretResponseSubscribedEventsList = Array<string>;
-export const RotateWebhookEndpointSecretResponseSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<RotateWebhookEndpointSecretResponseSubscribedEventsList>;
-
 export interface RotateWebhookEndpointSecretResponse {
   apiVersion: string;
   consecutiveFailures: number;
@@ -4698,9 +4252,9 @@ export interface RotateWebhookEndpointSecretResponse {
   id: string;
   livemode: boolean;
   object: RotateWebhookEndpointSecretResponseObject;
-  payloadStyle: RotateWebhookEndpointSecretResponsePayloadStyle;
-  status: RotateWebhookEndpointSecretResponseStatus;
-  subscribedEvents: RotateWebhookEndpointSecretResponseSubscribedEventsList;
+  payloadStyle: unknown;
+  status: unknown;
+  subscribedEvents: unknown;
   updatedAt: string;
   url: string;
   signingSecret: string;
@@ -4714,9 +4268,9 @@ export const RotateWebhookEndpointSecretResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     livemode: S.Boolean,
     object: RotateWebhookEndpointSecretResponseObject,
-    payloadStyle: RotateWebhookEndpointSecretResponsePayloadStyle,
-    status: RotateWebhookEndpointSecretResponseStatus,
-    subscribedEvents: RotateWebhookEndpointSecretResponseSubscribedEventsList,
+    payloadStyle: S.Unknown,
+    status: S.Unknown,
+    subscribedEvents: S.Unknown,
     updatedAt: S.String,
     url: S.String,
     signingSecret: S.String,
@@ -4729,16 +4283,12 @@ export type UpdatePatientRequestAddressCountry = "US";
 export const UpdatePatientRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientRequestAddress {
-  /** a string that will be trimmed */
   city: string;
-  /** a string that will be trimmed */
   line1: string;
   line2?: string | null;
-  /** a string that will be trimmed */
   postalCode: string;
-  /** a string that will be trimmed */
   state: string;
-  country?: UpdatePatientRequestAddressCountry | (string & {});
+  country?: UpdatePatientRequestAddressCountry | (string & {}) | null;
 }
 export const UpdatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -4747,159 +4297,338 @@ export const UpdatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
     line2: S.optional(S.NullOr(S.String)),
     postalCode: S.String,
     state: S.String,
-    country: S.optional(UpdatePatientRequestAddressCountry),
+    country: S.optional(S.NullOr(UpdatePatientRequestAddressCountry)),
   }),
 ).annotate({
   identifier: "UpdatePatientRequestAddress",
 }) as any as S.Schema<UpdatePatientRequestAddress>;
 
+export type UpdatePatientRequestClinicalProfileCurrentMedicationsList = Array<string>;
+export const UpdatePatientRequestClinicalProfileCurrentMedicationsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<UpdatePatientRequestClinicalProfileCurrentMedicationsList>;
+
+export type UpdatePatientRequestClinicalProfileHeightInchesCase1 = "Infinity" | "-Infinity" | "NaN";
+export const UpdatePatientRequestClinicalProfileHeightInchesCase1 = /*@__PURE__*/ S.String;
+
+export type UpdatePatientRequestClinicalProfileHeightInches =
+  | number
+  | UpdatePatientRequestClinicalProfileHeightInchesCase1;
+export const UpdatePatientRequestClinicalProfileHeightInches =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<UpdatePatientRequestClinicalProfileHeightInches>;
+
+export type UpdatePatientRequestClinicalProfileWeightPoundsCase1 = "Infinity" | "-Infinity" | "NaN";
+export const UpdatePatientRequestClinicalProfileWeightPoundsCase1 = /*@__PURE__*/ S.String;
+
+export type UpdatePatientRequestClinicalProfileWeightPounds =
+  | number
+  | UpdatePatientRequestClinicalProfileWeightPoundsCase1;
+export const UpdatePatientRequestClinicalProfileWeightPounds =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<UpdatePatientRequestClinicalProfileWeightPounds>;
+
+export interface UpdatePatientRequestClinicalProfile {
+  currentMedications?: UpdatePatientRequestClinicalProfileCurrentMedicationsList | null;
+  heightInches?: UpdatePatientRequestClinicalProfileHeightInches | null;
+  reviewedAt?: string | null;
+  weightPounds?: UpdatePatientRequestClinicalProfileWeightPounds | null;
+}
+export const UpdatePatientRequestClinicalProfile = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    currentMedications: S.optional(
+      S.NullOr(UpdatePatientRequestClinicalProfileCurrentMedicationsList),
+    ),
+    heightInches: S.optional(S.NullOr(UpdatePatientRequestClinicalProfileHeightInches)),
+    reviewedAt: S.optional(S.NullOr(S.String)),
+    weightPounds: S.optional(S.NullOr(UpdatePatientRequestClinicalProfileWeightPounds)),
+  }),
+).annotate({
+  identifier: "UpdatePatientRequestClinicalProfile",
+}) as any as S.Schema<UpdatePatientRequestClinicalProfile>;
+
+export type UpdatePatientRequestExternalIdentitiesItem = CreatePatientRequestExternalIdentitiesItem;
+export const UpdatePatientRequestExternalIdentitiesItem =
+  CreatePatientRequestExternalIdentitiesItem;
+
+export type UpdatePatientRequestExternalIdentitiesList =
+  Array<CreatePatientRequestExternalIdentitiesItem>;
+export const UpdatePatientRequestExternalIdentitiesList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestExternalIdentitiesItem,
+) as any as S.Schema<UpdatePatientRequestExternalIdentitiesList>;
+
+export type UpdatePatientRequestAddressesItemAddress = CreatePatientRequestAddressesItemAddress;
+export const UpdatePatientRequestAddressesItemAddress = CreatePatientRequestAddressesItemAddress;
+
+export type UpdatePatientRequestAddressesItem = CreatePatientRequestAddressesItem;
+export const UpdatePatientRequestAddressesItem = CreatePatientRequestAddressesItem;
+
+export type UpdatePatientRequestAddressesList = Array<CreatePatientRequestAddressesItem>;
+export const UpdatePatientRequestAddressesList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestAddressesItem,
+) as any as S.Schema<UpdatePatientRequestAddressesList>;
+
+export type UpdatePatientRequestEncountersItem = CreatePatientRequestEncountersItem;
+export const UpdatePatientRequestEncountersItem = CreatePatientRequestEncountersItem;
+
+export type UpdatePatientRequestEncountersList = Array<CreatePatientRequestEncountersItem>;
+export const UpdatePatientRequestEncountersList = /*@__PURE__*/ S.Array(
+  CreatePatientRequestEncountersItem,
+) as any as S.Schema<UpdatePatientRequestEncountersList>;
+
 export type UpdatePatientRequestGender = "f" | "m" | "o" | "u";
 export const UpdatePatientRequestGender = /*@__PURE__*/ S.String;
 
-export type UpdatePatientRequestMetadataMap = { [key: string]: unknown | undefined };
-export const UpdatePatientRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdatePatientRequestMetadataMap>;
+export type UpdatePatientRequestMeasurementsItemHeightCentimetersCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const UpdatePatientRequestMeasurementsItemHeightCentimetersCase1 = /*@__PURE__*/ S.String;
+
+export type UpdatePatientRequestMeasurementsItemHeightCentimeters =
+  | number
+  | UpdatePatientRequestMeasurementsItemHeightCentimetersCase1;
+export const UpdatePatientRequestMeasurementsItemHeightCentimeters =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<UpdatePatientRequestMeasurementsItemHeightCentimeters>;
+
+export type UpdatePatientRequestMeasurementsItemWeightKilogramsCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const UpdatePatientRequestMeasurementsItemWeightKilogramsCase1 = /*@__PURE__*/ S.String;
+
+export type UpdatePatientRequestMeasurementsItemWeightKilograms =
+  | number
+  | UpdatePatientRequestMeasurementsItemWeightKilogramsCase1;
+export const UpdatePatientRequestMeasurementsItemWeightKilograms =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<UpdatePatientRequestMeasurementsItemWeightKilograms>;
+
+export interface UpdatePatientRequestMeasurementsItem {
+  heightCentimeters: UpdatePatientRequestMeasurementsItemHeightCentimeters | null;
+  recordedAt: string;
+  source: string;
+  weightKilograms: UpdatePatientRequestMeasurementsItemWeightKilograms | null;
+}
+export const UpdatePatientRequestMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    heightCentimeters: S.NullOr(UpdatePatientRequestMeasurementsItemHeightCentimeters),
+    recordedAt: S.String,
+    source: S.String,
+    weightKilograms: S.NullOr(UpdatePatientRequestMeasurementsItemWeightKilograms),
+  }),
+).annotate({
+  identifier: "UpdatePatientRequestMeasurementsItem",
+}) as any as S.Schema<UpdatePatientRequestMeasurementsItem>;
+
+export type UpdatePatientRequestMeasurementsList = Array<UpdatePatientRequestMeasurementsItem>;
+export const UpdatePatientRequestMeasurementsList = /*@__PURE__*/ S.Array(
+  UpdatePatientRequestMeasurementsItem,
+) as any as S.Schema<UpdatePatientRequestMeasurementsList>;
 
 export interface UpdatePatientRequestName {
-  /** a string that will be trimmed */
-  first?: string;
-  /** a string that will be trimmed */
-  last?: string;
+  first?: string | null;
+  last?: string | null;
   middle?: string | null;
   preferred?: string | null;
 }
 export const UpdatePatientRequestName = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    first: S.optional(S.String),
-    last: S.optional(S.String),
+    first: S.optional(S.NullOr(S.String)),
+    last: S.optional(S.NullOr(S.String)),
     middle: S.optional(S.NullOr(S.String)),
     preferred: S.optional(S.NullOr(S.String)),
   }),
 ).annotate({ identifier: "UpdatePatientRequestName" }) as any as S.Schema<UpdatePatientRequestName>;
 
-export type UpdatePatientRequestStatus = "active" | "inactive" | "needs_review";
+export type UpdatePatientRequestProgramsItemStatus = "active" | "completed" | "paused";
+export const UpdatePatientRequestProgramsItemStatus = /*@__PURE__*/ S.String;
+
+export interface UpdatePatientRequestProgramsItem {
+  endedAt: string | null;
+  name: string;
+  startedAt: string;
+  status: UpdatePatientRequestProgramsItemStatus | (string & {});
+}
+export const UpdatePatientRequestProgramsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    endedAt: S.NullOr(S.String),
+    name: S.String,
+    startedAt: S.String,
+    status: UpdatePatientRequestProgramsItemStatus,
+  }),
+).annotate({
+  identifier: "UpdatePatientRequestProgramsItem",
+}) as any as S.Schema<UpdatePatientRequestProgramsItem>;
+
+export type UpdatePatientRequestProgramsList = Array<UpdatePatientRequestProgramsItem>;
+export const UpdatePatientRequestProgramsList = /*@__PURE__*/ S.Array(
+  UpdatePatientRequestProgramsItem,
+) as any as S.Schema<UpdatePatientRequestProgramsList>;
+
+export type UpdatePatientRequestStatus = "active" | "inactive";
 export const UpdatePatientRequestStatus = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientRequest {
   practiceId: string;
   patientId: string;
-  address?: UpdatePatientRequestAddress;
-  dateOfBirth?: string;
+  address?: UpdatePatientRequestAddress | null;
+  clinicalProfile?: UpdatePatientRequestClinicalProfile | null;
+  dateOfBirth?: string | null;
   email?: string | null;
-  gender?: UpdatePatientRequestGender | (string & {});
-  metadata?: UpdatePatientRequestMetadataMap;
-  name?: UpdatePatientRequestName;
-  /** a string that will be trimmed */
-  phone?: string;
-  status?: UpdatePatientRequestStatus | (string & {});
+  externalIdentities?: UpdatePatientRequestExternalIdentitiesList | null;
+  addresses?: UpdatePatientRequestAddressesList | null;
+  encounters?: UpdatePatientRequestEncountersList | null;
+  gender?: UpdatePatientRequestGender | (string & {}) | null;
+  metadata?: unknown | null;
+  medicalRecordNumber?: string | null;
+  measurements?: UpdatePatientRequestMeasurementsList | null;
+  name?: UpdatePatientRequestName | null;
+  programs?: UpdatePatientRequestProgramsList | null;
+  phone?: string | null;
+  status?: UpdatePatientRequestStatus | (string & {}) | null;
 }
 export const UpdatePatientRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
-    address: S.optional(UpdatePatientRequestAddress),
-    dateOfBirth: S.optional(S.String),
+    address: S.optional(S.NullOr(UpdatePatientRequestAddress)),
+    clinicalProfile: S.optional(S.NullOr(UpdatePatientRequestClinicalProfile)),
+    dateOfBirth: S.optional(S.NullOr(S.String)),
     email: S.optional(S.NullOr(S.String)),
-    gender: S.optional(UpdatePatientRequestGender),
-    metadata: S.optional(UpdatePatientRequestMetadataMap),
-    name: S.optional(UpdatePatientRequestName),
-    phone: S.optional(S.String),
-    status: S.optional(UpdatePatientRequestStatus),
+    externalIdentities: S.optional(S.NullOr(UpdatePatientRequestExternalIdentitiesList)),
+    addresses: S.optional(S.NullOr(UpdatePatientRequestAddressesList)),
+    encounters: S.optional(S.NullOr(UpdatePatientRequestEncountersList)),
+    gender: S.optional(S.NullOr(UpdatePatientRequestGender)),
+    metadata: S.optional(S.NullOr(S.Unknown)),
+    medicalRecordNumber: S.optional(S.NullOr(S.String)),
+    measurements: S.optional(S.NullOr(UpdatePatientRequestMeasurementsList)),
+    name: S.optional(S.NullOr(UpdatePatientRequestName)),
+    programs: S.optional(S.NullOr(UpdatePatientRequestProgramsList)),
+    phone: S.optional(S.NullOr(S.String)),
+    status: S.optional(S.NullOr(UpdatePatientRequestStatus)),
   }).pipe(
     T.Http({ method: "PATCH", uri: "/v1/practices/{practiceId}/patients/{patientId}", code: 200 }),
   ),
 ).annotate({ identifier: "UpdatePatientRequest" }) as any as S.Schema<UpdatePatientRequest>;
 
-export type UpdatePatientResponseAddress = CreatePatientResponseAddress;
-export const UpdatePatientResponseAddress = CreatePatientResponseAddress;
-
-export type UpdatePatientResponseAllergyReviewStatus = "not_reviewed" | "no_known" | "recorded";
-export const UpdatePatientResponseAllergyReviewStatus = /*@__PURE__*/ S.String;
-
-export type UpdatePatientResponseAllergySummaryItem = CreatePatientResponseAllergySummaryItem;
-export const UpdatePatientResponseAllergySummaryItem = CreatePatientResponseAllergySummaryItem;
-
-export type UpdatePatientResponseAllergySummaryList =
-  Array<CreatePatientResponseAllergySummaryItem>;
-export const UpdatePatientResponseAllergySummaryList = /*@__PURE__*/ S.Array(
-  CreatePatientResponseAllergySummaryItem,
-) as any as S.Schema<UpdatePatientResponseAllergySummaryList>;
-
-export type UpdatePatientResponseGender = "f" | "m" | "o" | "u";
-export const UpdatePatientResponseGender = /*@__PURE__*/ S.String;
-
-export type UpdatePatientResponseMetadataMap = { [key: string]: unknown | undefined };
-export const UpdatePatientResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdatePatientResponseMetadataMap>;
-
-export type UpdatePatientResponseName = CreatePatientResponseName;
-export const UpdatePatientResponseName = CreatePatientResponseName;
-
 export type UpdatePatientResponseObject = "patient";
 export const UpdatePatientResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdatePatientResponseStatus = "active" | "inactive" | "needs_review";
-export const UpdatePatientResponseStatus = /*@__PURE__*/ S.String;
-
 export interface UpdatePatientResponse {
-  address: CreatePatientResponseAddress;
-  allergyReviewStatus: UpdatePatientResponseAllergyReviewStatus;
-  allergySummary: UpdatePatientResponseAllergySummaryList;
+  address: unknown;
+  allergyReviewStatus: unknown;
+  allergySummary: unknown;
   createdAt: string;
+  clinicalProfile: unknown;
   dateOfBirth: string;
-  email: string | null;
-  externalId: string;
-  gender: UpdatePatientResponseGender;
+  email: unknown;
+  externalIdentities: unknown;
+  addresses: unknown;
+  encounters: unknown;
+  gender: unknown;
   id: string;
   livemode: boolean;
-  metadata: UpdatePatientResponseMetadataMap;
-  name: CreatePatientResponseName;
+  metadata: unknown;
+  medicalRecordNumber: unknown;
+  measurements: unknown;
+  name: unknown;
   object: UpdatePatientResponseObject;
   phone: string;
+  programs: unknown;
   practiceId: string;
-  status: UpdatePatientResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const UpdatePatientResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: CreatePatientResponseAddress,
-    allergyReviewStatus: UpdatePatientResponseAllergyReviewStatus,
-    allergySummary: UpdatePatientResponseAllergySummaryList,
+    address: S.Unknown,
+    allergyReviewStatus: S.Unknown,
+    allergySummary: S.Unknown,
     createdAt: S.String,
+    clinicalProfile: S.Unknown,
     dateOfBirth: S.String,
-    email: S.NullOr(S.String),
-    externalId: S.String,
-    gender: UpdatePatientResponseGender,
+    email: S.Unknown,
+    externalIdentities: S.Unknown,
+    addresses: S.Unknown,
+    encounters: S.Unknown,
+    gender: S.Unknown,
     id: S.String,
     livemode: S.Boolean,
-    metadata: UpdatePatientResponseMetadataMap,
-    name: CreatePatientResponseName,
+    metadata: S.Unknown,
+    medicalRecordNumber: S.Unknown,
+    measurements: S.Unknown,
+    name: S.Unknown,
     object: UpdatePatientResponseObject,
     phone: S.String,
+    programs: S.Unknown,
     practiceId: S.String,
-    status: UpdatePatientResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "UpdatePatientResponse" }) as any as S.Schema<UpdatePatientResponse>;
 
-export type UpdatePracticeRequestAddress = CreatePatientResponseAddress;
-export const UpdatePracticeRequestAddress = CreatePatientResponseAddress;
+export interface UpdatePharmacyCatalogPricingRequestItemsItem {
+  marketplaceUnitPriceCents: number | null;
+  providerItemKey: string;
+  vendorCostCents: number | null;
+}
+export const UpdatePharmacyCatalogPricingRequestItemsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    marketplaceUnitPriceCents: S.NullOr(S.Number),
+    providerItemKey: S.String,
+    vendorCostCents: S.NullOr(S.Number),
+  }),
+).annotate({
+  identifier: "UpdatePharmacyCatalogPricingRequestItemsItem",
+}) as any as S.Schema<UpdatePharmacyCatalogPricingRequestItemsItem>;
+
+export type UpdatePharmacyCatalogPricingRequestItemsList =
+  Array<UpdatePharmacyCatalogPricingRequestItemsItem>;
+export const UpdatePharmacyCatalogPricingRequestItemsList = /*@__PURE__*/ S.Array(
+  UpdatePharmacyCatalogPricingRequestItemsItem,
+) as any as S.Schema<UpdatePharmacyCatalogPricingRequestItemsList>;
+
+export type UpdatePharmacyCatalogPricingRequestMode = "merge" | "replace";
+export const UpdatePharmacyCatalogPricingRequestMode = /*@__PURE__*/ S.String;
+
+export interface UpdatePharmacyCatalogPricingRequest {
+  pharmacyId: string;
+  baseRevision?: number | null;
+  items: UpdatePharmacyCatalogPricingRequestItemsList;
+  mode?: UpdatePharmacyCatalogPricingRequestMode | (string & {}) | null;
+  sourceReference?: string | null;
+}
+export const UpdatePharmacyCatalogPricingRequest = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    pharmacyId: S.String.pipe(T.Label()),
+    baseRevision: S.optional(S.NullOr(S.Number)),
+    items: UpdatePharmacyCatalogPricingRequestItemsList,
+    mode: S.optional(S.NullOr(UpdatePharmacyCatalogPricingRequestMode)),
+    sourceReference: S.optional(S.NullOr(S.String)),
+  }).pipe(T.Http({ method: "PUT", uri: "/v1/pharmacies/{pharmacyId}/catalog-pricing", code: 200 })),
+).annotate({
+  identifier: "UpdatePharmacyCatalogPricingRequest",
+}) as any as S.Schema<UpdatePharmacyCatalogPricingRequest>;
+
+export interface UpdatePharmacyCatalogPricingResponse {
+  changeCount: number;
+  revision: number;
+}
+export const UpdatePharmacyCatalogPricingResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    changeCount: S.Number,
+    revision: S.Number,
+  }),
+).annotate({
+  identifier: "UpdatePharmacyCatalogPricingResponse",
+}) as any as S.Schema<UpdatePharmacyCatalogPricingResponse>;
+
+export type UpdatePracticeRequestAddress = CreatePatientRequestAddressesItemAddress;
+export const UpdatePracticeRequestAddress = CreatePatientRequestAddressesItemAddress;
 
 export type UpdatePracticeRequestAttestations = CreatePracticeRequestAttestations;
 export const UpdatePracticeRequestAttestations = CreatePracticeRequestAttestations;
 
 export type UpdatePracticeRequestComplianceContact = CreatePracticeRequestComplianceContact;
 export const UpdatePracticeRequestComplianceContact = CreatePracticeRequestComplianceContact;
-
-export type UpdatePracticeRequestMetadataMap = { [key: string]: unknown | undefined };
-export const UpdatePracticeRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdatePracticeRequestMetadataMap>;
 
 export type UpdatePracticeRequestPrescribersItemLicenseStatesList = Array<string>;
 export const UpdatePracticeRequestPrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
@@ -4909,7 +4638,6 @@ export const UpdatePracticeRequestPrescribersItemLicenseStatesList = /*@__PURE__
 export interface UpdatePracticeRequestPrescribersItem {
   credentials?: string | null;
   licenseStates: UpdatePracticeRequestPrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
   name: string;
   npi: string;
 }
@@ -4934,124 +4662,73 @@ export const UpdatePracticeRequestPrimaryContact = CreatePracticeRequestComplian
 
 export interface UpdatePracticeRequest {
   practiceId: string;
-  address?: CreatePatientResponseAddress;
-  attestations?: CreatePracticeRequestAttestations;
+  address?: CreatePatientRequestAddressesItemAddress | null;
+  attestations?: CreatePracticeRequestAttestations | null;
   complianceContact?: CreatePracticeRequestComplianceContact | null;
   externalId?: string | null;
   legalName?: string | null;
-  metadata?: UpdatePracticeRequestMetadataMap;
-  /** a string that will be trimmed */
-  name?: string;
-  prescribers?: UpdatePracticeRequestPrescribersList;
+  metadata?: unknown | null;
+  name?: string | null;
+  prescribers?: UpdatePracticeRequestPrescribersList | null;
   primaryContact?: CreatePracticeRequestComplianceContact | null;
   supportEmail?: string | null;
   supportPhone?: string | null;
-  /** a string that will be trimmed */
-  timezone?: string;
+  timezone?: string | null;
 }
 export const UpdatePracticeRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
-    address: S.optional(CreatePatientResponseAddress),
-    attestations: S.optional(CreatePracticeRequestAttestations),
+    address: S.optional(S.NullOr(CreatePatientRequestAddressesItemAddress)),
+    attestations: S.optional(S.NullOr(CreatePracticeRequestAttestations)),
     complianceContact: S.optional(S.NullOr(CreatePracticeRequestComplianceContact)),
     externalId: S.optional(S.NullOr(S.String)),
     legalName: S.optional(S.NullOr(S.String)),
-    metadata: S.optional(UpdatePracticeRequestMetadataMap),
-    name: S.optional(S.String),
-    prescribers: S.optional(UpdatePracticeRequestPrescribersList),
+    metadata: S.optional(S.NullOr(S.Unknown)),
+    name: S.optional(S.NullOr(S.String)),
+    prescribers: S.optional(S.NullOr(UpdatePracticeRequestPrescribersList)),
     primaryContact: S.optional(S.NullOr(CreatePracticeRequestComplianceContact)),
     supportEmail: S.optional(S.NullOr(S.String)),
     supportPhone: S.optional(S.NullOr(S.String)),
-    timezone: S.optional(S.String),
+    timezone: S.optional(S.NullOr(S.String)),
   }).pipe(T.Http({ method: "PATCH", uri: "/v1/practices/{practiceId}", code: 200 })),
 ).annotate({ identifier: "UpdatePracticeRequest" }) as any as S.Schema<UpdatePracticeRequest>;
-
-export type UpdatePracticeResponseAddress = CreatePatientResponseAddress;
-export const UpdatePracticeResponseAddress = CreatePatientResponseAddress;
-
-export type UpdatePracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-export const UpdatePracticeResponseContactsCompliance = CreatePracticeRequestComplianceContact;
-
-export type UpdatePracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-export const UpdatePracticeResponseContactsPrimary = CreatePracticeRequestComplianceContact;
-
-export type UpdatePracticeResponseContacts = CreatePracticeResponseContacts;
-export const UpdatePracticeResponseContacts = CreatePracticeResponseContacts;
-
-export type UpdatePracticeResponseMetadataMap = { [key: string]: unknown | undefined };
-export const UpdatePracticeResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdatePracticeResponseMetadataMap>;
 
 export type UpdatePracticeResponseObject = "practice";
 export const UpdatePracticeResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdatePracticeResponsePrescribersItemLicenseStatesList = Array<string>;
-export const UpdatePracticeResponsePrescribersItemLicenseStatesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<UpdatePracticeResponsePrescribersItemLicenseStatesList>;
-
-export interface UpdatePracticeResponsePrescribersItem {
-  credentials?: string | null;
-  licenseStates: UpdatePracticeResponsePrescribersItemLicenseStatesList;
-  /** a string that will be trimmed */
-  name: string;
-  npi: string;
-}
-export const UpdatePracticeResponsePrescribersItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    credentials: S.optional(S.NullOr(S.String)),
-    licenseStates: UpdatePracticeResponsePrescribersItemLicenseStatesList,
-    name: S.String,
-    npi: S.String,
-  }),
-).annotate({
-  identifier: "UpdatePracticeResponsePrescribersItem",
-}) as any as S.Schema<UpdatePracticeResponsePrescribersItem>;
-
-export type UpdatePracticeResponsePrescribersList = Array<UpdatePracticeResponsePrescribersItem>;
-export const UpdatePracticeResponsePrescribersList = /*@__PURE__*/ S.Array(
-  UpdatePracticeResponsePrescribersItem,
-) as any as S.Schema<UpdatePracticeResponsePrescribersList>;
-
-export type UpdatePracticeResponseProductionAccess = "approved" | "not_applicable" | "pending";
-export const UpdatePracticeResponseProductionAccess = /*@__PURE__*/ S.String;
-
 export interface UpdatePracticeResponse {
-  address: CreatePatientResponseAddress | null;
-  contacts: CreatePracticeResponseContacts;
+  address: unknown;
+  contacts: unknown;
   createdAt: string;
-  externalId: string | null;
+  externalId: unknown;
   id: string;
-  legalName: string | null;
+  legalName: unknown;
   livemode: boolean;
-  metadata: UpdatePracticeResponseMetadataMap;
+  metadata: unknown;
   name: string;
   object: UpdatePracticeResponseObject;
-  prescribers: UpdatePracticeResponsePrescribersList;
-  productionAccess: UpdatePracticeResponseProductionAccess;
-  supportEmail: string | null;
-  supportPhone: string | null;
+  prescribers: unknown;
+  productionAccess: unknown;
+  supportEmail: unknown;
+  supportPhone: unknown;
   timezone: string;
 }
 export const UpdatePracticeResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: S.NullOr(CreatePatientResponseAddress),
-    contacts: CreatePracticeResponseContacts,
+    address: S.Unknown,
+    contacts: S.Unknown,
     createdAt: S.String,
-    externalId: S.NullOr(S.String),
+    externalId: S.Unknown,
     id: S.String,
-    legalName: S.NullOr(S.String),
+    legalName: S.Unknown,
     livemode: S.Boolean,
-    metadata: UpdatePracticeResponseMetadataMap,
+    metadata: S.Unknown,
     name: S.String,
     object: UpdatePracticeResponseObject,
-    prescribers: UpdatePracticeResponsePrescribersList,
-    productionAccess: UpdatePracticeResponseProductionAccess,
-    supportEmail: S.NullOr(S.String),
-    supportPhone: S.NullOr(S.String),
+    prescribers: S.Unknown,
+    productionAccess: S.Unknown,
+    supportEmail: S.Unknown,
+    supportPhone: S.Unknown,
     timezone: S.String,
   }),
 ).annotate({ identifier: "UpdatePracticeResponse" }) as any as S.Schema<UpdatePracticeResponse>;
@@ -5062,15 +4739,15 @@ export const UpdatePracticeMembershipRequestStatus = /*@__PURE__*/ S.String;
 export interface UpdatePracticeMembershipRequest {
   practiceId: string;
   membershipId: string;
-  roleId?: string;
-  status?: UpdatePracticeMembershipRequestStatus | (string & {});
+  roleId?: string | null;
+  status?: UpdatePracticeMembershipRequestStatus | (string & {}) | null;
 }
 export const UpdatePracticeMembershipRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     membershipId: S.String.pipe(T.Label()),
-    roleId: S.optional(S.String),
-    status: S.optional(UpdatePracticeMembershipRequestStatus),
+    roleId: S.optional(S.NullOr(S.String)),
+    status: S.optional(S.NullOr(UpdatePracticeMembershipRequestStatus)),
   }).pipe(
     T.Http({
       method: "PATCH",
@@ -5085,27 +4762,24 @@ export const UpdatePracticeMembershipRequest = /*@__PURE__*/ S.suspend(() =>
 export type UpdatePracticeMembershipResponseObject = "membership";
 export const UpdatePracticeMembershipResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdatePracticeMembershipResponseStatus = "active" | "pending" | "revoked";
-export const UpdatePracticeMembershipResponseStatus = /*@__PURE__*/ S.String;
-
 export interface UpdatePracticeMembershipResponse {
-  acceptedAt: string | null;
+  acceptedAt: unknown;
   id: string;
   object: UpdatePracticeMembershipResponseObject;
   practiceId: string;
   roleId: string;
-  status: UpdatePracticeMembershipResponseStatus;
+  status: unknown;
   termsVersion: string;
   userId: string;
 }
 export const UpdatePracticeMembershipResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    acceptedAt: S.NullOr(S.String),
+    acceptedAt: S.Unknown,
     id: S.String,
     object: UpdatePracticeMembershipResponseObject,
     practiceId: S.String,
     roleId: S.String,
-    status: UpdatePracticeMembershipResponseStatus,
+    status: S.Unknown,
     termsVersion: S.String,
     userId: S.String,
   }),
@@ -5121,9 +4795,7 @@ export const UpdatePracticeRoleRequestPermissionsList = /*@__PURE__*/ S.Array(
 export interface UpdatePracticeRoleRequest {
   practiceId: string;
   roleId: string;
-  /** a string that will be trimmed */
   description: string;
-  /** a string that will be trimmed */
   name: string;
   permissions: UpdatePracticeRoleRequestPermissionsList;
 }
@@ -5142,17 +4814,12 @@ export const UpdatePracticeRoleRequest = /*@__PURE__*/ S.suspend(() =>
 export type UpdatePracticeRoleResponseObject = "role";
 export const UpdatePracticeRoleResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdatePracticeRoleResponsePermissionsList = Array<string>;
-export const UpdatePracticeRoleResponsePermissionsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<UpdatePracticeRoleResponsePermissionsList>;
-
 export interface UpdatePracticeRoleResponse {
   description: string;
   id: string;
   name: string;
   object: UpdatePracticeRoleResponseObject;
-  permissions: UpdatePracticeRoleResponsePermissionsList;
+  permissions: unknown;
   protected: boolean;
 }
 export const UpdatePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
@@ -5161,7 +4828,7 @@ export const UpdatePracticeRoleResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     name: S.String,
     object: UpdatePracticeRoleResponseObject,
-    permissions: UpdatePracticeRoleResponsePermissionsList,
+    permissions: S.Unknown,
     protected: S.Boolean,
   }),
 ).annotate({
@@ -5187,25 +4854,23 @@ export const UpdateProviderMappingRequest = /*@__PURE__*/ S.suspend(() =>
 export type UpdateProviderMappingResponseObject = "provider_mapping";
 export const UpdateProviderMappingResponseObject = /*@__PURE__*/ S.String;
 
-/** The mapping's verification state. Prescribing sessions require verified status. */
-export type UpdateProviderMappingResponseStatus = "pending" | "verified" | "revoked";
-export const UpdateProviderMappingResponseStatus = /*@__PURE__*/ S.String;
-
 export interface UpdateProviderMappingResponse {
   createdAt: string;
   /** Your platform's stable identifier for this provider. */
   externalId: string;
+  /** The Affinity provider mapping ID. Store this pmap_ value and send it as providerMappingId when you create component or hosted sessions. */
   id: string;
   livemode: boolean;
   /** The provider's 10-digit individual NPI. */
   npi: string;
   object: UpdateProviderMappingResponseObject;
+  /** The Affinity practice where this provider is authorized to act. */
   practiceId: string;
-  /** The mapping's verification state. Prescribing sessions require verified status. */
-  status: UpdateProviderMappingResponseStatus;
+  status: unknown;
   updatedAt: string;
+  /** The Affinity user record for the person your platform authenticated. */
   userId: string;
-  verifiedAt: string | null;
+  verifiedAt: unknown;
 }
 export const UpdateProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -5216,20 +4881,14 @@ export const UpdateProviderMappingResponse = /*@__PURE__*/ S.suspend(() =>
     npi: S.String,
     object: UpdateProviderMappingResponseObject,
     practiceId: S.String,
-    status: UpdateProviderMappingResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
     userId: S.String,
-    verifiedAt: S.NullOr(S.String),
+    verifiedAt: S.Unknown,
   }),
 ).annotate({
   identifier: "UpdateProviderMappingResponse",
 }) as any as S.Schema<UpdateProviderMappingResponse>;
-
-export type UpdateUserRequestMetadataMap = { [key: string]: unknown | undefined };
-export const UpdateUserRequestMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdateUserRequestMetadataMap>;
 
 export type UpdateUserRequestStatus = "active" | "deactivated";
 export const UpdateUserRequestStatus = /*@__PURE__*/ S.String;
@@ -5237,55 +4896,46 @@ export const UpdateUserRequestStatus = /*@__PURE__*/ S.String;
 export interface UpdateUserRequest {
   userId: string;
   email?: string | null;
-  metadata?: UpdateUserRequestMetadataMap;
+  metadata?: unknown | null;
   name?: string | null;
-  status?: UpdateUserRequestStatus | (string & {});
+  status?: UpdateUserRequestStatus | (string & {}) | null;
 }
 export const UpdateUserRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     userId: S.String.pipe(T.Label()),
     email: S.optional(S.NullOr(S.String)),
-    metadata: S.optional(UpdateUserRequestMetadataMap),
+    metadata: S.optional(S.NullOr(S.Unknown)),
     name: S.optional(S.NullOr(S.String)),
-    status: S.optional(UpdateUserRequestStatus),
+    status: S.optional(S.NullOr(UpdateUserRequestStatus)),
   }).pipe(T.Http({ method: "PATCH", uri: "/v1/users/{userId}", code: 200 })),
 ).annotate({ identifier: "UpdateUserRequest" }) as any as S.Schema<UpdateUserRequest>;
-
-export type UpdateUserResponseMetadataMap = { [key: string]: unknown | undefined };
-export const UpdateUserResponseMetadataMap = /*@__PURE__*/ S.Record(
-  S.String,
-  S.Unknown,
-) as any as S.Schema<UpdateUserResponseMetadataMap>;
 
 export type UpdateUserResponseObject = "user";
 export const UpdateUserResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdateUserResponseStatus = "active" | "deactivated";
-export const UpdateUserResponseStatus = /*@__PURE__*/ S.String;
-
 export interface UpdateUserResponse {
   createdAt: string;
-  email: string | null;
+  email: unknown;
   externalId: string;
   id: string;
   livemode: boolean;
-  metadata: UpdateUserResponseMetadataMap;
-  name: string | null;
+  metadata: unknown;
+  name: unknown;
   object: UpdateUserResponseObject;
-  status: UpdateUserResponseStatus;
+  status: unknown;
   updatedAt: string;
 }
 export const UpdateUserResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     createdAt: S.String,
-    email: S.NullOr(S.String),
+    email: S.Unknown,
     externalId: S.String,
     id: S.String,
     livemode: S.Boolean,
-    metadata: UpdateUserResponseMetadataMap,
-    name: S.NullOr(S.String),
+    metadata: S.Unknown,
+    name: S.Unknown,
     object: UpdateUserResponseObject,
-    status: UpdateUserResponseStatus,
+    status: S.Unknown,
     updatedAt: S.String,
   }),
 ).annotate({ identifier: "UpdateUserResponse" }) as any as S.Schema<UpdateUserResponse>;
@@ -5303,7 +4953,6 @@ export const UpdateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.
 
 export interface UpdateWebhookEndpointRequest {
   endpointId: string;
-  /** a string that will be trimmed */
   description: string;
   payloadStyle: UpdateWebhookEndpointRequestPayloadStyle | (string & {});
   status: UpdateWebhookEndpointRequestStatus | (string & {});
@@ -5326,17 +4975,6 @@ export const UpdateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
 export type UpdateWebhookEndpointResponseObject = "webhook_endpoint";
 export const UpdateWebhookEndpointResponseObject = /*@__PURE__*/ S.String;
 
-export type UpdateWebhookEndpointResponsePayloadStyle = "thin" | "snapshot";
-export const UpdateWebhookEndpointResponsePayloadStyle = /*@__PURE__*/ S.String;
-
-export type UpdateWebhookEndpointResponseStatus = "active" | "suspended" | "disabled";
-export const UpdateWebhookEndpointResponseStatus = /*@__PURE__*/ S.String;
-
-export type UpdateWebhookEndpointResponseSubscribedEventsList = Array<string>;
-export const UpdateWebhookEndpointResponseSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<UpdateWebhookEndpointResponseSubscribedEventsList>;
-
 export interface UpdateWebhookEndpointResponse {
   apiVersion: string;
   consecutiveFailures: number;
@@ -5345,9 +4983,9 @@ export interface UpdateWebhookEndpointResponse {
   id: string;
   livemode: boolean;
   object: UpdateWebhookEndpointResponseObject;
-  payloadStyle: UpdateWebhookEndpointResponsePayloadStyle;
-  status: UpdateWebhookEndpointResponseStatus;
-  subscribedEvents: UpdateWebhookEndpointResponseSubscribedEventsList;
+  payloadStyle: unknown;
+  status: unknown;
+  subscribedEvents: unknown;
   updatedAt: string;
   url: string;
 }
@@ -5360,15 +4998,30 @@ export const UpdateWebhookEndpointResponse = /*@__PURE__*/ S.suspend(() =>
     id: S.String,
     livemode: S.Boolean,
     object: UpdateWebhookEndpointResponseObject,
-    payloadStyle: UpdateWebhookEndpointResponsePayloadStyle,
-    status: UpdateWebhookEndpointResponseStatus,
-    subscribedEvents: UpdateWebhookEndpointResponseSubscribedEventsList,
+    payloadStyle: S.Unknown,
+    status: S.Unknown,
+    subscribedEvents: S.Unknown,
     updatedAt: S.String,
     url: S.String,
   }),
 ).annotate({
   identifier: "UpdateWebhookEndpointResponse",
 }) as any as S.Schema<UpdateWebhookEndpointResponse>;
+
+export type ArchivePharmacyOrganizationPricingError = Forbidden | AffinityOpError;
+/** Archive pharmacy organization pricing Archives the active organization price book for one pharmacy so checkout falls back to default Affinity segment prices. Idempotent when no active book exists. Idempotency-Key is required. */
+export const archivePharmacyOrganizationPricing: API.OperationMethod<
+  ArchivePharmacyOrganizationPricingRequest,
+  ArchivePharmacyOrganizationPricingResponse,
+  ArchivePharmacyOrganizationPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: ArchivePharmacyOrganizationPricingRequest,
+  output: ArchivePharmacyOrganizationPricingResponse,
+  errors: [Forbidden],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
 
 export type CancelOrderError = Forbidden | AffinityOpError;
 /** Cancel order Cancels an order before shipment. To correct an order, cancel it and create a replacement. */
@@ -5445,7 +5098,7 @@ export const createOrderSigningSession: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type CreatePatientError = Forbidden | AffinityOpError;
+export type CreatePatientError = BadRequest | Forbidden | NotFound | Conflict | AffinityOpError;
 /** Create practice patient Creates or returns a synthetic or real patient by the platform's stable external ID. Idempotency-Key is required. */
 export const createPatient: API.OperationMethod<
   CreatePatientRequest,
@@ -5455,7 +5108,7 @@ export const createPatient: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: CreatePatientRequest,
   output: CreatePatientResponse,
-  errors: [Forbidden],
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
 }));
@@ -5625,7 +5278,7 @@ export const getOrder: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type GetPatientError = Forbidden | AffinityOpError;
+export type GetPatientError = BadRequest | Forbidden | NotFound | Conflict | AffinityOpError;
 /** Read practice patient Returns one patient owned by the platform-managed practice. */
 export const getPatient: API.OperationMethod<
   GetPatientRequest,
@@ -5635,12 +5288,17 @@ export const getPatient: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: GetPatientRequest,
   output: GetPatientResponse,
-  errors: [Forbidden],
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
 }));
 
-export type GetPatientAllergiesError = Forbidden | AffinityOpError;
+export type GetPatientAllergiesError =
+  | BadRequest
+  | Forbidden
+  | NotFound
+  | Conflict
+  | AffinityOpError;
 /** Read patient allergies Returns the patient's structured allergy entries and review status. A not_reviewed status is not a no-known-allergies assertion and blocks clinical review and signing. */
 export const getPatientAllergies: API.OperationMethod<
   GetPatientAllergiesRequest,
@@ -5650,7 +5308,7 @@ export const getPatientAllergies: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: GetPatientAllergiesRequest,
   output: GetPatientAllergiesResponse,
-  errors: [Forbidden],
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
 }));
@@ -5775,7 +5433,7 @@ export const listOrders: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type ListPatientsError = Forbidden | AffinityOpError;
+export type ListPatientsError = BadRequest | Forbidden | NotFound | Conflict | AffinityOpError;
 /** List practice patients Lists patients owned by one platform-managed practice in the current mode. */
 export const listPatients: API.OperationMethod<
   ListPatientsRequest,
@@ -5785,7 +5443,7 @@ export const listPatients: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: ListPatientsRequest,
   output: ListPatientsResponse,
-  errors: [Forbidden],
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
 }));
@@ -5910,7 +5568,72 @@ export const listWebhookEvents: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type ReplacePatientAllergiesError = Forbidden | AffinityOpError;
+export type PublishPharmacyCatalogPricingError = Forbidden | AffinityOpError;
+/** Publish pharmacy catalog pricing draft Publishes the current shared draft as immutable pharmacy costs and marketplace price-book versions. Idempotency-Key is required. */
+export const publishPharmacyCatalogPricing: API.OperationMethod<
+  PublishPharmacyCatalogPricingRequest,
+  PublishPharmacyCatalogPricingResponse,
+  PublishPharmacyCatalogPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: PublishPharmacyCatalogPricingRequest,
+  output: PublishPharmacyCatalogPricingResponse,
+  errors: [Forbidden],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
+
+export type PublishPharmacyOrganizationPricingError = Forbidden | AffinityOpError;
+/** Publish pharmacy organization pricing Publishes an immutable organization price-book version for one pharmacy. mode=merge (default) applies item updates onto the active book; mode=replace publishes only the supplied priced items. Null marketplaceUnitPriceCents removes a key in merge mode. Idempotency-Key is required. */
+export const publishPharmacyOrganizationPricing: API.OperationMethod<
+  PublishPharmacyOrganizationPricingRequest,
+  PublishPharmacyOrganizationPricingResponse,
+  PublishPharmacyOrganizationPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: PublishPharmacyOrganizationPricingRequest,
+  output: PublishPharmacyOrganizationPricingResponse,
+  errors: [Forbidden],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
+
+export type ReadPharmacyCatalogPricingError = Forbidden | AffinityOpError;
+/** Read pharmacy catalog pricing Reads current pharmacy cost evidence and Affinity marketplace prices. */
+export const readPharmacyCatalogPricing: API.OperationMethod<
+  ReadPharmacyCatalogPricingRequest,
+  ReadPharmacyCatalogPricingResponse,
+  ReadPharmacyCatalogPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: ReadPharmacyCatalogPricingRequest,
+  output: ReadPharmacyCatalogPricingResponse,
+  errors: [Forbidden],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
+
+export type ReadPharmacyOrganizationPricingError = Forbidden | AffinityOpError;
+/** Read pharmacy organization pricing Reads the active organization-specific Affinity price book for one pharmacy provider. */
+export const readPharmacyOrganizationPricing: API.OperationMethod<
+  ReadPharmacyOrganizationPricingRequest,
+  ReadPharmacyOrganizationPricingResponse,
+  ReadPharmacyOrganizationPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: ReadPharmacyOrganizationPricingRequest,
+  output: ReadPharmacyOrganizationPricingResponse,
+  errors: [Forbidden],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
+
+export type ReplacePatientAllergiesError =
+  | BadRequest
+  | Forbidden
+  | NotFound
+  | Conflict
+  | AffinityOpError;
 /** Replace patient allergies Replaces the patient's structured allergy record. Sending no_known is the explicit no-known-allergies acknowledgement; recorded requires at least one entry. Idempotency-Key is required. */
 export const replacePatientAllergies: API.OperationMethod<
   ReplacePatientAllergiesRequest,
@@ -5920,7 +5643,7 @@ export const replacePatientAllergies: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: ReplacePatientAllergiesRequest,
   output: ReplacePatientAllergiesResponse,
-  errors: [Forbidden],
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
 }));
@@ -5955,7 +5678,7 @@ export const rotateWebhookEndpointSecret: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type UpdatePatientError = Forbidden | AffinityOpError;
+export type UpdatePatientError = BadRequest | Forbidden | NotFound | Conflict | AffinityOpError;
 /** Update practice patient Updates one patient owned by the platform-managed practice. */
 export const updatePatient: API.OperationMethod<
   UpdatePatientRequest,
@@ -5965,6 +5688,21 @@ export const updatePatient: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: UpdatePatientRequest,
   output: UpdatePatientResponse,
+  errors: [BadRequest, Forbidden, NotFound, Conflict],
+  protocol: AffinityProtocol,
+  retry: Retry.Retry,
+}));
+
+export type UpdatePharmacyCatalogPricingError = Forbidden | AffinityOpError;
+/** Save pharmacy catalog pricing draft Merges item changes into the shared pharmacy pricing draft by default; mode=replace replaces the complete draft. Idempotency-Key is required. Pricing does not approve or make catalog items orderable. */
+export const updatePharmacyCatalogPricing: API.OperationMethod<
+  UpdatePharmacyCatalogPricingRequest,
+  UpdatePharmacyCatalogPricingResponse,
+  UpdatePharmacyCatalogPricingError,
+  AffinityOpContext
+> = /*@__PURE__*/ API.make(() => ({
+  input: UpdatePharmacyCatalogPricingRequest,
+  output: UpdatePharmacyCatalogPricingResponse,
   errors: [Forbidden],
   protocol: AffinityProtocol,
   retry: Retry.Retry,

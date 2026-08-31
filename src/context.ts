@@ -26,7 +26,7 @@ export const affinityAgentContext = {
     apiBaseUrl: DEFAULT_API_BASE_URL,
     apiVersion: DEFAULT_API_VERSION,
     package: "@affinity-health/effect-sdk",
-    purpose: "Manage Affinity platform resources through typed, policy-guarded agent code.",
+    purpose: "Manage Affinity resources through typed agent code.",
   },
   execution: {
     commands: {

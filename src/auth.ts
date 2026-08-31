@@ -13,6 +13,8 @@ export const DEFAULT_DEVICE_SCOPES = [
 ] as const;
 export const WRITE_DEVICE_SCOPES = [
   "catalog:read",
+  "catalog_pricing:read",
+  "catalog_pricing:write",
   "component_sessions:write",
   "hosted_sessions:write",
   "memberships:read",

@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## [0.3.0] - 2026-08-31
+
+### Added
+
+- Six typed pricing operations for pharmacy costs, market prices, and organization price books.
+
+### Changed
+
+- Device authorization now presents read or write access instead of exposing the internal scope list.
+- Write access includes pricing when Affinity Internal is selected.
+- Authentication status now reports the access level instead of internal scopes.
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
@@ -27,3 +39,4 @@
 
 [0.1.0]: https://github.com/affinity-health/affinity-effect-sdk/releases/tag/v0.1.0
 [0.2.0]: https://github.com/affinity-health/affinity-effect-sdk/compare/v0.1.0...v0.2.0
+[0.3.0]: https://github.com/affinity-health/affinity-effect-sdk/compare/v0.2.0...v0.3.0

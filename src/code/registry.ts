@@ -2,6 +2,14 @@
 import * as Operations from "../services/affinity.ts";
 
 export const operationRegistry = {
+  archivePharmacyOrganizationPricing: {
+    effect: Operations.archivePharmacyOrganizationPricing,
+    method: "POST",
+    path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}/archive",
+    summary: "Archive pharmacy organization pricing",
+    tag: "Catalog pricing",
+    kind: "write",
+  },
   cancelOrder: {
     effect: Operations.cancelOrder,
     method: "POST",
@@ -290,6 +298,38 @@ export const operationRegistry = {
     tag: "Platform Webhooks",
     kind: "read",
   },
+  publishPharmacyCatalogPricing: {
+    effect: Operations.publishPharmacyCatalogPricing,
+    method: "POST",
+    path: "/v1/pharmacies/{pharmacyId}/catalog-pricing/publish",
+    summary: "Publish pharmacy catalog pricing draft",
+    tag: "Catalog pricing",
+    kind: "write",
+  },
+  publishPharmacyOrganizationPricing: {
+    effect: Operations.publishPharmacyOrganizationPricing,
+    method: "PUT",
+    path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
+    summary: "Publish pharmacy organization pricing",
+    tag: "Catalog pricing",
+    kind: "write",
+  },
+  readPharmacyCatalogPricing: {
+    effect: Operations.readPharmacyCatalogPricing,
+    method: "GET",
+    path: "/v1/pharmacies/{pharmacyId}/catalog-pricing",
+    summary: "Read pharmacy catalog pricing",
+    tag: "Catalog pricing",
+    kind: "read",
+  },
+  readPharmacyOrganizationPricing: {
+    effect: Operations.readPharmacyOrganizationPricing,
+    method: "GET",
+    path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
+    summary: "Read pharmacy organization pricing",
+    tag: "Catalog pricing",
+    kind: "read",
+  },
   replacePatientAllergies: {
     effect: Operations.replacePatientAllergies,
     method: "PUT",
@@ -320,6 +360,14 @@ export const operationRegistry = {
     path: "/v1/practices/{practiceId}/patients/{patientId}",
     summary: "Update practice patient",
     tag: "Patients",
+    kind: "write",
+  },
+  updatePharmacyCatalogPricing: {
+    effect: Operations.updatePharmacyCatalogPricing,
+    method: "PUT",
+    path: "/v1/pharmacies/{pharmacyId}/catalog-pricing",
+    summary: "Save pharmacy catalog pricing draft",
+    tag: "Catalog pricing",
     kind: "write",
   },
   updatePractice: {

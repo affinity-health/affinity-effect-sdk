@@ -1,6 +1,6 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 46 typed operations and runtime schemas from Affinity's OpenAPI document.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 52 typed operations and runtime schemas from Affinity's OpenAPI document.
 
 ## Install
 
@@ -12,7 +12,7 @@ Set the API key in the process environment. The CLI never accepts secrets as fla
 
 ```sh
 affinity auth login
-# Request write scopes; the browser shows the exact permissions before approval.
+# Request read and write access.
 affinity auth login --access write
 ```
 

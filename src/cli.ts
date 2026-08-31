@@ -407,7 +407,7 @@ const authLoginCommand = Command.make(
   "login",
   {
     access: Flag.choice("access", ["read", "write"]).pipe(
-      Flag.withDescription("Request read-only or read/write API scopes"),
+      Flag.withDescription("Request read access or read and write access"),
       Flag.withDefault("read"),
     ),
     noOpen: Flag.boolean("no-open").pipe(
@@ -459,7 +459,7 @@ const authLoginCommand = Command.make(
         expiresAt: credential.expiresAt,
         mode: credential.mode,
         organizations: credential.organizations,
-        scopes: credential.scopes,
+        access: credential.scopes.some((scope) => scope.endsWith(":write")) ? "write" : "read",
       },
       root.json,
     );
@@ -483,7 +483,7 @@ const authStatusCommand = Command.make(
             expiresAt: credential.expiresAt,
             mode: credential.mode,
             organizations: credential.organizations,
-            scopes: credential.scopes,
+            access: credential.scopes.some((scope) => scope.endsWith(":write")) ? "write" : "read",
             source: "device",
             status: Date.parse(credential.expiresAt) > Date.now() ? "authenticated" : "expired",
           }
