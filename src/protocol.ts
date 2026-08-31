@@ -22,6 +22,7 @@ export const AffinityProtocol: Layer.Layer<API.Protocol> = makeRestProtocol<Conf
   headers: (config) => ({
     Authorization: `Bearer ${Redacted.value(config.apiKey)}`,
     "Affinity-Version": config.apiVersion,
+    ...(config.organizationId ? { "X-Affinity-Organization-Id": config.organizationId } : {}),
     ...(config.actor
       ? {
           "Affinity-Actor-Id": config.actor.id,

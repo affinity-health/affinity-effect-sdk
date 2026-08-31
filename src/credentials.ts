@@ -17,6 +17,7 @@ export interface Config {
   readonly apiBaseUrl: string;
   readonly apiVersion: string;
   readonly actor?: Actor;
+  readonly organizationId?: string;
 }
 
 export interface CredentialsOptions {
@@ -24,6 +25,7 @@ export interface CredentialsOptions {
   readonly apiBaseUrl?: string;
   readonly apiVersion?: string;
   readonly actor?: Actor;
+  readonly organizationId?: string;
 }
 
 export class Credentials extends Context.Service<Credentials, Effect.Effect<Config, ConfigError>>()(
@@ -44,6 +46,7 @@ export const fromApiKey = (options: CredentialsOptions): Layer.Layer<Credentials
           apiBaseUrl: (options.apiBaseUrl ?? DEFAULT_API_BASE_URL).replace(/\/+$/, ""),
           apiVersion: options.apiVersion ?? DEFAULT_API_VERSION,
           actor: options.actor,
+          organizationId: options.organizationId,
         }),
   );
 
@@ -60,6 +63,7 @@ export const fromEnv: Layer.Layer<Credentials> = Layer.succeed(
       apiKey: Redacted.make(apiKey),
       apiBaseUrl: (process.env.AFFINITY_API_BASE_URL ?? DEFAULT_API_BASE_URL).replace(/\/+$/, ""),
       apiVersion: process.env.AFFINITY_API_VERSION ?? DEFAULT_API_VERSION,
+      organizationId: process.env.AFFINITY_ORGANIZATION_ID,
     };
   }),
 );

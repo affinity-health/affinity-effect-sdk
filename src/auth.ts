@@ -47,6 +47,7 @@ export interface DeviceCredential {
   readonly apiBaseUrl: string;
   readonly expiresAt: string;
   readonly mode: "live" | "test";
+  readonly organizations: ReadonlyArray<{ readonly id: string; readonly name: string }>;
   readonly scopes: ReadonlyArray<string>;
   readonly tokenType: "Bearer";
 }
@@ -54,6 +55,7 @@ export interface DeviceCredential {
 interface TokenSuccess {
   readonly access_token: string;
   readonly expires_in: number;
+  readonly organizations: ReadonlyArray<{ readonly id: string; readonly name: string }>;
   readonly scope: string;
   readonly token_type: "Bearer";
 }
@@ -87,6 +89,14 @@ const parseCredential = (value: unknown): DeviceCredential | undefined => {
     typeof item.expiresAt !== "string" ||
     (item.mode !== "test" && item.mode !== "live") ||
     item.tokenType !== "Bearer" ||
+    !Array.isArray(item.organizations) ||
+    !item.organizations.every(
+      (organization) =>
+        organization !== null &&
+        typeof organization === "object" &&
+        typeof (organization as Record<string, unknown>).id === "string" &&
+        typeof (organization as Record<string, unknown>).name === "string",
+    ) ||
     !Array.isArray(item.scopes) ||
     !item.scopes.every((scope) => typeof scope === "string")
   )
@@ -170,6 +180,7 @@ export const pollDeviceAuthorization = async (options: {
         apiBaseUrl,
         expiresAt: new Date(Date.now() + result.expires_in * 1_000).toISOString(),
         mode: result.access_token.startsWith("sk_live_") ? "live" : "test",
+        organizations: result.organizations,
         scopes: result.scope.split(" ").filter(Boolean),
         tokenType: result.token_type,
       };

@@ -2,8 +2,6 @@
 
 Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 46 typed operations and runtime schemas from Affinity's OpenAPI document.
 
-This package is an unpublished prototype.
-
 ## Install
 
 ```sh
@@ -26,6 +24,17 @@ permissions. Inspect or revoke it without exposing the token:
 affinity auth status --json
 affinity auth logout
 ```
+
+A device login can authorize one or more organizations. Select an organization for each command:
+
+```sh
+affinity context --json
+affinity eval 'await affinity.getAccount({})' --organization org_example
+```
+
+When the login contains one organization, the CLI selects it automatically. For repeated work,
+set `AFFINITY_ORGANIZATION_ID`. The API rejects an organization that was not approved during
+device login.
 
 `AFFINITY_API_KEY` remains available as an explicit environment override for non-interactive
 automation. Never pass a credential as a command argument.
@@ -118,6 +127,7 @@ import { createCodeSession } from "@affinity-health/effect-sdk/code";
 const session = createCodeSession({
   apiKey: process.env.AFFINITY_API_KEY!,
   mode: "test",
+  organizationId: "org_example",
 });
 
 try {

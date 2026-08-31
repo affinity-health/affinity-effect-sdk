@@ -78,7 +78,9 @@ export const affinityAgentContext = {
   },
 } as const;
 
-export const renderAffinityAgentContext = (): string => {
+export const renderAffinityAgentContext = (
+  organizations: ReadonlyArray<{ readonly id: string; readonly name: string }> = [],
+): string => {
   const { authentication, clinicalSafety, execution, identity, operations, policy } =
     affinityAgentContext;
   return [
@@ -106,6 +108,12 @@ export const renderAffinityAgentContext = (): string => {
     `- ${policy.live}`,
     `- ${policy.runner}`,
     `- Current credential source: ${authentication.current}. ${authentication.guidance}`,
+    ...(organizations.length > 0
+      ? [
+          `- Authorized organizations: ${organizations.map((item) => `${item.name} (${item.id})`).join(", ")}`,
+          "- Select one with --organization <id> or AFFINITY_ORGANIZATION_ID.",
+        ]
+      : []),
     "",
     "## Clinical invariants",
     "",

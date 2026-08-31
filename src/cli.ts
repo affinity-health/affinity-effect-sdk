@@ -30,7 +30,7 @@ import {
   renderAffinityAgentContext,
 } from "./context.ts";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 class CliError extends Schema.TaggedError<CliError>()("CliError", {
   cause: Schema.optional(Schema.Unknown),
@@ -67,6 +67,10 @@ const affinity = Command.make("affinity").pipe(
       Flag.withDescription("Policy mode for this execution"),
       Flag.withDefault(modeDefault),
     ),
+    organization: Flag.string("organization").pipe(
+      Flag.withDescription("Organization ID for this invocation"),
+      Flag.optional,
+    ),
     timeout: Flag.integer("timeout").pipe(
       Flag.withDescription("Timeout for each API operation in milliseconds"),
       Flag.withDefault(DEFAULT_OPERATION_TIMEOUT_MS),
@@ -85,6 +89,7 @@ interface RootOptions {
   readonly json: boolean;
   readonly maxRequests: number;
   readonly mode: "test" | "live";
+  readonly organization: Option.Option<string>;
   readonly timeout: number;
   readonly verbose: boolean;
 }
@@ -129,6 +134,31 @@ const loadSession = Effect.fn("loadSession")(function* (root: RootOptions) {
       message: "The saved Affinity login expired; run `affinity auth login` again",
     });
   }
+  const requestedOrganizationId =
+    Option.getOrUndefined(root.organization) ?? process.env.AFFINITY_ORGANIZATION_ID;
+  const organizationId = savedCredential
+    ? (requestedOrganizationId ??
+      (savedCredential.organizations.length === 1
+        ? savedCredential.organizations[0]?.id
+        : undefined))
+    : requestedOrganizationId;
+  if (savedCredential && !organizationId) {
+    return yield* new CliError({
+      exitCode: 2,
+      message:
+        "This login has multiple organizations; pass --organization or set AFFINITY_ORGANIZATION_ID",
+    });
+  }
+  if (
+    savedCredential &&
+    organizationId &&
+    !savedCredential.organizations.some((organization) => organization.id === organizationId)
+  ) {
+    return yield* new CliError({
+      exitCode: 2,
+      message: "The selected organization is not part of this login",
+    });
+  }
 
   const actorId = process.env.AFFINITY_ACTOR_ID;
   const actorType = process.env.AFFINITY_ACTOR_TYPE;
@@ -160,6 +190,7 @@ const loadSession = Effect.fn("loadSession")(function* (root: RootOptions) {
         confirmLive: Option.getOrUndefined(root.confirmLive) === "LIVE",
         maxRequests: root.maxRequests,
         mode: root.mode,
+        organizationId,
         timeoutMs: root.timeout,
         onOperation: root.verbose
           ? (event) => {
@@ -326,8 +357,27 @@ const contextCommand = Command.make(
   {},
   Effect.fn("affinity.context")(function* () {
     const root = yield* affinity;
-    if (root.json) return yield* printValue(affinityAgentContext, true);
-    yield* Console.log(renderAffinityAgentContext());
+    const credential = process.env.AFFINITY_API_KEY
+      ? undefined
+      : yield* Effect.tryPromise({
+          try: () => readDeviceCredential(),
+          catch: (cause) =>
+            new CliError({
+              cause,
+              exitCode: 1,
+              message: "Could not read the saved Affinity login",
+            }),
+        });
+    const organizations = credential?.organizations ?? [];
+    if (root.json)
+      return yield* printValue(
+        {
+          ...affinityAgentContext,
+          authentication: { ...affinityAgentContext.authentication, organizations },
+        },
+        true,
+      );
+    yield* Console.log(renderAffinityAgentContext(organizations));
   }),
 ).pipe(
   Command.withDescription("Print the operating context an agent needs before using Affinity"),
@@ -405,7 +455,12 @@ const authLoginCommand = Command.make(
         new CliError({ cause, exitCode: 1, message: "Could not save the Affinity login" }),
     });
     yield* printValue(
-      { expiresAt: credential.expiresAt, mode: credential.mode, scopes: credential.scopes },
+      {
+        expiresAt: credential.expiresAt,
+        mode: credential.mode,
+        organizations: credential.organizations,
+        scopes: credential.scopes,
+      },
       root.json,
     );
   }),
@@ -427,6 +482,7 @@ const authStatusCommand = Command.make(
         ? {
             expiresAt: credential.expiresAt,
             mode: credential.mode,
+            organizations: credential.organizations,
             scopes: credential.scopes,
             source: "device",
             status: Date.parse(credential.expiresAt) > Date.now() ? "authenticated" : "expired",
