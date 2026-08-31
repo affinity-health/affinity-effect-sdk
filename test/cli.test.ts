@@ -30,7 +30,7 @@ describe("affinity CLI", () => {
     });
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({
-      authentication: { deviceAuthorization: "not-configured" },
+      authentication: { deviceAuthorization: "rfc8628" },
       execution: { defaults: { maxRequests: 100, operationTimeoutMs: 30_000 } },
       operations: { counts: { total: 46 } },
     });
@@ -43,6 +43,16 @@ describe("affinity CLI", () => {
     });
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toHaveLength(46);
+    expect(result.stderr).toBe("");
+  });
+
+  test("reports signed-out auth status without exposing a credential path", () => {
+    const result = execute(["auth", "status", "--json"], {
+      AFFINITY_API_KEY: undefined,
+      XDG_CONFIG_HOME: `${cwd}/test/fixtures/missing-config`,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toEqual({ source: "none", status: "signed-out" });
     expect(result.stderr).toBe("");
   });
 
@@ -83,7 +93,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: undefined,
     });
     expect(result.exitCode).toBe(3);
-    expect(JSON.parse(result.stdout)).toMatchObject({ apiKey: "missing", mode: "test" });
+    expect(JSON.parse(result.stdout)).toMatchObject({ authentication: "missing", mode: "test" });
     expect(result.stdout).not.toContain("secret");
   });
 });

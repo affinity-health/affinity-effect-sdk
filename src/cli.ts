@@ -6,6 +6,15 @@ import { Argument, Command, Flag } from "effect/unstable/cli";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
+  deleteDeviceCredential,
+  pollDeviceAuthorization,
+  readDeviceCredential,
+  revokeDeviceCredential,
+  startDeviceAuthorization,
+  WRITE_DEVICE_SCOPES,
+  writeDeviceCredential,
+} from "./auth.ts";
+import {
   AgentOperationError,
   AgentPolicyError,
   createCodeSession,
@@ -100,11 +109,24 @@ const serialize = (value: unknown, compact: boolean): string =>
 const printValue = (value: unknown, compact: boolean) => Console.log(serialize(value, compact));
 
 const loadSession = Effect.fn("loadSession")(function* (root: RootOptions) {
-  const apiKey = process.env.AFFINITY_API_KEY;
+  const savedCredential = process.env.AFFINITY_API_KEY
+    ? undefined
+    : yield* Effect.tryPromise({
+        try: () => readDeviceCredential(),
+        catch: (cause) =>
+          new CliError({ cause, exitCode: 3, message: "Could not read the saved Affinity login" }),
+      });
+  const apiKey = process.env.AFFINITY_API_KEY ?? savedCredential?.accessToken;
   if (!apiKey) {
     return yield* new CliError({
       exitCode: 3,
-      message: "AFFINITY_API_KEY is required in the process environment",
+      message: "Run `affinity auth login` or set AFFINITY_API_KEY",
+    });
+  }
+  if (savedCredential && Date.parse(savedCredential.expiresAt) <= Date.now()) {
+    return yield* new CliError({
+      exitCode: 3,
+      message: "The saved Affinity login expired; run `affinity auth login` again",
     });
   }
 
@@ -127,7 +149,7 @@ const loadSession = Effect.fn("loadSession")(function* (root: RootOptions) {
     try: () =>
       createCodeSession({
         apiKey,
-        apiBaseUrl: process.env.AFFINITY_API_BASE_URL,
+        apiBaseUrl: process.env.AFFINITY_API_BASE_URL ?? savedCredential?.apiBaseUrl,
         apiVersion: process.env.AFFINITY_API_VERSION,
         actor:
           actorId && actorType
@@ -321,24 +343,172 @@ const contextCommand = Command.make(
   ]),
 );
 
+const openVerificationPage = (url: string): void => {
+  if (!process.stdout.isTTY) return;
+  const command = process.platform === "darwin" ? ["open", url] : ["xdg-open", url];
+  try {
+    Bun.spawn(command, { stderr: "ignore", stdout: "ignore" }).unref();
+  } catch {
+    // The printed URL remains the portable fallback.
+  }
+};
+
+const authLoginCommand = Command.make(
+  "login",
+  {
+    access: Flag.choice("access", ["read", "write"]).pipe(
+      Flag.withDescription("Request read-only or read/write API scopes"),
+      Flag.withDefault("read"),
+    ),
+    noOpen: Flag.boolean("no-open").pipe(
+      Flag.withDescription("Do not open the verification page in a browser"),
+      Flag.withDefault(false),
+    ),
+  },
+  Effect.fn("affinity.auth.login")(function* ({ access, noOpen }) {
+    const root = yield* affinity;
+    const apiBaseUrl = process.env.AFFINITY_API_BASE_URL;
+    const authorization = yield* Effect.tryPromise({
+      try: () =>
+        startDeviceAuthorization({
+          apiBaseUrl,
+          mode: root.mode,
+          scopes: access === "write" ? WRITE_DEVICE_SCOPES : undefined,
+        }),
+      catch: (cause) =>
+        new CliError({
+          cause,
+          exitCode: 4,
+          message: cause instanceof Error ? cause.message : "Could not start device login",
+        }),
+    });
+    const verificationUrl =
+      authorization.verification_uri_complete ?? authorization.verification_uri;
+    if (!root.json) {
+      yield* Console.error(`Open ${verificationUrl}`);
+      yield* Console.error(`Enter code ${authorization.user_code}`);
+      yield* Console.error("Waiting for approval...");
+    }
+    if (!noOpen) openVerificationPage(verificationUrl);
+    const credential = yield* Effect.tryPromise({
+      try: () => pollDeviceAuthorization({ apiBaseUrl, authorization }),
+      catch: (cause) =>
+        new CliError({
+          cause,
+          exitCode: 4,
+          message: cause instanceof Error ? cause.message : "Device login failed",
+        }),
+    });
+    yield* Effect.tryPromise({
+      try: () => writeDeviceCredential(credential),
+      catch: (cause) =>
+        new CliError({ cause, exitCode: 1, message: "Could not save the Affinity login" }),
+    });
+    yield* printValue(
+      { expiresAt: credential.expiresAt, mode: credential.mode, scopes: credential.scopes },
+      root.json,
+    );
+  }),
+).pipe(Command.withDescription("Sign in through a browser using a one-time device code"));
+
+const authStatusCommand = Command.make(
+  "status",
+  {},
+  Effect.fn("affinity.auth.status")(function* () {
+    const root = yield* affinity;
+    const credential = yield* Effect.tryPromise({
+      try: () => readDeviceCredential(),
+      catch: (cause) =>
+        new CliError({ cause, exitCode: 1, message: "Could not read the saved Affinity login" }),
+    });
+    const status = process.env.AFFINITY_API_KEY
+      ? { source: "environment", status: "configured" }
+      : credential
+        ? {
+            expiresAt: credential.expiresAt,
+            mode: credential.mode,
+            scopes: credential.scopes,
+            source: "device",
+            status: Date.parse(credential.expiresAt) > Date.now() ? "authenticated" : "expired",
+          }
+        : { source: "none", status: "signed-out" };
+    yield* printValue(status, root.json);
+  }),
+).pipe(Command.withDescription("Show the active credential source without exposing secrets"));
+
+const authLogoutCommand = Command.make(
+  "logout",
+  {},
+  Effect.fn("affinity.auth.logout")(function* () {
+    const root = yield* affinity;
+    const credential = yield* Effect.tryPromise({
+      try: () => readDeviceCredential(),
+      catch: (cause) =>
+        new CliError({ cause, exitCode: 1, message: "Could not read the saved Affinity login" }),
+    });
+    if (credential) {
+      yield* Effect.tryPromise({
+        try: () => revokeDeviceCredential(credential),
+        catch: (cause) =>
+          new CliError({
+            cause,
+            exitCode: 4,
+            message: "Could not revoke the Affinity login; local credential retained",
+          }),
+      });
+      yield* Effect.promise(() => deleteDeviceCredential());
+    }
+    yield* printValue({ status: "signed-out" }, root.json);
+  }),
+).pipe(Command.withDescription("Revoke the saved device login and remove it locally"));
+
+const authCommand = Command.make("auth").pipe(
+  Command.withDescription("Manage Affinity authentication"),
+  Command.withSubcommands([authLoginCommand, authLogoutCommand, authStatusCommand]),
+);
+
 const doctorCommand = Command.make(
   "doctor",
   {},
   Effect.fn("affinity.doctor")(function* () {
     const root = yield* affinity;
+    const credential = process.env.AFFINITY_API_KEY
+      ? undefined
+      : yield* Effect.tryPromise({
+          try: () => readDeviceCredential(),
+          catch: (cause) =>
+            new CliError({
+              cause,
+              exitCode: 1,
+              message: "Could not read the saved Affinity login",
+            }),
+        });
+    const credentialStatus = process.env.AFFINITY_API_KEY
+      ? "environment"
+      : credential && Date.parse(credential.expiresAt) > Date.now()
+        ? "device"
+        : credential
+          ? "expired"
+          : "missing";
     const checks = {
-      apiBaseUrl: process.env.AFFINITY_API_BASE_URL ?? "https://api.joinaffinityai.com",
-      apiKey: process.env.AFFINITY_API_KEY ? "configured" : "missing",
+      apiBaseUrl:
+        process.env.AFFINITY_API_BASE_URL ??
+        credential?.apiBaseUrl ??
+        "https://api.joinaffinityai.com",
+      authentication: credentialStatus,
       apiVersion: process.env.AFFINITY_API_VERSION ?? "2026-08-11",
       bun: Bun.version,
       mode: root.mode,
       mutationAccess: root.apply,
     };
     yield* printValue(checks, root.json);
-    if (!process.env.AFFINITY_API_KEY) {
+    if (credentialStatus === "missing" || credentialStatus === "expired") {
       return yield* new CliError({
         exitCode: 3,
-        message: "Set AFFINITY_API_KEY before running agent code",
+        message:
+          credentialStatus === "expired"
+            ? "The saved Affinity login expired; run `affinity auth login` again"
+            : "Run `affinity auth login` or set AFFINITY_API_KEY",
       });
     }
   }),
@@ -346,6 +516,7 @@ const doctorCommand = Command.make(
 
 const program = affinity.pipe(
   Command.withSubcommands([
+    authCommand,
     contextCommand,
     doctorCommand,
     evalCommand,

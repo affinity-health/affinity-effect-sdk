@@ -13,8 +13,22 @@ bun add @affinity-health/effect-sdk effect@rc
 Set the API key in the process environment. The CLI never accepts secrets as flags.
 
 ```sh
-export AFFINITY_API_KEY=...
+affinity auth login
+# Request write scopes; the browser shows the exact permissions before approval.
+affinity auth login --access write
 ```
+
+The CLI opens Affinity's browser approval page, polls using OAuth device authorization, and stores
+the resulting expiring credential in the user's configuration directory with owner-only
+permissions. Inspect or revoke it without exposing the token:
+
+```sh
+affinity auth status --json
+affinity auth logout
+```
+
+`AFFINITY_API_KEY` remains available as an explicit environment override for non-interactive
+automation. Never pass a credential as a command argument.
 
 Give an agent the complete operating contract before it acts:
 

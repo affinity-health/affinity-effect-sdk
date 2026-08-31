@@ -47,10 +47,15 @@ export const affinityAgentContext = {
     },
   },
   authentication: {
-    current: "AFFINITY_API_KEY",
-    deviceAuthorization: "not-configured",
+    commands: {
+      login: "affinity auth login (read-only) or affinity auth login --access write",
+      logout: "affinity auth logout",
+      status: "affinity auth status --json",
+    },
+    current: "Saved device login, with AFFINITY_API_KEY as an explicit environment override",
+    deviceAuthorization: "rfc8628",
     guidance:
-      "Never place credentials in arguments, source files, logs, or agent prompts. Device authorization requires Affinity server support before it can be used safely.",
+      "Never place credentials in arguments, source files, logs, or agent prompts. Device credentials are stored in the user configuration directory with owner-only permissions.",
   },
   policy: {
     clinical: "Order and signing operations additionally require --allow-clinical.",

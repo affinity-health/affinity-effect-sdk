@@ -1,4 +1,5 @@
 export * from "./client.ts";
+export * from "./auth.ts";
 export * as Code from "./code/index.ts";
 export * from "./credentials.ts";
 export * from "./context.ts";
