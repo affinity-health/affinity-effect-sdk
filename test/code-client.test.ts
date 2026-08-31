@@ -4,7 +4,9 @@ import { operationRegistry } from "../src/code/registry.ts";
 
 describe("agent code client", () => {
   test("generates a registry for every OpenAPI operation", () => {
-    expect(Object.keys(operationRegistry)).toHaveLength(46);
+    expect(Object.keys(operationRegistry)).toHaveLength(55);
+    expect(operationRegistry.listFormulationDefaults.kind).toBe("read");
+    expect(operationRegistry.publishFormulationDefault.kind).toBe("write");
     expect(operationRegistry.getAccount.kind).toBe("read");
     expect(operationRegistry.createPractice.kind).toBe("write");
     expect(operationRegistry.createOrders.kind).toBe("clinical");

@@ -210,6 +210,14 @@ export const operationRegistry = {
     tag: "Catalog",
     kind: "read",
   },
+  listFormulationDefaults: {
+    effect: Operations.listFormulationDefaults,
+    method: "GET",
+    path: "/v1/formulation-defaults",
+    summary: "List formulation defaults",
+    tag: "Formulation defaults",
+    kind: "read",
+  },
   listOrderEvents: {
     effect: Operations.listOrderEvents,
     method: "GET",
@@ -298,6 +306,14 @@ export const operationRegistry = {
     tag: "Platform Webhooks",
     kind: "read",
   },
+  publishFormulationDefault: {
+    effect: Operations.publishFormulationDefault,
+    method: "PUT",
+    path: "/v1/formulation-defaults/{canonicalFormulationId}",
+    summary: "Publish a formulation default",
+    tag: "Formulation defaults",
+    kind: "write",
+  },
   publishPharmacyCatalogPricing: {
     effect: Operations.publishPharmacyCatalogPricing,
     method: "POST",
@@ -344,6 +360,14 @@ export const operationRegistry = {
     path: "/v1/webhook-events/{eventId}/replay",
     summary: "Replay webhook event",
     tag: "Platform Webhooks",
+    kind: "write",
+  },
+  retireFormulationDefault: {
+    effect: Operations.retireFormulationDefault,
+    method: "DELETE",
+    path: "/v1/formulation-defaults/{canonicalFormulationId}",
+    summary: "Retire a formulation default",
+    tag: "Formulation defaults",
     kind: "write",
   },
   rotateWebhookEndpointSecret: {

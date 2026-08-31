@@ -1,6 +1,6 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 52 typed operations and runtime schemas from Affinity's OpenAPI document.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 55 typed operations and runtime schemas from Affinity's OpenAPI document.
 
 ## Install
 
@@ -112,6 +112,16 @@ affinity run update-practice.ts \
 ```
 
 The mode flag governs the runner's policy. The API key and server remain responsible for authorization and the actual Test or Live data boundary.
+
+An Affinity internal-service key with `formulation_defaults:write` can set both defaults in one
+operation:
+
+```sh
+affinity eval 'await affinity.publishFormulationDefault({ canonicalFormulationId: "frm_example", directions: "Inject 0.25 mL subcutaneously once weekly.", compoundingReason: "Commercially available strengths do not meet this patient-specific dose." })' \
+  --mode live \
+  --apply \
+  --confirm-live LIVE
+```
 
 Each session permits 100 operations by default, with a 30-second timeout per operation. Use `--max-requests` and `--timeout` to lower or raise those limits.
 

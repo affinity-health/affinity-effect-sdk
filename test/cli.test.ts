@@ -6,7 +6,11 @@ const execute = (
   args: ReadonlyArray<string>,
   environment: Readonly<Record<string, string | undefined>> = {},
 ) => {
-  const env = { ...process.env, ...environment };
+  const env = {
+    ...process.env,
+    XDG_CONFIG_HOME: `${cwd}/test/fixtures/missing-config`,
+    ...environment,
+  };
   for (const [name, value] of Object.entries(env)) {
     if (value === undefined) delete env[name];
   }
@@ -32,7 +36,7 @@ describe("affinity CLI", () => {
     expect(JSON.parse(result.stdout)).toMatchObject({
       authentication: { deviceAuthorization: "rfc8628" },
       execution: { defaults: { maxRequests: 100, operationTimeoutMs: 30_000 } },
-      operations: { counts: { total: 46 } },
+      operations: { counts: { total: 55 } },
     });
     expect(result.stderr).toBe("");
   });
@@ -42,7 +46,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: undefined,
     });
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toHaveLength(46);
+    expect(JSON.parse(result.stdout)).toHaveLength(55);
     expect(result.stderr).toBe("");
   });
 
@@ -61,7 +65,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: "aff_test_secret",
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe("46\n");
+    expect(result.stdout).toBe("55\n");
     expect(result.stderr).toBe("");
   });
 
@@ -84,7 +88,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: "aff_test_secret",
     });
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toEqual({ operationCount: 46 });
+    expect(JSON.parse(result.stdout)).toEqual({ operationCount: 55 });
     expect(result.stderr).toBe("");
   });
 

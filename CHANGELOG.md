@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Typed CLI and SDK operations for listing, publishing, and retiring formulation SIG and compounding-reason defaults with an internal admin key.
+
 ## [0.3.1] - 2026-08-31
 
 ### Fixed
