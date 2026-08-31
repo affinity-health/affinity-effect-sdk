@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [0.3.1] - 2026-08-31
+
+### Fixed
+
+- The CLI now reports the installed package version correctly.
+
 ## [0.3.0] - 2026-08-31
 
 ### Added
@@ -40,3 +46,4 @@
 [0.1.0]: https://github.com/affinity-health/affinity-effect-sdk/releases/tag/v0.1.0
 [0.2.0]: https://github.com/affinity-health/affinity-effect-sdk/compare/v0.1.0...v0.2.0
 [0.3.0]: https://github.com/affinity-health/affinity-effect-sdk/compare/v0.2.0...v0.3.0
+[0.3.1]: https://github.com/affinity-health/affinity-effect-sdk/compare/v0.3.0...v0.3.1

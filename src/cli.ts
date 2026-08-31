@@ -30,7 +30,7 @@ import {
   renderAffinityAgentContext,
 } from "./context.ts";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.1";
 
 class CliError extends Schema.TaggedError<CliError>()("CliError", {
   cause: Schema.optional(Schema.Unknown),
