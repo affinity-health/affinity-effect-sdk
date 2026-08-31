@@ -24,6 +24,19 @@ const execute = (
 };
 
 describe("affinity CLI", () => {
+  test("prints a deterministic agent context without credentials", () => {
+    const result = execute(["context", "--json"], {
+      AFFINITY_API_KEY: undefined,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      authentication: { deviceAuthorization: "not-configured" },
+      execution: { defaults: { maxRequests: 100, operationTimeoutMs: 30_000 } },
+      operations: { counts: { total: 46 } },
+    });
+    expect(result.stderr).toBe("");
+  });
+
   test("lists operations without credentials", () => {
     const result = execute(["operations", "--json"], {
       AFFINITY_API_KEY: undefined,

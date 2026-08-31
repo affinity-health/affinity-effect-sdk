@@ -14,6 +14,12 @@ import {
   type AgentProgramContext,
 } from "./code/index.ts";
 import { operationRegistry } from "./code/registry.ts";
+import {
+  affinityAgentContext,
+  DEFAULT_MAX_REQUESTS,
+  DEFAULT_OPERATION_TIMEOUT_MS,
+  renderAffinityAgentContext,
+} from "./context.ts";
 
 const VERSION = "0.1.0";
 
@@ -46,7 +52,7 @@ const affinity = Command.make("affinity").pipe(
     ),
     maxRequests: Flag.integer("max-requests").pipe(
       Flag.withDescription("Maximum API operations in one code session"),
-      Flag.withDefault(100),
+      Flag.withDefault(DEFAULT_MAX_REQUESTS),
     ),
     mode: Flag.choice("mode", ["test", "live"]).pipe(
       Flag.withDescription("Policy mode for this execution"),
@@ -54,7 +60,7 @@ const affinity = Command.make("affinity").pipe(
     ),
     timeout: Flag.integer("timeout").pipe(
       Flag.withDescription("Timeout for each API operation in milliseconds"),
-      Flag.withDefault(30_000),
+      Flag.withDefault(DEFAULT_OPERATION_TIMEOUT_MS),
     ),
     verbose: Flag.boolean("verbose").pipe(
       Flag.withDescription("Print operation diagnostics to stderr"),
@@ -293,6 +299,28 @@ const operationsCommand = Command.make(
   }),
 ).pipe(Command.withDescription("List operations available to agent programs"));
 
+const contextCommand = Command.make(
+  "context",
+  {},
+  Effect.fn("affinity.context")(function* () {
+    const root = yield* affinity;
+    if (root.json) return yield* printValue(affinityAgentContext, true);
+    yield* Console.log(renderAffinityAgentContext());
+  }),
+).pipe(
+  Command.withDescription("Print the operating context an agent needs before using Affinity"),
+  Command.withExamples([
+    {
+      command: "affinity context",
+      description: "Read the concise agent briefing",
+    },
+    {
+      command: "affinity context --json",
+      description: "Load the complete structured context and operation catalog",
+    },
+  ]),
+);
+
 const doctorCommand = Command.make(
   "doctor",
   {},
@@ -317,7 +345,13 @@ const doctorCommand = Command.make(
 ).pipe(Command.withDescription("Check the local code-mode configuration without making a request"));
 
 const program = affinity.pipe(
-  Command.withSubcommands([doctorCommand, evalCommand, operationsCommand, runCommand]),
+  Command.withSubcommands([
+    contextCommand,
+    doctorCommand,
+    evalCommand,
+    operationsCommand,
+    runCommand,
+  ]),
   Command.run({ version: VERSION }),
   Effect.provide(BunServices.layer),
   Effect.catch((error) => {

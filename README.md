@@ -16,6 +16,17 @@ Set the API key in the process environment. The CLI never accepts secrets as fla
 export AFFINITY_API_KEY=...
 ```
 
+Give an agent the complete operating contract before it acts:
+
+```sh
+affinity context
+affinity context --json
+```
+
+The text form is a concise briefing. The JSON form also includes the generated operation catalog,
+policy classes, clinical invariants, authentication status, and the default budget of 100 API
+requests with a 30-second timeout per request. It does not require credentials.
+
 ## Agent code mode
 
 Evaluate one asynchronous JavaScript expression:
