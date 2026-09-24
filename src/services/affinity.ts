@@ -65,6 +65,7 @@ export const ActOnOrderExceptionRequestAction = /*@__PURE__*/ S.String;
 export interface ActOnOrderExceptionRequest {
   orderId: string;
   exceptionId: string;
+  idempotencyKey: string;
   action: ActOnOrderExceptionRequestAction | (string & {});
   note?: string | null;
 }
@@ -72,6 +73,7 @@ export const ActOnOrderExceptionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
     exceptionId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     action: ActOnOrderExceptionRequestAction,
     note: S.optional(S.NullOr(S.String)),
   }).pipe(
@@ -387,6 +389,7 @@ export const AddOrderPrescriptionRequestPrescription = /*@__PURE__*/ S.suspend((
 
 export interface AddOrderPrescriptionRequest {
   orderId: string;
+  idempotencyKey: string;
   metadata?: AddOrderPrescriptionRequestMetadataMap | null;
   practiceId: string;
   expectedVersions: AddOrderPrescriptionRequestExpectedVersionsList;
@@ -395,6 +398,7 @@ export interface AddOrderPrescriptionRequest {
 export const AddOrderPrescriptionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     metadata: S.optional(S.NullOr(AddOrderPrescriptionRequestMetadataMap)),
     practiceId: S.String,
     expectedVersions: AddOrderPrescriptionRequestExpectedVersionsList,
@@ -444,12 +448,14 @@ export interface ArchivePatientAddressRequest {
   practiceId: string;
   patientId: string;
   addressId: string;
+  idempotencyKey: string;
 }
 export const ArchivePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
     addressId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "DELETE",
@@ -506,11 +512,13 @@ export const ArchivePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
 export interface ArchivePharmacyOrganizationPricingRequest {
   pharmacyId: string;
   organizationId: string;
+  idempotencyKey: string;
 }
 export const ArchivePharmacyOrganizationPricingRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     pharmacyId: S.String.pipe(T.Label()),
     organizationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "POST",
@@ -553,11 +561,13 @@ export const ArchivePharmacyOrganizationPricingResponse = /*@__PURE__*/ S.suspen
 export interface ArchivePracticeLocationRequest {
   practiceId: string;
   locationId: string;
+  idempotencyKey: string;
 }
 export const ArchivePracticeLocationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     locationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "POST",
@@ -616,11 +626,13 @@ export const ArchivePracticeLocationResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface CancelOrderRequest {
   orderId: string;
+  idempotencyKey: string;
   reason: string;
 }
 export const CancelOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     reason: S.String,
   }).pipe(T.Http({ method: "POST", uri: "/v1/orders/{orderId}/cancel", code: 200 })),
 ).annotate({ identifier: "CancelOrderRequest" }) as any as S.Schema<CancelOrderRequest>;
@@ -1228,6 +1240,7 @@ export const CreateComponentSessionRequestContext = /*@__PURE__*/ S.suspend(() =
 }) as any as S.Schema<CreateComponentSessionRequestContext>;
 
 export interface CreateComponentSessionRequest {
+  idempotencyKey: string;
   allowedOrigin: string;
   components: CreateComponentSessionRequestComponents;
   consent: CreateComponentSessionRequestConsent;
@@ -1237,6 +1250,7 @@ export interface CreateComponentSessionRequest {
 }
 export const CreateComponentSessionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     allowedOrigin: S.String,
     components: CreateComponentSessionRequestComponents,
     consent: CreateComponentSessionRequestConsent,
@@ -1272,6 +1286,7 @@ export type CreateHostedSessionRequestFlow = "order_review";
 export const CreateHostedSessionRequestFlow = /*@__PURE__*/ S.String;
 
 export interface CreateHostedSessionRequest {
+  idempotencyKey: string;
   flow: CreateHostedSessionRequestFlow | (string & {});
   orderId: string;
   practiceId: string;
@@ -1281,6 +1296,7 @@ export interface CreateHostedSessionRequest {
 }
 export const CreateHostedSessionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     flow: CreateHostedSessionRequestFlow,
     orderId: S.String,
     practiceId: S.String,
@@ -1888,6 +1904,7 @@ export const CreateOrderRequestPrescriptionsList = /*@__PURE__*/ S.Array(
 ) as any as S.Schema<CreateOrderRequestPrescriptionsList>;
 
 export interface CreateOrderRequest {
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -1901,6 +1918,7 @@ export interface CreateOrderRequest {
 }
 export const CreateOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
@@ -2627,6 +2645,7 @@ export const CreateOrderBatchRequestOrdersList = /*@__PURE__*/ S.Array(
 ) as any as S.Schema<CreateOrderBatchRequestOrdersList>;
 
 export interface CreateOrderBatchRequest {
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -2634,6 +2653,7 @@ export interface CreateOrderBatchRequest {
 }
 export const CreateOrderBatchRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
@@ -2996,6 +3016,7 @@ export const CreatePatientRequestProgramsList = /*@__PURE__*/ S.Array(
 
 export interface CreatePatientRequest {
   practiceId: string;
+  idempotencyKey: string;
   address?: CreatePatientRequestAddress | null;
   clinicalProfile?: CreatePatientRequestClinicalProfile | null;
   dateOfBirth: string;
@@ -3016,6 +3037,7 @@ export interface CreatePatientRequest {
 export const CreatePatientRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     address: S.optional(S.NullOr(CreatePatientRequestAddress)),
     clinicalProfile: S.optional(S.NullOr(CreatePatientRequestClinicalProfile)),
     dateOfBirth: S.String,
@@ -3378,6 +3400,7 @@ export const CreatePatientAddressRequestAddress = /*@__PURE__*/ S.suspend(() =>
 export interface CreatePatientAddressRequest {
   practiceId: string;
   patientId: string;
+  idempotencyKey: string;
   address: CreatePatientAddressRequestAddress;
   label?: string | null;
   preferredShipping?: boolean | null;
@@ -3387,6 +3410,7 @@ export const CreatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     address: CreatePatientAddressRequestAddress,
     label: S.optional(S.NullOr(S.String)),
     preferredShipping: S.optional(S.NullOr(S.Boolean)),
@@ -3492,6 +3516,7 @@ export type CreatePracticeRequestPrimaryContact = CreatePracticeRequestComplianc
 export const CreatePracticeRequestPrimaryContact = CreatePracticeRequestComplianceContact;
 
 export interface CreatePracticeRequest {
+  idempotencyKey?: string;
   /** Enable Live access at creation. Requires an approved platform and a Live request. Defaults to false. */
   liveEnabled?: boolean;
   address: ArchivePatientAddressResponseAddress;
@@ -3510,6 +3535,7 @@ export interface CreatePracticeRequest {
 }
 export const CreatePracticeRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.optional(S.String.pipe(T.Header("Idempotency-Key"))),
     liveEnabled: S.optional(S.Boolean),
     address: ArchivePatientAddressResponseAddress,
     attestations: CreatePracticeRequestAttestations,
@@ -3618,6 +3644,7 @@ export const CreatePracticeResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface CreatePracticeLocationRequest {
   practiceId: string;
+  idempotencyKey: string;
   city?: string | null;
   country?: string | null;
   line1?: string | null;
@@ -3632,6 +3659,7 @@ export interface CreatePracticeLocationRequest {
 export const CreatePracticeLocationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     city: S.optional(S.NullOr(S.String)),
     country: S.optional(S.NullOr(S.String)),
     line1: S.optional(S.NullOr(S.String)),
@@ -3694,6 +3722,7 @@ export const CreatePracticeLocationResponse = /*@__PURE__*/ S.suspend(() =>
 export interface CreatePracticeTeamLicenseRequest {
   practiceId: string;
   prescriberId: string;
+  idempotencyKey: string;
   state: string;
   licenseNumber: string;
   expiresAt?: string | null;
@@ -3702,6 +3731,7 @@ export const CreatePracticeTeamLicenseRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     prescriberId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     state: S.String,
     licenseNumber: S.String,
     expiresAt: S.optional(S.NullOr(S.String)),
@@ -3772,6 +3802,7 @@ export const CreateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.
 ) as any as S.Schema<CreateWebhookEndpointRequestSubscribedEventsList>;
 
 export interface CreateWebhookEndpointRequest {
+  idempotencyKey: string;
   practiceIds?: CreateWebhookEndpointRequestPracticeIdsList | null;
   description?: string | null;
   payloadStyle?: CreateWebhookEndpointRequestPayloadStyle | (string & {}) | null;
@@ -3780,6 +3811,7 @@ export interface CreateWebhookEndpointRequest {
 }
 export const CreateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceIds: S.optional(S.NullOr(CreateWebhookEndpointRequestPracticeIdsList)),
     description: S.optional(S.NullOr(S.String)),
     payloadStyle: S.optional(S.NullOr(CreateWebhookEndpointRequestPayloadStyle)),
@@ -3851,11 +3883,13 @@ export const CreateWebhookEndpointResponse = /*@__PURE__*/ S.suspend(() =>
 export interface DeletePatientRequest {
   practiceId: string;
   patientId: string;
+  idempotencyKey: string;
 }
 export const DeletePatientRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({ method: "DELETE", uri: "/v1/practices/{practiceId}/patients/{patientId}", code: 200 }),
   ),
@@ -3879,10 +3913,12 @@ export const DeletePatientResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface DeleteWebhookEndpointRequest {
   endpointId: string;
+  idempotencyKey: string;
 }
 export const DeleteWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endpointId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(T.Http({ method: "DELETE", uri: "/v1/webhook-endpoints/{endpointId}", code: 200 })),
 ).annotate({
   identifier: "DeleteWebhookEndpointRequest",
@@ -6251,6 +6287,7 @@ export const InvitePracticeTeamPersonRequestLocationIdsList = /*@__PURE__*/ S.Ar
 
 export interface InvitePracticeTeamPersonRequest {
   practiceId: string;
+  idempotencyKey: string;
   externalId: string;
   email: string;
   name: string;
@@ -6269,6 +6306,7 @@ export interface InvitePracticeTeamPersonRequest {
 export const InvitePracticeTeamPersonRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     externalId: S.String,
     email: S.String,
     name: S.String,
@@ -10239,6 +10277,7 @@ export const PlatformPublicApiSellingPricesReadSellingPriceResponse = /*@__PURE_
 
 export interface PlatformPublicApiSellingPricesUpdateSellingPriceRequest {
   catalogItemId: string;
+  idempotencyKey: string;
   practiceId?: string | null;
   amountCents: number | null;
   baseVersion: number;
@@ -10246,6 +10285,7 @@ export interface PlatformPublicApiSellingPricesUpdateSellingPriceRequest {
 export const PlatformPublicApiSellingPricesUpdateSellingPriceRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     catalogItemId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.optional(S.NullOr(S.String)),
     amountCents: S.NullOr(S.Number),
     baseVersion: S.Number,
@@ -12053,12 +12093,14 @@ export const PreviewOrderResponse2 = /*@__PURE__*/ S.suspend(() =>
 
 export interface PublishFormulationDefaultRequest {
   canonicalFormulationId: string;
+  idempotencyKey: string;
   compoundingReason?: string | null;
   directions: string;
 }
 export const PublishFormulationDefaultRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     canonicalFormulationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     compoundingReason: S.optional(S.NullOr(S.String)),
     directions: S.String,
   }).pipe(
@@ -12105,11 +12147,13 @@ export const PublishFormulationDefaultResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface PublishPharmacyCatalogPricingRequest {
   pharmacyId: string;
+  idempotencyKey: string;
   baseRevision?: number | null;
 }
 export const PublishPharmacyCatalogPricingRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     pharmacyId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     baseRevision: S.optional(S.NullOr(S.Number)),
   }).pipe(
     T.Http({
@@ -12177,6 +12221,7 @@ export const PublishPharmacyOrganizationPricingRequestMode = /*@__PURE__*/ S.Str
 export interface PublishPharmacyOrganizationPricingRequest {
   pharmacyId: string;
   organizationId: string;
+  idempotencyKey: string;
   items: PublishPharmacyOrganizationPricingRequestItemsList;
   mode?: PublishPharmacyOrganizationPricingRequestMode | (string & {}) | null;
   name?: string | null;
@@ -12186,6 +12231,7 @@ export const PublishPharmacyOrganizationPricingRequest = /*@__PURE__*/ S.suspend
   S.Struct({
     pharmacyId: S.String.pipe(T.Label()),
     organizationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     items: PublishPharmacyOrganizationPricingRequestItemsList,
     mode: S.optional(S.NullOr(PublishPharmacyOrganizationPricingRequestMode)),
     name: S.optional(S.NullOr(S.String)),
@@ -12615,6 +12661,7 @@ export const RegisterUserRequestLocationIdsList = /*@__PURE__*/ S.Array(
 
 export interface RegisterUserRequest {
   practiceId: string;
+  idempotencyKey: string;
   externalId: string;
   email: string;
   name: string;
@@ -12634,6 +12681,7 @@ export interface RegisterUserRequest {
 export const RegisterUserRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     externalId: S.String,
     email: S.String,
     name: S.String,
@@ -12695,6 +12743,7 @@ export const RejectOrderRequestExpectedVersionsList = /*@__PURE__*/ S.Array(
 
 export interface RejectOrderRequest {
   orderId: string;
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -12704,6 +12753,7 @@ export interface RejectOrderRequest {
 export const RejectOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
@@ -12839,6 +12889,7 @@ export const ReplacePatientAllergiesRequestReviewStatus = /*@__PURE__*/ S.String
 export interface ReplacePatientAllergiesRequest {
   practiceId: string;
   patientId: string;
+  idempotencyKey: string;
   allergies: ReplacePatientAllergiesRequestAllergiesList;
   reviewStatus: ReplacePatientAllergiesRequestReviewStatus | (string & {});
 }
@@ -12846,6 +12897,7 @@ export const ReplacePatientAllergiesRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     allergies: ReplacePatientAllergiesRequestAllergiesList,
     reviewStatus: ReplacePatientAllergiesRequestReviewStatus,
   }).pipe(
@@ -12978,10 +13030,12 @@ export const ReplacePatientAllergiesResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface ReplayWebhookEventRequest {
   eventId: string;
+  idempotencyKey: string;
 }
 export const ReplayWebhookEventRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     eventId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(T.Http({ method: "POST", uri: "/v1/webhook-events/{eventId}/replay", code: 200 })),
 ).annotate({
   identifier: "ReplayWebhookEventRequest",
@@ -13141,11 +13195,13 @@ export const ReplayWebhookEventResponse = /*@__PURE__*/ S.suspend(() =>
 export interface ResendPracticeTeamInvitationRequest {
   practiceId: string;
   invitationId: string;
+  idempotencyKey: string;
 }
 export const ResendPracticeTeamInvitationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     invitationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "POST",
@@ -13418,10 +13474,12 @@ export const ResendPracticeTeamInvitationResponse = /*@__PURE__*/ S.suspend(() =
 
 export interface RetireFormulationDefaultRequest {
   canonicalFormulationId: string;
+  idempotencyKey: string;
 }
 export const RetireFormulationDefaultRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     canonicalFormulationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "DELETE",
@@ -14973,11 +15031,13 @@ export const RetrievePrescribingOptionsResponse = /*@__PURE__*/ S.suspend(() =>
 export interface RevokePracticeTeamInvitationRequest {
   practiceId: string;
   invitationId: string;
+  idempotencyKey: string;
 }
 export const RevokePracticeTeamInvitationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     invitationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "DELETE",
@@ -15226,10 +15286,12 @@ export const RevokePracticeTeamInvitationResponse = /*@__PURE__*/ S.suspend(() =
 
 export interface RevokeWebhookGrantRequest {
   platformId: string;
+  idempotencyKey: string;
 }
 export const RevokeWebhookGrantRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     platformId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(T.Http({ method: "DELETE", uri: "/v1/webhook-grants/{platformId}", code: 200 })),
 ).annotate({
   identifier: "RevokeWebhookGrantRequest",
@@ -15257,10 +15319,12 @@ export const RevokeWebhookGrantResponse = /*@__PURE__*/ S.suspend(() =>
 
 export interface RotateWebhookEndpointSecretRequest {
   endpointId: string;
+  idempotencyKey: string;
 }
 export const RotateWebhookEndpointSecretRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endpointId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({ method: "POST", uri: "/v1/webhook-endpoints/{endpointId}/rotate-secret", code: 200 }),
   ),
@@ -15338,11 +15402,13 @@ export const SaveWebhookGrantRequestScopesList = /*@__PURE__*/ S.Array(
 
 export interface SaveWebhookGrantRequest {
   platformId: string;
+  idempotencyKey: string;
   scopes: SaveWebhookGrantRequestScopesList;
 }
 export const SaveWebhookGrantRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     platformId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     scopes: SaveWebhookGrantRequestScopesList,
   }).pipe(T.Http({ method: "PUT", uri: "/v1/webhook-grants/{platformId}", code: 200 })),
 ).annotate({ identifier: "SaveWebhookGrantRequest" }) as any as S.Schema<SaveWebhookGrantRequest>;
@@ -15386,12 +15452,14 @@ export interface SetDefaultPatientAddressRequest {
   practiceId: string;
   patientId: string;
   addressId: string;
+  idempotencyKey: string;
 }
 export const SetDefaultPatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
     addressId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(
     T.Http({
       method: "PUT",
@@ -15446,6 +15514,7 @@ export const SignAndSubmitOrderRequestExpectedVersionsList = /*@__PURE__*/ S.Arr
 
 export interface SignAndSubmitOrderRequest {
   orderId: string;
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -15455,6 +15524,7 @@ export interface SignAndSubmitOrderRequest {
 export const SignAndSubmitOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
@@ -15465,8 +15535,84 @@ export const SignAndSubmitOrderRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "SignAndSubmitOrderRequest",
 }) as any as S.Schema<SignAndSubmitOrderRequest>;
 
-export interface SignAndSubmitOrderResponse {}
-export const SignAndSubmitOrderResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+export type SignAndSubmitOrderResponseObject = "order_sign_and_submission";
+export const SignAndSubmitOrderResponseObject = /*@__PURE__*/ S.String;
+
+export type SignAndSubmitOrderResponseStatus =
+  | "submitted"
+  | "partially_submitted"
+  | "not_submitted";
+export const SignAndSubmitOrderResponseStatus = /*@__PURE__*/ S.String;
+
+export type SignAndSubmitOrderResponsePrescriptionsItemStatus = "submitted" | "failed";
+export const SignAndSubmitOrderResponsePrescriptionsItemStatus = /*@__PURE__*/ S.String;
+
+export type SignAndSubmitOrderResponsePrescriptionsItemErrorStatusCase1 =
+  | "Infinity"
+  | "-Infinity"
+  | "NaN";
+export const SignAndSubmitOrderResponsePrescriptionsItemErrorStatusCase1 = /*@__PURE__*/ S.String;
+
+export type SignAndSubmitOrderResponsePrescriptionsItemErrorStatus =
+  | number
+  | SignAndSubmitOrderResponsePrescriptionsItemErrorStatusCase1;
+export const SignAndSubmitOrderResponsePrescriptionsItemErrorStatus =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<SignAndSubmitOrderResponsePrescriptionsItemErrorStatus>;
+
+export interface SignAndSubmitOrderResponsePrescriptionsItemError {
+  code: string;
+  detail: string;
+  status: SignAndSubmitOrderResponsePrescriptionsItemErrorStatus;
+}
+export const SignAndSubmitOrderResponsePrescriptionsItemError = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    code: S.String,
+    detail: S.String,
+    status: SignAndSubmitOrderResponsePrescriptionsItemErrorStatus,
+  }),
+).annotate({
+  identifier: "SignAndSubmitOrderResponsePrescriptionsItemError",
+}) as any as S.Schema<SignAndSubmitOrderResponsePrescriptionsItemError>;
+
+export interface SignAndSubmitOrderResponsePrescriptionsItem {
+  prescriptionId: string;
+  status: SignAndSubmitOrderResponsePrescriptionsItemStatus;
+  fulfillmentOrderId: string | null;
+  error: SignAndSubmitOrderResponsePrescriptionsItemError | null;
+}
+export const SignAndSubmitOrderResponsePrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    prescriptionId: S.String,
+    status: SignAndSubmitOrderResponsePrescriptionsItemStatus,
+    fulfillmentOrderId: S.NullOr(S.String),
+    error: S.NullOr(SignAndSubmitOrderResponsePrescriptionsItemError),
+  }),
+).annotate({
+  identifier: "SignAndSubmitOrderResponsePrescriptionsItem",
+}) as any as S.Schema<SignAndSubmitOrderResponsePrescriptionsItem>;
+
+export type SignAndSubmitOrderResponsePrescriptionsList =
+  Array<SignAndSubmitOrderResponsePrescriptionsItem>;
+export const SignAndSubmitOrderResponsePrescriptionsList = /*@__PURE__*/ S.Array(
+  SignAndSubmitOrderResponsePrescriptionsItem,
+) as any as S.Schema<SignAndSubmitOrderResponsePrescriptionsList>;
+
+export interface SignAndSubmitOrderResponse {
+  object: SignAndSubmitOrderResponseObject;
+  orderId: string;
+  signedAt: string;
+  status: SignAndSubmitOrderResponseStatus;
+  prescriptions: SignAndSubmitOrderResponsePrescriptionsList;
+}
+export const SignAndSubmitOrderResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    object: SignAndSubmitOrderResponseObject,
+    orderId: S.String,
+    signedAt: S.String,
+    status: SignAndSubmitOrderResponseStatus,
+    prescriptions: SignAndSubmitOrderResponsePrescriptionsList,
+  }),
+).annotate({
   identifier: "SignAndSubmitOrderResponse",
 }) as any as S.Schema<SignAndSubmitOrderResponse>;
 
@@ -15487,6 +15633,7 @@ export const SignOrderRequestExpectedVersionsList = /*@__PURE__*/ S.Array(
 
 export interface SignOrderRequest {
   orderId: string;
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -15496,6 +15643,7 @@ export interface SignOrderRequest {
 export const SignOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
@@ -15535,6 +15683,7 @@ export const SubmitOrderRequestPrescriber = CreateOrderRequestPrescriber;
 
 export interface SubmitOrderRequest {
   orderId: string;
+  idempotencyKey: string;
   practiceId: string;
   userId?: string | null;
   prescriber?: CreateOrderRequestPrescriber | null;
@@ -15542,23 +15691,40 @@ export interface SubmitOrderRequest {
 export const SubmitOrderRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.String)),
     prescriber: S.optional(S.NullOr(CreateOrderRequestPrescriber)),
   }).pipe(T.Http({ method: "POST", uri: "/v1/orders/{orderId}/submit", code: 200 })),
 ).annotate({ identifier: "SubmitOrderRequest" }) as any as S.Schema<SubmitOrderRequest>;
 
-export interface SubmitOrderResponse {}
-export const SubmitOrderResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "SubmitOrderResponse",
-}) as any as S.Schema<SubmitOrderResponse>;
+export type SubmitOrderResponseObject = "order_submission";
+export const SubmitOrderResponseObject = /*@__PURE__*/ S.String;
+
+export type SubmitOrderResponseStatus = "submitted";
+export const SubmitOrderResponseStatus = /*@__PURE__*/ S.String;
+
+export interface SubmitOrderResponse {
+  object: SubmitOrderResponseObject;
+  orderId: string;
+  status: SubmitOrderResponseStatus;
+}
+export const SubmitOrderResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    object: SubmitOrderResponseObject,
+    orderId: S.String,
+    status: SubmitOrderResponseStatus,
+  }),
+).annotate({ identifier: "SubmitOrderResponse" }) as any as S.Schema<SubmitOrderResponse>;
 
 export interface TestWebhookEndpointRequest {
   endpointId: string;
+  idempotencyKey: string;
 }
 export const TestWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endpointId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
   }).pipe(T.Http({ method: "POST", uri: "/v1/webhook-endpoints/{endpointId}/test", code: 200 })),
 ).annotate({
   identifier: "TestWebhookEndpointRequest",
@@ -15826,6 +15992,7 @@ export const UpdateOrderPrescriptionRequestPrescription = /*@__PURE__*/ S.suspen
 export interface UpdateOrderPrescriptionRequest {
   orderId: string;
   prescriptionId: string;
+  idempotencyKey: string;
   metadata?: UpdateOrderPrescriptionRequestMetadataMap | null;
   practiceId: string;
   expectedVersions: UpdateOrderPrescriptionRequestExpectedVersionsList;
@@ -15835,6 +16002,7 @@ export const UpdateOrderPrescriptionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
     prescriptionId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     metadata: S.optional(S.NullOr(UpdateOrderPrescriptionRequestMetadataMap)),
     practiceId: S.String,
     expectedVersions: UpdateOrderPrescriptionRequestExpectedVersionsList,
@@ -15907,6 +16075,7 @@ export const UpdateOrderTestSimulationRequestAction = /*@__PURE__*/ S.String;
 
 export interface UpdateOrderTestSimulationRequest {
   orderId: string;
+  idempotencyKey: string;
   mode: UpdateOrderTestSimulationRequestMode | (string & {});
   scenario: UpdateOrderTestSimulationRequestScenario | (string & {});
   action?: UpdateOrderTestSimulationRequestAction | (string & {}) | null;
@@ -15914,6 +16083,7 @@ export interface UpdateOrderTestSimulationRequest {
 export const UpdateOrderTestSimulationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     orderId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     mode: UpdateOrderTestSimulationRequestMode,
     scenario: UpdateOrderTestSimulationRequestScenario,
     action: S.optional(S.NullOr(UpdateOrderTestSimulationRequestAction)),
@@ -16196,6 +16366,7 @@ export const UpdatePatientRequestStatus = /*@__PURE__*/ S.String;
 export interface UpdatePatientRequest {
   practiceId: string;
   patientId: string;
+  idempotencyKey: string;
   address?: UpdatePatientRequestAddress | null;
   clinicalProfile?: UpdatePatientRequestClinicalProfile | null;
   dateOfBirth?: string | null;
@@ -16218,6 +16389,7 @@ export const UpdatePatientRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     address: S.optional(S.NullOr(UpdatePatientRequestAddress)),
     clinicalProfile: S.optional(S.NullOr(UpdatePatientRequestClinicalProfile)),
     dateOfBirth: S.optional(S.NullOr(S.String)),
@@ -16528,6 +16700,7 @@ export interface UpdatePatientAddressRequest {
   practiceId: string;
   patientId: string;
   addressId: string;
+  idempotencyKey: string;
   address?: UpdatePatientAddressRequestAddress | null;
   label?: string | null;
   recipientName?: string | null;
@@ -16538,6 +16711,7 @@ export const UpdatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
     practiceId: S.String.pipe(T.Label()),
     patientId: S.String.pipe(T.Label()),
     addressId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     address: S.optional(S.NullOr(UpdatePatientAddressRequestAddress)),
     label: S.optional(S.NullOr(S.String)),
     recipientName: S.optional(S.NullOr(S.String)),
@@ -16603,6 +16777,7 @@ export const UpdatePharmacyCatalogPricingRequestMode = /*@__PURE__*/ S.String;
 
 export interface UpdatePharmacyCatalogPricingRequest {
   pharmacyId: string;
+  idempotencyKey: string;
   baseRevision?: number | null;
   items: UpdatePharmacyCatalogPricingRequestItemsList;
   mode?: UpdatePharmacyCatalogPricingRequestMode | (string & {}) | null;
@@ -16611,6 +16786,7 @@ export interface UpdatePharmacyCatalogPricingRequest {
 export const UpdatePharmacyCatalogPricingRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     pharmacyId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     baseRevision: S.optional(S.NullOr(S.Number)),
     items: UpdatePharmacyCatalogPricingRequestItemsList,
     mode: S.optional(S.NullOr(UpdatePharmacyCatalogPricingRequestMode)),
@@ -16674,6 +16850,7 @@ export const UpdatePracticeRequestPrimaryContact = CreatePracticeRequestComplian
 
 export interface UpdatePracticeRequest {
   practiceId: string;
+  idempotencyKey?: string;
   /** Enable or disable Live access for an owned practice. Requires an approved platform and a Live request. Affinity Admin decisions take precedence. */
   liveEnabled?: boolean;
   address?: ArchivePatientAddressResponseAddress | null;
@@ -16693,6 +16870,7 @@ export interface UpdatePracticeRequest {
 export const UpdatePracticeRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
+    idempotencyKey: S.optional(S.String.pipe(T.Header("Idempotency-Key"))),
     liveEnabled: S.optional(S.Boolean),
     address: S.optional(S.NullOr(ArchivePatientAddressResponseAddress)),
     attestations: S.optional(S.NullOr(CreatePracticeRequestAttestations)),
@@ -16792,6 +16970,7 @@ export const UpdatePracticeResponse = /*@__PURE__*/ S.suspend(() =>
 export interface UpdatePracticeLocationRequest {
   practiceId: string;
   locationId: string;
+  idempotencyKey: string;
   city?: string | null;
   country?: string | null;
   line1?: string | null;
@@ -16807,6 +16986,7 @@ export const UpdatePracticeLocationRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     locationId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     city: S.optional(S.NullOr(S.String)),
     country: S.optional(S.NullOr(S.String)),
     line1: S.optional(S.NullOr(S.String)),
@@ -16876,6 +17056,7 @@ export interface UpdatePracticeTeamLicenseRequest {
   practiceId: string;
   prescriberId: string;
   licenseId: string;
+  idempotencyKey: string;
   state?: string | null;
   licenseNumber?: string | null;
   expiresAt?: string | null;
@@ -16885,6 +17066,7 @@ export const UpdatePracticeTeamLicenseRequest = /*@__PURE__*/ S.suspend(() =>
     practiceId: S.String.pipe(T.Label()),
     prescriberId: S.String.pipe(T.Label()),
     licenseId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     state: S.optional(S.NullOr(S.String)),
     licenseNumber: S.optional(S.NullOr(S.String)),
     expiresAt: S.optional(S.NullOr(S.String)),
@@ -16952,6 +17134,7 @@ export const UpdatePracticeTeamMemberRequestLocationIdsList = /*@__PURE__*/ S.Ar
 export interface UpdatePracticeTeamMemberRequest {
   practiceId: string;
   memberId: string;
+  idempotencyKey: string;
   role?: UpdatePracticeTeamMemberRequestRole | (string & {}) | null;
   roles?: UpdatePracticeTeamMemberRequestRolesList | null;
   status?: UpdatePracticeTeamMemberRequestStatus | (string & {}) | null;
@@ -16962,6 +17145,7 @@ export const UpdatePracticeTeamMemberRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     memberId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     role: S.optional(S.NullOr(UpdatePracticeTeamMemberRequestRole)),
     roles: S.optional(S.NullOr(UpdatePracticeTeamMemberRequestRolesList)),
     status: S.optional(S.NullOr(UpdatePracticeTeamMemberRequestStatus)),
@@ -17107,6 +17291,7 @@ export const UpdatePracticeTeamPrescriberRequestAddress = InvitePracticeTeamPers
 export interface UpdatePracticeTeamPrescriberRequest {
   practiceId: string;
   prescriberId: string;
+  idempotencyKey: string;
   displayName?: string | null;
   legalName?: string | null;
   credentials?: string | null;
@@ -17117,6 +17302,7 @@ export const UpdatePracticeTeamPrescriberRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     practiceId: S.String.pipe(T.Label()),
     prescriberId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     displayName: S.optional(S.NullOr(S.String)),
     legalName: S.optional(S.NullOr(S.String)),
     credentials: S.optional(S.NullOr(S.String)),
@@ -17221,6 +17407,7 @@ export const UpdateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.
 
 export interface UpdateWebhookEndpointRequest {
   endpointId: string;
+  idempotencyKey: string;
   practiceIds?: UpdateWebhookEndpointRequestPracticeIdsList | null;
   description?: string | null;
   payloadStyle?: UpdateWebhookEndpointRequestPayloadStyle | (string & {}) | null;
@@ -17231,6 +17418,7 @@ export interface UpdateWebhookEndpointRequest {
 export const UpdateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endpointId: S.String.pipe(T.Label()),
+    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     practiceIds: S.optional(S.NullOr(UpdateWebhookEndpointRequestPracticeIdsList)),
     description: S.optional(S.NullOr(S.String)),
     payloadStyle: S.optional(S.NullOr(UpdateWebhookEndpointRequestPayloadStyle)),
@@ -17305,7 +17493,7 @@ export type ActOnOrderExceptionError =
   | Conflict
   | UnprocessableEntity
   | AffinityOpError;
-/** Handle order exception Acknowledge, retry, contact, assign, or resolve an order exception. */
+/** Handle order exception Acknowledge, retry, contact, or resolve an order exception in the credential's Test/Live mode. assign_to_me requires a signed-in dashboard user; API keys receive 400 and may use acknowledge instead. Actor headers do not create a dashboard assignee. */
 export const actOnOrderException: API.OperationMethod<
   ActOnOrderExceptionRequest,
   ActOnOrderExceptionResponse,
@@ -18194,7 +18382,7 @@ export type ListShippingOptionsError =
   | Conflict
   | UnprocessableEntity
   | AffinityOpError;
-/** List shipping options Returns at most 50 reviewed shipping services eligible for a catalog item, destination, and API mode. */
+/** List shipping options Returns an array of at most 50 reviewed shipping services eligible for a catalog item, destination, and API mode. destinationState must be a USPS state or territory code. Each option has one temperature; pharmacy catalog summaries list all supported temperatures. */
 export const listShippingOptions: API.OperationMethod<
   ListShippingOptionsRequest,
   ListShippingOptionsResponse2,
@@ -18271,7 +18459,7 @@ export type PlatformPublicApiSellingPricesReadSellingPriceError =
   | NotFound
   | Conflict
   | AffinityOpError;
-/** Read selling price Requires selling_prices:read. Omit practiceId for the platform default, or supply a managed practice. A null amount inherits the next applicable price. Amounts use the catalog pricing basis, in USD cents. */
+/** Read selling price Requires selling_prices:read. Omit practiceId for the platform default, or supply a managed practice. A null amount inherits the next applicable price. Amounts use the catalog pricing basis, in USD cents. purchaseAmountCents is the platform's Affinity purchase price for that same basis. requiresReview indicates changed product pricing terms, not a below-purchase-price discount. */
 export const platformPublicApiSellingPricesReadSellingPrice: API.OperationMethod<
   PlatformPublicApiSellingPricesReadSellingPriceRequest,
   PlatformPublicApiSellingPricesReadSellingPriceResponse,
@@ -18291,7 +18479,7 @@ export type PlatformPublicApiSellingPricesUpdateSellingPriceError =
   | NotFound
   | Conflict
   | AffinityOpError;
-/** Set selling price Requires selling_prices:write. Sets a platform default or managed practice override in the current Test/Live mode. Send baseVersion from Read selling price. Null removes the override. Prices use the catalog pricing basis. This does not change the platform's Affinity purchase price or collect practice payments. */
+/** Set selling price Requires selling_prices:write. Sets a platform default or managed practice override in the current Test/Live mode. Send baseVersion from Read selling price. Null removes the override. Prices use the catalog pricing basis. Intentional discounts below purchaseAmountCents are allowed; compare these amounts to warn about selling below your Affinity purchase price. This does not change the platform's Affinity purchase price or collect practice payments. */
 export const platformPublicApiSellingPricesUpdateSellingPrice: API.OperationMethod<
   PlatformPublicApiSellingPricesUpdateSellingPriceRequest,
   PlatformPublicApiSellingPricesUpdateSellingPriceResponse,

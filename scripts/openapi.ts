@@ -21,5 +21,17 @@ export async function loadOpenApi() {
       target[name] = value;
     }
   }
+  // Credentials own authentication/version/actor headers. Idempotency is a per-operation input.
+  for (const pathItem of Object.values(publicApi.paths)) {
+    for (const operation of Object.values(pathItem as Record<string, unknown>)) {
+      if (!operation || typeof operation !== "object") continue;
+      const value = operation as { parameters?: Array<{ in?: string; name?: string }> };
+      if (value.parameters)
+        value.parameters = value.parameters.filter(
+          (parameter) =>
+            parameter.in !== "header" || parameter.name?.toLowerCase() === "idempotency-key",
+        );
+    }
+  }
   return publicApi;
 }

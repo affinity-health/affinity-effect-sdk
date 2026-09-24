@@ -3,6 +3,50 @@ import { AgentPolicyError, createCodeSession } from "../src/code/client.ts";
 import { operationRegistry } from "../src/code/registry.ts";
 
 describe("agent code client", () => {
+  test("sends stable idempotency keys through retries and honors explicit replay keys", async () => {
+    const requests: Array<{ key: string | null; body: unknown }> = [];
+    let rejectFirst = true;
+    const server = Bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      async fetch(request) {
+        const key = request.headers.get("Idempotency-Key");
+        requests.push({ key, body: await request.json() });
+        if (!key) return Response.json({ detail: "Idempotency-Key required" }, { status: 400 });
+        if (rejectFirst) {
+          rejectFirst = false;
+          return Response.json({ detail: "Try again" }, { status: 503 });
+        }
+        return Response.json({ orderId: "ord_synthetic", status: "submitted" }, { status: 202 });
+      },
+    });
+    const session = createCodeSession({
+      apiKey: "sk_test_synthetic",
+      apiBaseUrl: server.url.origin,
+      allowMutations: true,
+      allowClinical: true,
+    });
+    const input = { orderId: "ord_synthetic", practiceId: "prac_synthetic" };
+    try {
+      const submitted = await session.affinity.submitOrder(input);
+      expect(submitted).toMatchObject({ status: "submitted" });
+      await session.affinity.submitOrder(input);
+      await session.affinity.submitOrder({ ...input, idempotencyKey: "retry-known-operation" });
+      await session.affinity.submitOrder({ ...input, idempotencyKey: "retry-known-operation" });
+      expect(requests).toHaveLength(5);
+      expect(requests[0]!.key).toMatch(/^[0-9a-f-]{36}$/);
+      expect(requests[0]!.key).toBe(requests[1]!.key);
+      expect(requests[2]!.key).not.toBe(requests[0]!.key);
+      expect(requests[3]!.key).toBe("retry-known-operation");
+      expect(requests[4]!.key).toBe("retry-known-operation");
+      for (const request of requests)
+        expect(request.body).toEqual({ practiceId: input.practiceId });
+    } finally {
+      await session.dispose();
+      server.stop(true);
+    }
+  });
+
   test("generates a registry for every OpenAPI operation", () => {
     expect(Object.keys(operationRegistry)).toHaveLength(83);
     expect(operationRegistry.previewOrder.kind).toBe("write");

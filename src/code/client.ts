@@ -17,9 +17,13 @@ type OperationEffects = {
   [Name in OperationName]: (typeof operationRegistry)[Name]["effect"];
 };
 
+type CodeInput<T> = T extends { idempotencyKey: string }
+  ? Omit<T, "idempotencyKey"> & { readonly idempotencyKey?: string }
+  : T;
+
 export type AffinityCodeClient = {
   readonly [Name in OperationName]: (
-    input: InputOf<OperationEffects[Name]>,
+    input: CodeInput<InputOf<OperationEffects[Name]>>,
   ) => Promise<OutputOf<OperationEffects[Name]>>;
 };
 
@@ -173,7 +177,11 @@ export const createCodeSession = (options: CodeClientOptions): AffinityCodeSessi
         requestNumber: requestCount,
       });
 
-      const effect = (operation.effect as AnyOperation)(input).pipe(
+      const preparedInput =
+        operation.idempotencyRequired && Predicate.isObject(input)
+          ? { ...input, idempotencyKey: input.idempotencyKey ?? crypto.randomUUID() }
+          : input;
+      const effect = (operation.effect as AnyOperation)(preparedInput).pipe(
         Effect.timeout(timeoutMs),
         Effect.result,
       );

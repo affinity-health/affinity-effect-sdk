@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## [0.4.1] - 2026-09-24
+
+### Fixed
+
+- Send required idempotency headers for mutations. CLI and code-client calls generate a key once per invocation, preserve it during retries, and support explicit keys for replay. Effect-native operations expose the required header in their typed input.
+- Preserve HTTP 202 response types for asynchronous signing and submission.
+
 ## [0.4.0] - 2026-09-24
 
 ### Fixed

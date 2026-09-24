@@ -118,6 +118,8 @@ The public contract includes `previewOrder`, `createOrder`, `signOrder`, `submit
 `--apply --allow-clinical` for order mutations. Fetch current versions and obtain the clinician's
 attestation before signing. See the [headless workflow](https://docs.joinaffinityai.com/guides/choose-an-integration/).
 
+The CLI and code client generate a separate idempotency key for each mutation and keep it through automatic retries. To replay an operation across calls or process restarts, supply the same `idempotencyKey` in its input. Effect-native operations require that input explicitly where the API requires it.
+
 Each session permits 100 operations by default, with a 30-second timeout per operation. Use `--max-requests` and `--timeout` to lower or raise those limits.
 
 The runner executes local code with the current operating-system user's permissions. It is not a sandbox. Run only code you trust. The runner removes `AFFINITY_API_KEY` from its process environment before evaluating agent code, but the injected `affinity` client remains authorized for the operations allowed by the session policy.

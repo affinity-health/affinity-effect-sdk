@@ -17,6 +17,8 @@ await runOpenApiConvert({
     },
   ],
   options: {
+    headerParams: true,
+    successStatuses: ["200", "201", "202", "204"],
     namespace: "com.joinaffinityai.api",
     serviceName: "Affinity",
     statusToErrorClass: {

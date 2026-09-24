@@ -2,6 +2,11 @@ import { loadOpenApi } from "./openapi.ts";
 
 interface OpenApiOperation {
   readonly operationId?: string;
+  readonly parameters?: ReadonlyArray<{
+    readonly in?: string;
+    readonly name?: string;
+    readonly required?: boolean;
+  }>;
   readonly summary?: string;
   readonly tags?: ReadonlyArray<string>;
 }
@@ -38,6 +43,13 @@ const operations = Object.entries(document.paths ?? {}).flatMap(([path, pathItem
           (_match, letter: string) => letter.toUpperCase(),
         ),
         method: upperMethod,
+        idempotencyRequired:
+          operation.parameters?.some(
+            (parameter) =>
+              parameter.in === "header" &&
+              parameter.name?.toLowerCase() === "idempotency-key" &&
+              parameter.required,
+          ) ?? false,
         path,
         summary: operation.summary ?? operation.operationId,
         tag: operation.tags?.[0] ?? "Other",
@@ -60,6 +72,7 @@ const entries = operations
     (operation) => `  ${operation.name}: {
     effect: Operations.${operation.name},
     method: ${quoted(operation.method)},
+    idempotencyRequired: ${operation.idempotencyRequired},
     path: ${quoted(operation.path)},
     summary: ${quoted(operation.summary)},
     tag: ${quoted(operation.tag)},

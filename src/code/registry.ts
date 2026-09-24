@@ -5,6 +5,7 @@ export const operationRegistry = {
   actOnOrderException: {
     effect: Operations.actOnOrderException,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/exceptions/{exceptionId}/actions",
     summary: "Handle order exception",
     tag: "Orders",
@@ -13,6 +14,7 @@ export const operationRegistry = {
   addOrderPrescription: {
     effect: Operations.addOrderPrescription,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/prescriptions",
     summary: "Add prescription to order",
     tag: "Orders",
@@ -21,6 +23,7 @@ export const operationRegistry = {
   archivePatientAddress: {
     effect: Operations.archivePatientAddress,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}/addresses/{addressId}",
     summary: "Archive delivery address",
     tag: "Patients",
@@ -29,6 +32,7 @@ export const operationRegistry = {
   archivePharmacyOrganizationPricing: {
     effect: Operations.archivePharmacyOrganizationPricing,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}/archive",
     summary: "Archive pharmacy organization pricing",
     tag: "Catalog pricing",
@@ -37,6 +41,7 @@ export const operationRegistry = {
   archivePracticeLocation: {
     effect: Operations.archivePracticeLocation,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/locations/{locationId}/archive",
     summary: "Archive location",
     tag: "Locations",
@@ -45,6 +50,7 @@ export const operationRegistry = {
   cancelOrder: {
     effect: Operations.cancelOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/cancel",
     summary: "Cancel order",
     tag: "Orders",
@@ -53,6 +59,7 @@ export const operationRegistry = {
   createComponentSession: {
     effect: Operations.createComponentSession,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/component-sessions",
     summary: "Create component session",
     tag: "Sessions",
@@ -61,6 +68,7 @@ export const operationRegistry = {
   createHostedSession: {
     effect: Operations.createHostedSession,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/hosted-sessions",
     summary: "Create hosted session",
     tag: "Sessions",
@@ -69,6 +77,7 @@ export const operationRegistry = {
   createOrder: {
     effect: Operations.createOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders",
     summary: "Create order",
     tag: "Orders",
@@ -77,6 +86,7 @@ export const operationRegistry = {
   createOrderBatch: {
     effect: Operations.createOrderBatch,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/order-batches",
     summary: "Create order batch",
     tag: "Orders",
@@ -85,6 +95,7 @@ export const operationRegistry = {
   createPatient: {
     effect: Operations.createPatient,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients",
     summary: "Create patient",
     tag: "Patients",
@@ -93,6 +104,7 @@ export const operationRegistry = {
   createPatientAddress: {
     effect: Operations.createPatientAddress,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}/addresses",
     summary: "Save delivery address",
     tag: "Patients",
@@ -101,6 +113,7 @@ export const operationRegistry = {
   createPractice: {
     effect: Operations.createPractice,
     method: "POST",
+    idempotencyRequired: false,
     path: "/v1/practices",
     summary: "Create practice",
     tag: "Practices",
@@ -109,6 +122,7 @@ export const operationRegistry = {
   createPracticeLocation: {
     effect: Operations.createPracticeLocation,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/locations",
     summary: "Create location",
     tag: "Locations",
@@ -117,6 +131,7 @@ export const operationRegistry = {
   createPracticeTeamLicense: {
     effect: Operations.createPracticeTeamLicense,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/prescribers/{prescriberId}/licenses",
     summary: "Add license",
     tag: "Team",
@@ -125,6 +140,7 @@ export const operationRegistry = {
   createWebhookEndpoint: {
     effect: Operations.createWebhookEndpoint,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/webhook-endpoints",
     summary: "Create endpoint",
     tag: "Webhooks",
@@ -133,6 +149,7 @@ export const operationRegistry = {
   deletePatient: {
     effect: Operations.deletePatient,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}",
     summary: "Delete patient",
     tag: "Patients",
@@ -141,6 +158,7 @@ export const operationRegistry = {
   deleteWebhookEndpoint: {
     effect: Operations.deleteWebhookEndpoint,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/webhook-endpoints/{endpointId}",
     summary: "Disable endpoint",
     tag: "Webhooks",
@@ -149,6 +167,7 @@ export const operationRegistry = {
   getAccount: {
     effect: Operations.getAccount,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/account",
     summary: "Read account",
     tag: "Account",
@@ -157,6 +176,7 @@ export const operationRegistry = {
   getApiAccess: {
     effect: Operations.getApiAccess,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/auth/access",
     summary: "Read API key access",
     tag: "API Keys",
@@ -165,6 +185,7 @@ export const operationRegistry = {
   getOrder: {
     effect: Operations.getOrder,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/orders/{orderId}",
     summary: "Read order",
     tag: "Orders",
@@ -173,6 +194,7 @@ export const operationRegistry = {
   getOrderTestSimulation: {
     effect: Operations.getOrderTestSimulation,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/orders/{orderId}/test-simulation",
     summary: "Read Test order controls",
     tag: "Orders",
@@ -181,6 +203,7 @@ export const operationRegistry = {
   getPatient: {
     effect: Operations.getPatient,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/patients/{patientId}",
     summary: "Read patient",
     tag: "Patients",
@@ -189,6 +212,7 @@ export const operationRegistry = {
   getPatientAllergies: {
     effect: Operations.getPatientAllergies,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/patients/{patientId}/allergies",
     summary: "Read allergies",
     tag: "Patients",
@@ -197,6 +221,7 @@ export const operationRegistry = {
   getPractice: {
     effect: Operations.getPractice,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}",
     summary: "Read practice",
     tag: "Practices",
@@ -205,6 +230,7 @@ export const operationRegistry = {
   getPracticeLocation: {
     effect: Operations.getPracticeLocation,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/locations/{locationId}",
     summary: "Read location",
     tag: "Locations",
@@ -213,6 +239,7 @@ export const operationRegistry = {
   getPracticeTeam: {
     effect: Operations.getPracticeTeam,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team",
     summary: "Get team",
     tag: "Team",
@@ -221,6 +248,7 @@ export const operationRegistry = {
   getPracticeTeamInvitation: {
     effect: Operations.getPracticeTeamInvitation,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/invitations/{invitationId}",
     summary: "Get invitation",
     tag: "Team",
@@ -229,6 +257,7 @@ export const operationRegistry = {
   getPracticeTeamMember: {
     effect: Operations.getPracticeTeamMember,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/members/{memberId}",
     summary: "Get member",
     tag: "Team",
@@ -237,6 +266,7 @@ export const operationRegistry = {
   getPracticeTeamPrescriber: {
     effect: Operations.getPracticeTeamPrescriber,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/prescribers/{prescriberId}",
     summary: "Get prescriber",
     tag: "Team",
@@ -245,6 +275,7 @@ export const operationRegistry = {
   getWebhookEvent: {
     effect: Operations.getWebhookEvent,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/webhook-events/{eventId}",
     summary: "Read event attempts",
     tag: "Webhooks",
@@ -253,6 +284,7 @@ export const operationRegistry = {
   invitePracticeTeamPerson: {
     effect: Operations.invitePracticeTeamPerson,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/invitations",
     summary: "Invite team member",
     tag: "Team",
@@ -261,6 +293,7 @@ export const operationRegistry = {
   listCatalogItems: {
     effect: Operations.listCatalogItems,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/catalog/items",
     summary: "List catalog items",
     tag: "Catalog",
@@ -269,6 +302,7 @@ export const operationRegistry = {
   listFormulationDefaults: {
     effect: Operations.listFormulationDefaults,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/formulation-defaults",
     summary: "List formulation defaults",
     tag: "Formulation defaults",
@@ -277,6 +311,7 @@ export const operationRegistry = {
   listOrderEvents: {
     effect: Operations.listOrderEvents,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/orders/{orderId}/events",
     summary: "List order events",
     tag: "Orders",
@@ -285,6 +320,7 @@ export const operationRegistry = {
   listOrders: {
     effect: Operations.listOrders,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/orders",
     summary: "List orders",
     tag: "Orders",
@@ -293,6 +329,7 @@ export const operationRegistry = {
   listPatientAddresses: {
     effect: Operations.listPatientAddresses,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/patients/{patientId}/addresses",
     summary: "List delivery addresses",
     tag: "Patients",
@@ -301,6 +338,7 @@ export const operationRegistry = {
   listPatients: {
     effect: Operations.listPatients,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/patients",
     summary: "List patients",
     tag: "Patients",
@@ -309,6 +347,7 @@ export const operationRegistry = {
   listPharmacies: {
     effect: Operations.listPharmacies,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/pharmacies",
     summary: "List pharmacies",
     tag: "Catalog",
@@ -317,6 +356,7 @@ export const operationRegistry = {
   listPracticeLocations: {
     effect: Operations.listPracticeLocations,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/locations",
     summary: "List locations",
     tag: "Locations",
@@ -325,6 +365,7 @@ export const operationRegistry = {
   listPractices: {
     effect: Operations.listPractices,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices",
     summary: "List practices",
     tag: "Practices",
@@ -333,6 +374,7 @@ export const operationRegistry = {
   listPracticeTeamInvitations: {
     effect: Operations.listPracticeTeamInvitations,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/invitations",
     summary: "List invitations",
     tag: "Team",
@@ -341,6 +383,7 @@ export const operationRegistry = {
   listPracticeTeamMembers: {
     effect: Operations.listPracticeTeamMembers,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/members",
     summary: "List team members",
     tag: "Team",
@@ -349,6 +392,7 @@ export const operationRegistry = {
   listPracticeTeamPrescribers: {
     effect: Operations.listPracticeTeamPrescribers,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}/team/prescribers",
     summary: "List prescribers",
     tag: "Team",
@@ -357,6 +401,7 @@ export const operationRegistry = {
   listShippingOptions: {
     effect: Operations.listShippingOptions,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/catalog/items/{catalogItemId}/shipping-options",
     summary: "List shipping options",
     tag: "Catalog",
@@ -365,6 +410,7 @@ export const operationRegistry = {
   listWebhookEndpoints: {
     effect: Operations.listWebhookEndpoints,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/webhook-endpoints",
     summary: "List endpoints",
     tag: "Webhooks",
@@ -373,6 +419,7 @@ export const operationRegistry = {
   listWebhookEvents: {
     effect: Operations.listWebhookEvents,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/webhook-events",
     summary: "List events",
     tag: "Webhooks",
@@ -381,6 +428,7 @@ export const operationRegistry = {
   listWebhookGrants: {
     effect: Operations.listWebhookGrants,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/webhook-grants",
     summary: "List access grants",
     tag: "Webhooks",
@@ -389,6 +437,7 @@ export const operationRegistry = {
   platformPublicApiSellingPricesReadSellingPrice: {
     effect: Operations.platformPublicApiSellingPricesReadSellingPrice,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/catalog/items/{catalogItemId}/selling-price",
     summary: "Read selling price",
     tag: "Platform Pricing",
@@ -397,6 +446,7 @@ export const operationRegistry = {
   platformPublicApiSellingPricesUpdateSellingPrice: {
     effect: Operations.platformPublicApiSellingPricesUpdateSellingPrice,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/catalog/items/{catalogItemId}/selling-price",
     summary: "Set selling price",
     tag: "Platform Pricing",
@@ -405,6 +455,7 @@ export const operationRegistry = {
   previewOrder: {
     effect: Operations.previewOrder,
     method: "POST",
+    idempotencyRequired: false,
     path: "/v1/order-previews",
     summary: "Preview an order",
     tag: "Orders",
@@ -413,6 +464,7 @@ export const operationRegistry = {
   publishFormulationDefault: {
     effect: Operations.publishFormulationDefault,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/formulation-defaults/{canonicalFormulationId}",
     summary: "Publish a formulation default",
     tag: "Formulation defaults",
@@ -421,6 +473,7 @@ export const operationRegistry = {
   publishPharmacyCatalogPricing: {
     effect: Operations.publishPharmacyCatalogPricing,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/pharmacies/{pharmacyId}/catalog-pricing/publish",
     summary: "Publish pharmacy catalog pricing draft",
     tag: "Catalog pricing",
@@ -429,6 +482,7 @@ export const operationRegistry = {
   publishPharmacyOrganizationPricing: {
     effect: Operations.publishPharmacyOrganizationPricing,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
     summary: "Publish pharmacy organization pricing",
     tag: "Catalog pricing",
@@ -437,6 +491,7 @@ export const operationRegistry = {
   readPharmacyCatalogPricing: {
     effect: Operations.readPharmacyCatalogPricing,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/pharmacies/{pharmacyId}/catalog-pricing",
     summary: "Read pharmacy catalog pricing",
     tag: "Catalog pricing",
@@ -445,6 +500,7 @@ export const operationRegistry = {
   readPharmacyOrganizationPricing: {
     effect: Operations.readPharmacyOrganizationPricing,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}",
     summary: "Read pharmacy organization pricing",
     tag: "Catalog pricing",
@@ -453,6 +509,7 @@ export const operationRegistry = {
   registerUser: {
     effect: Operations.registerUser,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/users",
     summary: "Register user",
     tag: "Team",
@@ -461,6 +518,7 @@ export const operationRegistry = {
   rejectOrder: {
     effect: Operations.rejectOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/rejection",
     summary: "Reject order",
     tag: "Orders",
@@ -469,6 +527,7 @@ export const operationRegistry = {
   replacePatientAllergies: {
     effect: Operations.replacePatientAllergies,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}/allergies",
     summary: "Replace allergies",
     tag: "Patients",
@@ -477,6 +536,7 @@ export const operationRegistry = {
   replayWebhookEvent: {
     effect: Operations.replayWebhookEvent,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/webhook-events/{eventId}/replay",
     summary: "Replay event",
     tag: "Webhooks",
@@ -485,6 +545,7 @@ export const operationRegistry = {
   resendPracticeTeamInvitation: {
     effect: Operations.resendPracticeTeamInvitation,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/invitations/{invitationId}/resend",
     summary: "Resend invitation",
     tag: "Team",
@@ -493,6 +554,7 @@ export const operationRegistry = {
   retireFormulationDefault: {
     effect: Operations.retireFormulationDefault,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/formulation-defaults/{canonicalFormulationId}",
     summary: "Retire a formulation default",
     tag: "Formulation defaults",
@@ -501,6 +563,7 @@ export const operationRegistry = {
   retrievePrescribingOptions: {
     effect: Operations.retrievePrescribingOptions,
     method: "GET",
+    idempotencyRequired: false,
     path: "/v1/catalog/items/{catalogItemId}/prescribing-options",
     summary: "Retrieve prescribing options",
     tag: "Catalog",
@@ -509,6 +572,7 @@ export const operationRegistry = {
   revokePracticeTeamInvitation: {
     effect: Operations.revokePracticeTeamInvitation,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/invitations/{invitationId}",
     summary: "Revoke invitation",
     tag: "Team",
@@ -517,6 +581,7 @@ export const operationRegistry = {
   revokeWebhookGrant: {
     effect: Operations.revokeWebhookGrant,
     method: "DELETE",
+    idempotencyRequired: true,
     path: "/v1/webhook-grants/{platformId}",
     summary: "Revoke webhook access",
     tag: "Webhooks",
@@ -525,6 +590,7 @@ export const operationRegistry = {
   rotateWebhookEndpointSecret: {
     effect: Operations.rotateWebhookEndpointSecret,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/webhook-endpoints/{endpointId}/rotate-secret",
     summary: "Rotate signing secret",
     tag: "Webhooks",
@@ -533,6 +599,7 @@ export const operationRegistry = {
   saveWebhookGrant: {
     effect: Operations.saveWebhookGrant,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/webhook-grants/{platformId}",
     summary: "Grant webhook access",
     tag: "Webhooks",
@@ -541,6 +608,7 @@ export const operationRegistry = {
   setDefaultPatientAddress: {
     effect: Operations.setDefaultPatientAddress,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}/addresses/{addressId}/default",
     summary: "Set default delivery address",
     tag: "Patients",
@@ -549,6 +617,7 @@ export const operationRegistry = {
   signAndSubmitOrder: {
     effect: Operations.signAndSubmitOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/sign-and-submit",
     summary: "Sign and submit order",
     tag: "Orders",
@@ -557,6 +626,7 @@ export const operationRegistry = {
   signOrder: {
     effect: Operations.signOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/sign",
     summary: "Sign order",
     tag: "Orders",
@@ -565,6 +635,7 @@ export const operationRegistry = {
   submitOrder: {
     effect: Operations.submitOrder,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/submit",
     summary: "Submit order",
     tag: "Orders",
@@ -573,6 +644,7 @@ export const operationRegistry = {
   testWebhookEndpoint: {
     effect: Operations.testWebhookEndpoint,
     method: "POST",
+    idempotencyRequired: true,
     path: "/v1/webhook-endpoints/{endpointId}/test",
     summary: "Send test event",
     tag: "Webhooks",
@@ -581,6 +653,7 @@ export const operationRegistry = {
   updateOrderPrescription: {
     effect: Operations.updateOrderPrescription,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/prescriptions/{prescriptionId}",
     summary: "Update prescription in order",
     tag: "Orders",
@@ -589,6 +662,7 @@ export const operationRegistry = {
   updateOrderTestSimulation: {
     effect: Operations.updateOrderTestSimulation,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/orders/{orderId}/test-simulation",
     summary: "Configure Test order simulation",
     tag: "Orders",
@@ -597,6 +671,7 @@ export const operationRegistry = {
   updatePatient: {
     effect: Operations.updatePatient,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}",
     summary: "Update patient",
     tag: "Patients",
@@ -605,6 +680,7 @@ export const operationRegistry = {
   updatePatientAddress: {
     effect: Operations.updatePatientAddress,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/patients/{patientId}/addresses/{addressId}",
     summary: "Update delivery address",
     tag: "Patients",
@@ -613,6 +689,7 @@ export const operationRegistry = {
   updatePharmacyCatalogPricing: {
     effect: Operations.updatePharmacyCatalogPricing,
     method: "PUT",
+    idempotencyRequired: true,
     path: "/v1/pharmacies/{pharmacyId}/catalog-pricing",
     summary: "Save pharmacy catalog pricing draft",
     tag: "Catalog pricing",
@@ -621,6 +698,7 @@ export const operationRegistry = {
   updatePractice: {
     effect: Operations.updatePractice,
     method: "PATCH",
+    idempotencyRequired: false,
     path: "/v1/practices/{practiceId}",
     summary: "Update practice",
     tag: "Practices",
@@ -629,6 +707,7 @@ export const operationRegistry = {
   updatePracticeLocation: {
     effect: Operations.updatePracticeLocation,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/locations/{locationId}",
     summary: "Update location",
     tag: "Locations",
@@ -637,6 +716,7 @@ export const operationRegistry = {
   updatePracticeTeamLicense: {
     effect: Operations.updatePracticeTeamLicense,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/prescribers/{prescriberId}/licenses/{licenseId}",
     summary: "Update license",
     tag: "Team",
@@ -645,6 +725,7 @@ export const operationRegistry = {
   updatePracticeTeamMember: {
     effect: Operations.updatePracticeTeamMember,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/members/{memberId}",
     summary: "Update member access",
     tag: "Team",
@@ -653,6 +734,7 @@ export const operationRegistry = {
   updatePracticeTeamPrescriber: {
     effect: Operations.updatePracticeTeamPrescriber,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/practices/{practiceId}/team/prescribers/{prescriberId}",
     summary: "Update prescriber",
     tag: "Team",
@@ -661,6 +743,7 @@ export const operationRegistry = {
   updateWebhookEndpoint: {
     effect: Operations.updateWebhookEndpoint,
     method: "PATCH",
+    idempotencyRequired: true,
     path: "/v1/webhook-endpoints/{endpointId}",
     summary: "Update endpoint",
     tag: "Webhooks",

@@ -39,12 +39,14 @@ describe("generated operations", () => {
       refills: 0,
     };
     const draft = {
+      idempotencyKey: "draft-test",
       practiceId: "prac_synthetic",
       patientId: "pat_synthetic",
       prescriber: { npi: "1111111112" },
       prescriptions: [prescription],
     };
     const signing = {
+      idempotencyKey: "sign-test",
       practiceId: draft.practiceId,
       prescriber: draft.prescriber,
       signatureAttestation: true,
@@ -55,7 +57,11 @@ describe("generated operations", () => {
         yield* Effect.result(createOrder(draft).pipe(Retry.none));
         yield* Effect.result(signOrder({ orderId: "ord_synthetic", ...signing }).pipe(Retry.none));
         yield* Effect.result(
-          submitOrder({ orderId: "ord_synthetic", practiceId: draft.practiceId }).pipe(Retry.none),
+          submitOrder({
+            orderId: "ord_synthetic",
+            practiceId: draft.practiceId,
+            idempotencyKey: "submit-test",
+          }).pipe(Retry.none),
         );
       }).pipe(
         Effect.provide(layer({ apiKey: "aff_test_secret", apiBaseUrl: "https://example.test" })),
@@ -67,9 +73,14 @@ describe("generated operations", () => {
       ["POST", "/v1/orders/ord_synthetic/sign"],
       ["POST", "/v1/orders/ord_synthetic/submit"],
     ]);
+    expect(requests.map((request) => request.headers.get("idempotency-key"))).toEqual([
+      "draft-test",
+      "sign-test",
+      "submit-test",
+    ]);
     expect(await Promise.all(requests.map((request) => request.json()))).toEqual([
-      draft,
-      signing,
+      (({ idempotencyKey: _key, ...body }) => body)(draft),
+      (({ idempotencyKey: _key, ...body }) => body)(signing),
       { practiceId: draft.practiceId },
     ]);
   });

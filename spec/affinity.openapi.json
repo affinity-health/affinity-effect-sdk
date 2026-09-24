@@ -1733,7 +1733,7 @@
             }
           }
         },
-        "description": "Returns at most 50 reviewed shipping services eligible for a catalog item, destination, and API mode.",
+        "description": "Returns an array of at most 50 reviewed shipping services eligible for a catalog item, destination, and API mode. destinationState must be a USPS state or territory code. Each option has one temperature; pharmacy catalog summaries list all supported temperatures.",
         "summary": "List shipping options",
         "x-visibility": "public"
       }
@@ -2721,7 +2721,7 @@
           },
           "required": true
         },
-        "description": "Acknowledge, retry, contact, assign, or resolve an order exception.",
+        "description": "Acknowledge, retry, contact, or resolve an order exception in the credential's Test/Live mode. assign_to_me requires a signed-in dashboard user; API keys receive 400 and may use acknowledge instead. Actor headers do not create a dashboard assignee.",
         "summary": "Handle order exception",
         "x-visibility": "public"
       }
@@ -11354,7 +11354,7 @@
             }
           }
         },
-        "description": "Requires selling_prices:read. Omit practiceId for the platform default, or supply a managed practice. A null amount inherits the next applicable price. Amounts use the catalog pricing basis, in USD cents.",
+        "description": "Requires selling_prices:read. Omit practiceId for the platform default, or supply a managed practice. A null amount inherits the next applicable price. Amounts use the catalog pricing basis, in USD cents. purchaseAmountCents is the platform's Affinity purchase price for that same basis. requiresReview indicates changed product pricing terms, not a below-purchase-price discount.",
         "summary": "Read selling price",
         "x-visibility": "public"
       },
@@ -11483,7 +11483,7 @@
           },
           "required": true
         },
-        "description": "Requires selling_prices:write. Sets a platform default or managed practice override in the current Test/Live mode. Send baseVersion from Read selling price. Null removes the override. Prices use the catalog pricing basis. This does not change the platform's Affinity purchase price or collect practice payments.",
+        "description": "Requires selling_prices:write. Sets a platform default or managed practice override in the current Test/Live mode. Send baseVersion from Read selling price. Null removes the override. Prices use the catalog pricing basis. Intentional discounts below purchaseAmountCents are allowed; compare these amounts to warn about selling below your Affinity purchase price. This does not change the platform's Affinity purchase price or collect practice payments.",
         "summary": "Set selling price",
         "x-visibility": "public"
       }
