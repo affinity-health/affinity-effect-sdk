@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [0.4.0] - 2026-09-24
+
 ### Fixed
 
 - Pin the compatible Effect runtime and platform dependencies so the CLI works without consumer overrides.
