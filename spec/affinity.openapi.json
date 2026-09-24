@@ -2550,7 +2550,7 @@
           },
           "required": true
         },
-        "description": "Confirms cancellation locally before external submission; otherwise creates an acknowledged pharmacy cancellation request. Shipment possession makes the request too late.",
+        "description": "Requests cancellation. HTTP 200 means the request was handled; check cancellation.status for confirmed, pending, partial, or failed. Only confirmed means the entire order is cancelled. Shipment possession makes a fulfillment cancellation too late.",
         "summary": "Cancel order",
         "x-visibility": "public"
       }
@@ -14153,6 +14153,37 @@
                                 "kind": {
                                   "type": "string",
                                   "enum": [
+                                    "item"
+                                  ]
+                                },
+                                "quantity": {
+                                  "type": "string",
+                                  "enum": [
+                                    "1"
+                                  ]
+                                },
+                                "unit": {
+                                  "type": "string",
+                                  "allOf": [
+                                    {
+                                      "minLength": 1
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "quantity",
+                                "unit"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "enum": [
                                     "package"
                                   ]
                                 },
@@ -22469,6 +22500,64 @@
           },
           "updatedAt": {
             "type": "string"
+          },
+          "cancellation": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "confirmed",
+                  "pending",
+                  "partial",
+                  "failed"
+                ]
+              },
+              "outcomes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "cancellationId": {
+                      "type": "string",
+                      "pattern": "^cancl_[0-9a-hjkmnp-tv-z]{26}$",
+                      "examples": [
+                        "cancl_01j2y8m6jcc9tt24af5pw9x1bc"
+                      ]
+                    },
+                    "fulfillmentId": {
+                      "type": "string",
+                      "pattern": "^ord_[0-9a-hjkmnp-tv-z]{26}$",
+                      "examples": [
+                        "ord_01j2y8m6jcc9tt24af5pw9x1bc"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed",
+                        "failed",
+                        "rejected",
+                        "requested",
+                        "sent",
+                        "too_late"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "cancellationId",
+                    "fulfillmentId",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "status",
+              "outcomes"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -22492,7 +22581,8 @@
           "review",
           "prescriptions",
           "status",
-          "updatedAt"
+          "updatedAt",
+          "cancellation"
         ],
         "additionalProperties": false
       },
@@ -22804,7 +22894,29 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "webhook_endpoint.test",
+                    "cancellation.requested",
+                    "cancellation.sent",
+                    "cancellation.confirmed",
+                    "cancellation.rejected",
+                    "cancellation.failed",
+                    "cancellation.too_late",
+                    "order.created",
+                    "order.updated",
+                    "order.review_requested",
+                    "order.changes_requested",
+                    "order.signed",
+                    "order.rejected",
+                    "order.submitted",
+                    "order.accepted",
+                    "order.processing",
+                    "order.shipped",
+                    "order.delivered",
+                    "order.blocked",
+                    "order.cancelled"
+                  ]
                 }
               },
               {
@@ -22948,40 +23060,90 @@
             ]
           },
           "description": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "payloadStyle": {
-            "type": "string",
-            "enum": [
-              "thin",
-              "snapshot"
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "thin",
+                  "snapshot"
+                ]
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "suspended",
-              "disabled"
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "suspended",
+                  "disabled"
+                ]
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "subscribedEvents": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "webhook_endpoint.test",
+                    "cancellation.requested",
+                    "cancellation.sent",
+                    "cancellation.confirmed",
+                    "cancellation.rejected",
+                    "cancellation.failed",
+                    "cancellation.too_late",
+                    "order.created",
+                    "order.updated",
+                    "order.review_requested",
+                    "order.changes_requested",
+                    "order.signed",
+                    "order.rejected",
+                    "order.submitted",
+                    "order.accepted",
+                    "order.processing",
+                    "order.shipped",
+                    "order.delivered",
+                    "order.blocked",
+                    "order.cancelled"
+                  ]
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "url": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
-        "required": [
-          "description",
-          "payloadStyle",
-          "status",
-          "subscribedEvents",
-          "url"
-        ],
         "additionalProperties": false,
         "title": "UpdateWebhookEndpointRequest"
       },
@@ -26032,6 +26194,37 @@
                       },
                       "basis": {
                         "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "item"
+                                ]
+                              },
+                              "quantity": {
+                                "type": "string",
+                                "enum": [
+                                  "1"
+                                ]
+                              },
+                              "unit": {
+                                "type": "string",
+                                "allOf": [
+                                  {
+                                    "minLength": 1
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "quantity",
+                              "unit"
+                            ],
+                            "additionalProperties": false
+                          },
                           {
                             "type": "object",
                             "properties": {
@@ -48744,6 +48937,37 @@
                   "kind": {
                     "type": "string",
                     "enum": [
+                      "item"
+                    ]
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "enum": [
+                      "1"
+                    ]
+                  },
+                  "unit": {
+                    "type": "string",
+                    "allOf": [
+                      {
+                        "minLength": 1
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "quantity",
+                  "unit"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
                       "package"
                     ]
                   },
@@ -48898,6 +49122,37 @@
           },
           "basis": {
             "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "item"
+                    ]
+                  },
+                  "quantity": {
+                    "type": "string",
+                    "enum": [
+                      "1"
+                    ]
+                  },
+                  "unit": {
+                    "type": "string",
+                    "allOf": [
+                      {
+                        "minLength": 1
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "quantity",
+                  "unit"
+                ],
+                "additionalProperties": false
+              },
               {
                 "type": "object",
                 "properties": {

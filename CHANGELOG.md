@@ -6,6 +6,10 @@
 
 ### Fixed
 
+- Support status-only webhook endpoint updates, published webhook event names, and item-based catalog pricing.
+
+- Expose cancellation status and per-fulfillment outcomes so a failed cancellation is distinguishable from confirmation or a pending request.
+
 - Pin the compatible Effect runtime and platform dependencies so the CLI works without consumer overrides.
 - Regenerate 74 public operations from the deployed 2026-08-11 API contract, including preview, create, sign, submit, and sign-and-submit.
 - Retain the existing internal pricing and formulation operations. Replace retired user, membership, and provider-mapping operations with the current practice team API.

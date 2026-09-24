@@ -1053,6 +1053,52 @@ export type CancelOrderResponseStatus =
   | "submitted";
 export const CancelOrderResponseStatus = /*@__PURE__*/ S.String;
 
+export type CancelOrderResponseCancellationStatus = "confirmed" | "pending" | "partial" | "failed";
+export const CancelOrderResponseCancellationStatus = /*@__PURE__*/ S.String;
+
+export type CancelOrderResponseCancellationOutcomesItemStatus =
+  | "confirmed"
+  | "failed"
+  | "rejected"
+  | "requested"
+  | "sent"
+  | "too_late";
+export const CancelOrderResponseCancellationOutcomesItemStatus = /*@__PURE__*/ S.String;
+
+export interface CancelOrderResponseCancellationOutcomesItem {
+  cancellationId: string;
+  fulfillmentId: string;
+  status: CancelOrderResponseCancellationOutcomesItemStatus;
+}
+export const CancelOrderResponseCancellationOutcomesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    cancellationId: S.String,
+    fulfillmentId: S.String,
+    status: CancelOrderResponseCancellationOutcomesItemStatus,
+  }),
+).annotate({
+  identifier: "CancelOrderResponseCancellationOutcomesItem",
+}) as any as S.Schema<CancelOrderResponseCancellationOutcomesItem>;
+
+export type CancelOrderResponseCancellationOutcomesList =
+  Array<CancelOrderResponseCancellationOutcomesItem>;
+export const CancelOrderResponseCancellationOutcomesList = /*@__PURE__*/ S.Array(
+  CancelOrderResponseCancellationOutcomesItem,
+) as any as S.Schema<CancelOrderResponseCancellationOutcomesList>;
+
+export interface CancelOrderResponseCancellation {
+  status: CancelOrderResponseCancellationStatus;
+  outcomes: CancelOrderResponseCancellationOutcomesList;
+}
+export const CancelOrderResponseCancellation = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    status: CancelOrderResponseCancellationStatus,
+    outcomes: CancelOrderResponseCancellationOutcomesList,
+  }),
+).annotate({
+  identifier: "CancelOrderResponseCancellation",
+}) as any as S.Schema<CancelOrderResponseCancellation>;
+
 export interface CancelOrderResponse {
   otcItems: CancelOrderResponseOtcItemsList;
   /** Snapshot of the practice-facing medication total. Null until every prescription has recorded submission pricing. Excludes shipping and supplies. */
@@ -1076,6 +1122,7 @@ export interface CancelOrderResponse {
   prescriptions: unknown;
   status: CancelOrderResponseStatus;
   updatedAt: string;
+  cancellation: CancelOrderResponseCancellation;
 }
 export const CancelOrderResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -1100,6 +1147,7 @@ export const CancelOrderResponse = /*@__PURE__*/ S.suspend(() =>
     prescriptions: S.Unknown,
     status: CancelOrderResponseStatus,
     updatedAt: S.String,
+    cancellation: CancelOrderResponseCancellation,
   }),
 ).annotate({ identifier: "CancelOrderResponse" }) as any as S.Schema<CancelOrderResponse>;
 
@@ -3693,9 +3741,34 @@ export const CreateWebhookEndpointRequestPracticeIdsList = /*@__PURE__*/ S.Array
 export type CreateWebhookEndpointRequestPayloadStyle = "thin" | "snapshot";
 export const CreateWebhookEndpointRequestPayloadStyle = /*@__PURE__*/ S.String;
 
-export type CreateWebhookEndpointRequestSubscribedEventsList = Array<string>;
+export type CreateWebhookEndpointRequestSubscribedEventsItem =
+  | "webhook_endpoint.test"
+  | "cancellation.requested"
+  | "cancellation.sent"
+  | "cancellation.confirmed"
+  | "cancellation.rejected"
+  | "cancellation.failed"
+  | "cancellation.too_late"
+  | "order.created"
+  | "order.updated"
+  | "order.review_requested"
+  | "order.changes_requested"
+  | "order.signed"
+  | "order.rejected"
+  | "order.submitted"
+  | "order.accepted"
+  | "order.processing"
+  | "order.shipped"
+  | "order.delivered"
+  | "order.blocked"
+  | "order.cancelled";
+export const CreateWebhookEndpointRequestSubscribedEventsItem = /*@__PURE__*/ S.String;
+
+export type CreateWebhookEndpointRequestSubscribedEventsList = Array<
+  CreateWebhookEndpointRequestSubscribedEventsItem | (string & {})
+>;
 export const CreateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
+  CreateWebhookEndpointRequestSubscribedEventsItem,
 ) as any as S.Schema<CreateWebhookEndpointRequestSubscribedEventsList>;
 
 export interface CreateWebhookEndpointRequest {
@@ -7277,48 +7350,70 @@ export const ListCatalogItemsResponseDataItemPrescriptionRequirements = /*@__PUR
   identifier: "ListCatalogItemsResponseDataItemPrescriptionRequirements",
 }) as any as S.Schema<ListCatalogItemsResponseDataItemPrescriptionRequirements>;
 
-export type ListCatalogItemsResponseDataItemPricingBasisCase0Kind = "package";
+export type ListCatalogItemsResponseDataItemPricingBasisCase0Kind = "item";
 export const ListCatalogItemsResponseDataItemPricingBasisCase0Kind = /*@__PURE__*/ S.String;
+
+export type ListCatalogItemsResponseDataItemPricingBasisCase0Quantity = "1";
+export const ListCatalogItemsResponseDataItemPricingBasisCase0Quantity = /*@__PURE__*/ S.String;
 
 export interface ListCatalogItemsResponseDataItemPricingBasisCase0 {
   kind: ListCatalogItemsResponseDataItemPricingBasisCase0Kind;
-  quantity: unknown;
+  quantity: ListCatalogItemsResponseDataItemPricingBasisCase0Quantity;
   unit: unknown;
 }
 export const ListCatalogItemsResponseDataItemPricingBasisCase0 = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     kind: ListCatalogItemsResponseDataItemPricingBasisCase0Kind,
-    quantity: S.Unknown,
+    quantity: ListCatalogItemsResponseDataItemPricingBasisCase0Quantity,
     unit: S.Unknown,
   }),
 ).annotate({
   identifier: "ListCatalogItemsResponseDataItemPricingBasisCase0",
 }) as any as S.Schema<ListCatalogItemsResponseDataItemPricingBasisCase0>;
 
-export type ListCatalogItemsResponseDataItemPricingBasisCase1Kind = "unit";
+export type ListCatalogItemsResponseDataItemPricingBasisCase1Kind = "package";
 export const ListCatalogItemsResponseDataItemPricingBasisCase1Kind = /*@__PURE__*/ S.String;
-
-export type ListCatalogItemsResponseDataItemPricingBasisCase1Quantity = "1";
-export const ListCatalogItemsResponseDataItemPricingBasisCase1Quantity = /*@__PURE__*/ S.String;
 
 export interface ListCatalogItemsResponseDataItemPricingBasisCase1 {
   kind: ListCatalogItemsResponseDataItemPricingBasisCase1Kind;
-  quantity: ListCatalogItemsResponseDataItemPricingBasisCase1Quantity;
+  quantity: unknown;
   unit: unknown;
 }
 export const ListCatalogItemsResponseDataItemPricingBasisCase1 = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     kind: ListCatalogItemsResponseDataItemPricingBasisCase1Kind,
-    quantity: ListCatalogItemsResponseDataItemPricingBasisCase1Quantity,
+    quantity: S.Unknown,
     unit: S.Unknown,
   }),
 ).annotate({
   identifier: "ListCatalogItemsResponseDataItemPricingBasisCase1",
 }) as any as S.Schema<ListCatalogItemsResponseDataItemPricingBasisCase1>;
 
+export type ListCatalogItemsResponseDataItemPricingBasisCase2Kind = "unit";
+export const ListCatalogItemsResponseDataItemPricingBasisCase2Kind = /*@__PURE__*/ S.String;
+
+export type ListCatalogItemsResponseDataItemPricingBasisCase2Quantity = "1";
+export const ListCatalogItemsResponseDataItemPricingBasisCase2Quantity = /*@__PURE__*/ S.String;
+
+export interface ListCatalogItemsResponseDataItemPricingBasisCase2 {
+  kind: ListCatalogItemsResponseDataItemPricingBasisCase2Kind;
+  quantity: ListCatalogItemsResponseDataItemPricingBasisCase2Quantity;
+  unit: unknown;
+}
+export const ListCatalogItemsResponseDataItemPricingBasisCase2 = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    kind: ListCatalogItemsResponseDataItemPricingBasisCase2Kind,
+    quantity: ListCatalogItemsResponseDataItemPricingBasisCase2Quantity,
+    unit: S.Unknown,
+  }),
+).annotate({
+  identifier: "ListCatalogItemsResponseDataItemPricingBasisCase2",
+}) as any as S.Schema<ListCatalogItemsResponseDataItemPricingBasisCase2>;
+
 export type ListCatalogItemsResponseDataItemPricingBasis =
   | ListCatalogItemsResponseDataItemPricingBasisCase0
-  | ListCatalogItemsResponseDataItemPricingBasisCase1;
+  | ListCatalogItemsResponseDataItemPricingBasisCase1
+  | ListCatalogItemsResponseDataItemPricingBasisCase2;
 export const ListCatalogItemsResponseDataItemPricingBasis =
   /*@__PURE__*/ S.Unknown as any as S.Schema<ListCatalogItemsResponseDataItemPricingBasis>;
 
@@ -10046,53 +10141,78 @@ export type PlatformPublicApiSellingPricesReadSellingPriceResponseCurrency = "US
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseCurrency =
   /*@__PURE__*/ S.String;
 
-export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Kind = "package";
+export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Kind = "item";
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Kind =
+  /*@__PURE__*/ S.String;
+
+export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Quantity = "1";
+export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Quantity =
   /*@__PURE__*/ S.String;
 
 export interface PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0 {
   kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Kind;
-  quantity: unknown;
+  quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Quantity;
   unit: unknown;
 }
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0 =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Kind,
-      quantity: S.Unknown,
+      quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0Quantity,
       unit: S.Unknown,
     }),
   ).annotate({
     identifier: "PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0",
   }) as any as S.Schema<PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0>;
 
-export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Kind = "unit";
+export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Kind = "package";
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Kind =
-  /*@__PURE__*/ S.String;
-
-export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Quantity = "1";
-export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Quantity =
   /*@__PURE__*/ S.String;
 
 export interface PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1 {
   kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Kind;
-  quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Quantity;
+  quantity: unknown;
   unit: unknown;
 }
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1 =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Kind,
-      quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1Quantity,
+      quantity: S.Unknown,
       unit: S.Unknown,
     }),
   ).annotate({
     identifier: "PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1",
   }) as any as S.Schema<PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1>;
 
+export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Kind = "unit";
+export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Kind =
+  /*@__PURE__*/ S.String;
+
+export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Quantity = "1";
+export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Quantity =
+  /*@__PURE__*/ S.String;
+
+export interface PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2 {
+  kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Kind;
+  quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Quantity;
+  unit: unknown;
+}
+export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2 =
+  /*@__PURE__*/ S.suspend(() =>
+    S.Struct({
+      kind: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Kind,
+      quantity: PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2Quantity,
+      unit: S.Unknown,
+    }),
+  ).annotate({
+    identifier: "PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2",
+  }) as any as S.Schema<PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2>;
+
 export type PlatformPublicApiSellingPricesReadSellingPriceResponseBasis =
   | PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase0
-  | PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1;
+  | PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase1
+  | PlatformPublicApiSellingPricesReadSellingPriceResponseBasisCase2;
 export const PlatformPublicApiSellingPricesReadSellingPriceResponseBasis =
   /*@__PURE__*/ S.Unknown as any as S.Schema<PlatformPublicApiSellingPricesReadSellingPriceResponseBasis>;
 
@@ -10140,53 +10260,78 @@ export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseCurrency = "
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseCurrency =
   /*@__PURE__*/ S.String;
 
-export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Kind = "package";
+export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Kind = "item";
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Kind =
+  /*@__PURE__*/ S.String;
+
+export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Quantity = "1";
+export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Quantity =
   /*@__PURE__*/ S.String;
 
 export interface PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0 {
   kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Kind;
-  quantity: unknown;
+  quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Quantity;
   unit: unknown;
 }
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0 =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Kind,
-      quantity: S.Unknown,
+      quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0Quantity,
       unit: S.Unknown,
     }),
   ).annotate({
     identifier: "PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0",
   }) as any as S.Schema<PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0>;
 
-export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Kind = "unit";
+export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Kind = "package";
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Kind =
-  /*@__PURE__*/ S.String;
-
-export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Quantity = "1";
-export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Quantity =
   /*@__PURE__*/ S.String;
 
 export interface PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1 {
   kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Kind;
-  quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Quantity;
+  quantity: unknown;
   unit: unknown;
 }
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1 =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Kind,
-      quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1Quantity,
+      quantity: S.Unknown,
       unit: S.Unknown,
     }),
   ).annotate({
     identifier: "PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1",
   }) as any as S.Schema<PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1>;
 
+export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Kind = "unit";
+export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Kind =
+  /*@__PURE__*/ S.String;
+
+export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Quantity = "1";
+export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Quantity =
+  /*@__PURE__*/ S.String;
+
+export interface PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2 {
+  kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Kind;
+  quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Quantity;
+  unit: unknown;
+}
+export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2 =
+  /*@__PURE__*/ S.suspend(() =>
+    S.Struct({
+      kind: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Kind,
+      quantity: PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2Quantity,
+      unit: S.Unknown,
+    }),
+  ).annotate({
+    identifier: "PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2",
+  }) as any as S.Schema<PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2>;
+
 export type PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasis =
   | PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase0
-  | PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1;
+  | PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase1
+  | PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasisCase2;
 export const PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasis =
   /*@__PURE__*/ S.Unknown as any as S.Schema<PlatformPublicApiSellingPricesUpdateSellingPriceResponseBasis>;
 
@@ -14487,53 +14632,78 @@ export const RetrievePrescribingOptionsResponseCatalogPrescriptionRequirements =
     identifier: "RetrievePrescribingOptionsResponseCatalogPrescriptionRequirements",
   }) as any as S.Schema<RetrievePrescribingOptionsResponseCatalogPrescriptionRequirements>;
 
-export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Kind = "package";
+export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Kind = "item";
 export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Kind =
+  /*@__PURE__*/ S.String;
+
+export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Quantity = "1";
+export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Quantity =
   /*@__PURE__*/ S.String;
 
 export interface RetrievePrescribingOptionsResponseCatalogPricingBasisCase0 {
   kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Kind;
-  quantity: unknown;
+  quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Quantity;
   unit: unknown;
 }
 export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase0 = /*@__PURE__*/ S.suspend(
   () =>
     S.Struct({
       kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Kind,
-      quantity: S.Unknown,
+      quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase0Quantity,
       unit: S.Unknown,
     }),
 ).annotate({
   identifier: "RetrievePrescribingOptionsResponseCatalogPricingBasisCase0",
 }) as any as S.Schema<RetrievePrescribingOptionsResponseCatalogPricingBasisCase0>;
 
-export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Kind = "unit";
+export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Kind = "package";
 export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Kind =
-  /*@__PURE__*/ S.String;
-
-export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Quantity = "1";
-export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Quantity =
   /*@__PURE__*/ S.String;
 
 export interface RetrievePrescribingOptionsResponseCatalogPricingBasisCase1 {
   kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Kind;
-  quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Quantity;
+  quantity: unknown;
   unit: unknown;
 }
 export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase1 = /*@__PURE__*/ S.suspend(
   () =>
     S.Struct({
       kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Kind,
-      quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase1Quantity,
+      quantity: S.Unknown,
       unit: S.Unknown,
     }),
 ).annotate({
   identifier: "RetrievePrescribingOptionsResponseCatalogPricingBasisCase1",
 }) as any as S.Schema<RetrievePrescribingOptionsResponseCatalogPricingBasisCase1>;
 
+export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Kind = "unit";
+export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Kind =
+  /*@__PURE__*/ S.String;
+
+export type RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Quantity = "1";
+export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Quantity =
+  /*@__PURE__*/ S.String;
+
+export interface RetrievePrescribingOptionsResponseCatalogPricingBasisCase2 {
+  kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Kind;
+  quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Quantity;
+  unit: unknown;
+}
+export const RetrievePrescribingOptionsResponseCatalogPricingBasisCase2 = /*@__PURE__*/ S.suspend(
+  () =>
+    S.Struct({
+      kind: RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Kind,
+      quantity: RetrievePrescribingOptionsResponseCatalogPricingBasisCase2Quantity,
+      unit: S.Unknown,
+    }),
+).annotate({
+  identifier: "RetrievePrescribingOptionsResponseCatalogPricingBasisCase2",
+}) as any as S.Schema<RetrievePrescribingOptionsResponseCatalogPricingBasisCase2>;
+
 export type RetrievePrescribingOptionsResponseCatalogPricingBasis =
   | RetrievePrescribingOptionsResponseCatalogPricingBasisCase0
-  | RetrievePrescribingOptionsResponseCatalogPricingBasisCase1;
+  | RetrievePrescribingOptionsResponseCatalogPricingBasisCase1
+  | RetrievePrescribingOptionsResponseCatalogPricingBasisCase2;
 export const RetrievePrescribingOptionsResponseCatalogPricingBasis =
   /*@__PURE__*/ S.Unknown as any as S.Schema<RetrievePrescribingOptionsResponseCatalogPricingBasis>;
 
@@ -17019,29 +17189,54 @@ export const UpdateWebhookEndpointRequestPayloadStyle = /*@__PURE__*/ S.String;
 export type UpdateWebhookEndpointRequestStatus = "active" | "suspended" | "disabled";
 export const UpdateWebhookEndpointRequestStatus = /*@__PURE__*/ S.String;
 
-export type UpdateWebhookEndpointRequestSubscribedEventsList = Array<string>;
+export type UpdateWebhookEndpointRequestSubscribedEventsItem =
+  | "webhook_endpoint.test"
+  | "cancellation.requested"
+  | "cancellation.sent"
+  | "cancellation.confirmed"
+  | "cancellation.rejected"
+  | "cancellation.failed"
+  | "cancellation.too_late"
+  | "order.created"
+  | "order.updated"
+  | "order.review_requested"
+  | "order.changes_requested"
+  | "order.signed"
+  | "order.rejected"
+  | "order.submitted"
+  | "order.accepted"
+  | "order.processing"
+  | "order.shipped"
+  | "order.delivered"
+  | "order.blocked"
+  | "order.cancelled";
+export const UpdateWebhookEndpointRequestSubscribedEventsItem = /*@__PURE__*/ S.String;
+
+export type UpdateWebhookEndpointRequestSubscribedEventsList = Array<
+  UpdateWebhookEndpointRequestSubscribedEventsItem | (string & {})
+>;
 export const UpdateWebhookEndpointRequestSubscribedEventsList = /*@__PURE__*/ S.Array(
-  S.String,
+  UpdateWebhookEndpointRequestSubscribedEventsItem,
 ) as any as S.Schema<UpdateWebhookEndpointRequestSubscribedEventsList>;
 
 export interface UpdateWebhookEndpointRequest {
   endpointId: string;
   practiceIds?: UpdateWebhookEndpointRequestPracticeIdsList | null;
-  description: string;
-  payloadStyle: UpdateWebhookEndpointRequestPayloadStyle | (string & {});
-  status: UpdateWebhookEndpointRequestStatus | (string & {});
-  subscribedEvents: UpdateWebhookEndpointRequestSubscribedEventsList;
-  url: string;
+  description?: string | null;
+  payloadStyle?: UpdateWebhookEndpointRequestPayloadStyle | (string & {}) | null;
+  status?: UpdateWebhookEndpointRequestStatus | (string & {}) | null;
+  subscribedEvents?: UpdateWebhookEndpointRequestSubscribedEventsList | null;
+  url?: string | null;
 }
 export const UpdateWebhookEndpointRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endpointId: S.String.pipe(T.Label()),
     practiceIds: S.optional(S.NullOr(UpdateWebhookEndpointRequestPracticeIdsList)),
-    description: S.String,
-    payloadStyle: UpdateWebhookEndpointRequestPayloadStyle,
-    status: UpdateWebhookEndpointRequestStatus,
-    subscribedEvents: UpdateWebhookEndpointRequestSubscribedEventsList,
-    url: S.String,
+    description: S.optional(S.NullOr(S.String)),
+    payloadStyle: S.optional(S.NullOr(UpdateWebhookEndpointRequestPayloadStyle)),
+    status: S.optional(S.NullOr(UpdateWebhookEndpointRequestStatus)),
+    subscribedEvents: S.optional(S.NullOr(UpdateWebhookEndpointRequestSubscribedEventsList)),
+    url: S.optional(S.NullOr(S.String)),
   }).pipe(T.Http({ method: "PATCH", uri: "/v1/webhook-endpoints/{endpointId}", code: 200 })),
 ).annotate({
   identifier: "UpdateWebhookEndpointRequest",
@@ -17207,7 +17402,7 @@ export type CancelOrderError =
   | Conflict
   | UnprocessableEntity
   | AffinityOpError;
-/** Cancel order Confirms cancellation locally before external submission; otherwise creates an acknowledged pharmacy cancellation request. Shipment possession makes the request too late. */
+/** Cancel order Requests cancellation. HTTP 200 means the request was handled; check cancellation.status for confirmed, pending, partial, or failed. Only confirmed means the entire order is cancelled. Shipment possession makes a fulfillment cancellation too late. */
 export const cancelOrder: API.OperationMethod<
   CancelOrderRequest,
   CancelOrderResponse,
