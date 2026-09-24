@@ -4,12 +4,16 @@ import { operationRegistry } from "../src/code/registry.ts";
 
 describe("agent code client", () => {
   test("generates a registry for every OpenAPI operation", () => {
-    expect(Object.keys(operationRegistry)).toHaveLength(55);
-    expect(operationRegistry.listFormulationDefaults.kind).toBe("read");
-    expect(operationRegistry.publishFormulationDefault.kind).toBe("write");
+    expect(Object.keys(operationRegistry)).toHaveLength(83);
+    expect(operationRegistry.previewOrder.kind).toBe("write");
+    expect(operationRegistry.registerUser.kind).toBe("write");
     expect(operationRegistry.getAccount.kind).toBe("read");
     expect(operationRegistry.createPractice.kind).toBe("write");
-    expect(operationRegistry.createOrders.kind).toBe("clinical");
+    expect(operationRegistry.createOrder.kind).toBe("clinical");
+    expect(operationRegistry.signOrder.kind).toBe("clinical");
+    expect(operationRegistry.submitOrder.kind).toBe("clinical");
+    expect(operationRegistry.signAndSubmitOrder.kind).toBe("clinical");
+    expect(operationRegistry.addOrderPrescription.kind).toBe("clinical");
   });
 
   test("blocks mutations unless the session enables them", async () => {
@@ -29,10 +33,10 @@ describe("agent code client", () => {
       allowMutations: true,
     });
     try {
-      await expect(session.affinity.createOrders({} as never)).rejects.toMatchObject({
+      await expect(session.affinity.createOrder({} as never)).rejects.toMatchObject({
         _tag: "AgentPolicyError",
         kind: "clinical",
-        operation: "createOrders",
+        operation: "createOrder",
       });
     } finally {
       await session.dispose();

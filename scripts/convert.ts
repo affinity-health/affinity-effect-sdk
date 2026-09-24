@@ -1,13 +1,19 @@
 #!/usr/bin/env bun
 
 import { runOpenApiConvert } from "@distilled.cloud/core/codegen/openapi-cli";
+import { loadOpenApi } from "./openapi.ts";
+
+await Bun.write(
+  `${import.meta.dir}/../.generated-openapi/affinity.json`,
+  JSON.stringify(await loadOpenApi()),
+);
 
 await runOpenApiConvert({
   root: `${import.meta.dir}/..`,
   specs: [
     {
       name: "affinity",
-      specPath: "spec/affinity.openapi.json",
+      specPath: ".generated-openapi/affinity.json",
     },
   ],
   options: {

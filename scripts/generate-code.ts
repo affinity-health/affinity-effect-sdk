@@ -1,3 +1,5 @@
+import { loadOpenApi } from "./openapi.ts";
+
 interface OpenApiOperation {
   readonly operationId?: string;
   readonly summary?: string;
@@ -8,11 +10,22 @@ interface OpenApiDocument {
   readonly paths?: Readonly<Record<string, Readonly<Record<string, OpenApiOperation>>>>;
 }
 
-const document = (await Bun.file(
-  `${import.meta.dir}/../spec/affinity.openapi.json`,
-).json()) as OpenApiDocument;
+const document = (await loadOpenApi()) as OpenApiDocument;
 
-const clinicalOperations = new Set(["cancelOrder", "createOrderSigningSession", "createOrders"]);
+const clinicalOperations = new Set([
+  "cancelOrder",
+  "actOnOrderException",
+  "createOrder",
+  "createOrderBatch",
+  "addOrderPrescription",
+  "updateOrderPrescription",
+  "createHostedSession",
+  "signOrder",
+  "signAndSubmitOrder",
+  "submitOrder",
+  "rejectOrder",
+  "updateOrderTestSimulation",
+]);
 
 const operations = Object.entries(document.paths ?? {}).flatMap(([path, pathItem]) =>
   Object.entries(pathItem).flatMap(([method, operation]) => {
@@ -20,7 +33,10 @@ const operations = Object.entries(document.paths ?? {}).flatMap(([path, pathItem
     const upperMethod = method.toUpperCase();
     return [
       {
-        name: operation.operationId,
+        name: operation.operationId.replace(
+          /[^a-zA-Z0-9]+([a-zA-Z0-9])/gu,
+          (_match, letter: string) => letter.toUpperCase(),
+        ),
         method: upperMethod,
         path,
         summary: operation.summary ?? operation.operationId,

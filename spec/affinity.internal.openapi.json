@@ -1,0 +1,2205 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Affinity API",
+    "version": "2026-08-11",
+    "contact": {
+      "email": "support@joinaffinityai.com",
+      "name": "Affinity API Support"
+    },
+    "description": "Affinity API for software platforms connecting practices to the compounder network.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "affinityApiKey": []
+    }
+  ],
+  "paths": {
+    "/v1/formulation-defaults": {
+      "get": {
+        "tags": [
+          "Formulation defaults"
+        ],
+        "operationId": "listFormulationDefaults",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "Infinity",
+                            "-Infinity",
+                            "NaN"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "Infinity",
+                            "-Infinity",
+                            "NaN"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 50
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "configured",
+                    "missing"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFormulationDefaultsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "HTTP 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "HTTP 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Lists canonical formulation defaults. Requires a Live Affinity internal key with formulation_defaults:read.",
+        "summary": "List formulation defaults",
+        "x-visibility": "public"
+      }
+    },
+    "/v1/formulation-defaults/{canonicalFormulationId}": {
+      "put": {
+        "tags": [
+          "Formulation defaults"
+        ],
+        "operationId": "publishFormulationDefault",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canonicalFormulationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^frm_[a-z0-9]{7}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishFormulationDefaultResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "HTTP 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "HTTP 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishFormulationDefaultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Publishes a formulation-level default SIG and optional compounding-reason suggestion. Requires formulation_defaults:write.",
+        "summary": "Publish a formulation default",
+        "x-visibility": "public"
+      },
+      "delete": {
+        "tags": [
+          "Formulation defaults"
+        ],
+        "operationId": "retireFormulationDefault",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canonicalFormulationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^frm_[a-z0-9]{7}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetireFormulationDefaultResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "HTTP 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "HTTP 422",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Retires the active defaults for one canonical formulation. Requires formulation_defaults:write.",
+        "summary": "Retire a formulation default",
+        "x-visibility": "public"
+      }
+    },
+    "/v1/pharmacies/{pharmacyId}/catalog-pricing": {
+      "get": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "readPharmacyCatalogPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadPharmacyCatalogPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reads current pharmacy cost evidence and Affinity marketplace prices.",
+        "summary": "Read pharmacy catalog pricing",
+        "x-visibility": "public"
+      },
+      "put": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "updatePharmacyCatalogPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePharmacyCatalogPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePharmacyCatalogPricingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Merges item changes into the shared pharmacy pricing draft by default; mode=replace replaces the complete draft. Idempotency-Key is required. Pricing does not approve or make catalog items orderable.",
+        "summary": "Save pharmacy catalog pricing draft",
+        "x-visibility": "public"
+      }
+    },
+    "/v1/pharmacies/{pharmacyId}/catalog-pricing/publish": {
+      "post": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "publishPharmacyCatalogPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishPharmacyCatalogPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishPharmacyCatalogPricingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Publishes the current shared draft as immutable pharmacy costs and marketplace price-book versions. Idempotency-Key is required.",
+        "summary": "Publish pharmacy catalog pricing draft",
+        "x-visibility": "public"
+      }
+    },
+    "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}": {
+      "get": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "readPharmacyOrganizationPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^org_[0-9A-Za-z]{14}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadPharmacyOrganizationPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reads the active organization-specific Affinity price book for one pharmacy provider.",
+        "summary": "Read pharmacy organization pricing",
+        "x-visibility": "public"
+      },
+      "put": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "publishPharmacyOrganizationPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^org_[0-9A-Za-z]{14}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishPharmacyOrganizationPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishPharmacyOrganizationPricingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "description": "Publishes an immutable organization price-book version for one pharmacy. mode=merge (default) applies item updates onto the active book; mode=replace publishes only the supplied priced items. Null marketplaceUnitPriceCents removes a key in merge mode. Idempotency-Key is required.",
+        "summary": "Publish pharmacy organization pricing",
+        "x-visibility": "public"
+      }
+    },
+    "/v1/pharmacies/{pharmacyId}/organization-pricing/{organizationId}/archive": {
+      "post": {
+        "tags": [
+          "Catalog pricing"
+        ],
+        "operationId": "archivePharmacyOrganizationPricing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^org_[0-9A-Za-z]{14}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "pharmacyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+              "examples": [
+                "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Affinity-Version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTTP 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArchivePharmacyOrganizationPricingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "HTTP 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTP 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "HTTP 429",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Archives the active organization price book for one pharmacy so checkout falls back to default Affinity segment prices. Idempotent when no active book exists. Idempotency-Key is required.",
+        "summary": "Archive pharmacy organization pricing",
+        "x-visibility": "public"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "affinityApiKey": {
+        "description": "Server-side Affinity service key. Use this header when bearer authorization is unavailable.",
+        "in": "header",
+        "name": "x-affinity-api-key",
+        "type": "apiKey"
+      },
+      "bearerAuth": {
+        "description": "Server-side Affinity service key using the Bearer authentication scheme.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "PublishPharmacyOrganizationPricingRequest": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "marketplaceUnitPriceCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 10000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "providerItemKey": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "marketplaceUnitPriceCents",
+                "providerItemKey"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1000
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "merge",
+                  "replace"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sourceReference": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "title": "PublishPharmacyOrganizationPricingRequest"
+      },
+      "ReadPharmacyCatalogPricingResponse": {
+        "title": "ReadPharmacyCatalogPricingResponse",
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "affinityPriceCents": {
+                  "type": "object",
+                  "properties": {
+                    "independentClinic": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "telehealth": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "independentClinic",
+                    "telehealth"
+                  ],
+                  "additionalProperties": false
+                },
+                "catalogKind": {
+                  "type": "string",
+                  "enum": [
+                    "otc",
+                    "prescription"
+                  ]
+                },
+                "hasDraftPricingChange": {
+                  "type": "boolean"
+                },
+                "isActive": {
+                  "type": "boolean"
+                },
+                "isOrderable": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "providerItemKey": {
+                  "type": "string"
+                },
+                "strength": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "vendorCostCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "draftMarketplaceUnitPriceCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "draftVendorCostCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "affinityPriceCents",
+                "catalogKind",
+                "hasDraftPricingChange",
+                "isActive",
+                "isOrderable",
+                "name",
+                "providerItemKey",
+                "strength",
+                "unit",
+                "vendorCostCents",
+                "draftMarketplaceUnitPriceCents",
+                "draftVendorCostCents"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "pharmacy_catalog_pricing"
+            ]
+          },
+          "pharmacy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+                "examples": [
+                  "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "provider": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^cmp_[0-9a-hjkmnp-tv-z]{26}$",
+                "examples": [
+                  "cmp_01j2y8m6jcc9tt24af5pw9x1bc"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "versions": {
+            "type": "object",
+            "properties": {
+              "independentClinic": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "telehealth": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "independentClinic",
+              "telehealth"
+            ],
+            "additionalProperties": false
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "changeCount": {
+                    "type": "integer"
+                  },
+                  "revision": {
+                    "type": "integer"
+                  },
+                  "sourceReference": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "updatedAt": {
+                    "type": "string"
+                  },
+                  "updatedBy": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "changeCount",
+                  "revision",
+                  "sourceReference",
+                  "updatedAt",
+                  "updatedBy"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "object",
+          "pharmacy",
+          "provider",
+          "versions",
+          "workspace"
+        ],
+        "additionalProperties": false
+      },
+      "ReadPharmacyOrganizationPricingResponse": {
+        "title": "ReadPharmacyOrganizationPricingResponse",
+        "type": "object",
+        "properties": {
+          "activeBook": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "version"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "catalogKind": {
+                  "type": "string",
+                  "enum": [
+                    "otc",
+                    "prescription"
+                  ]
+                },
+                "isActive": {
+                  "type": "boolean"
+                },
+                "isOrderable": {
+                  "type": "boolean"
+                },
+                "marketplaceUnitPriceCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "providerItemKey": {
+                  "type": "string"
+                },
+                "strength": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "vendorCostCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "catalogKind",
+                "isActive",
+                "isOrderable",
+                "marketplaceUnitPriceCents",
+                "name",
+                "providerItemKey",
+                "strength",
+                "unit",
+                "vendorCostCents"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "pharmacy_organization_pricing"
+            ]
+          },
+          "organization": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^org_[0-9A-Za-z]{14}$"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "practice",
+                  "platform"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "pharmacy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^pharm_[0-9a-hjkmnp-tv-z]{26}$",
+                "examples": [
+                  "pharm_01j2y8m6jcc9tt24af5pw9x1bc"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "provider": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^cmp_[0-9a-hjkmnp-tv-z]{26}$",
+                "examples": [
+                  "cmp_01j2y8m6jcc9tt24af5pw9x1bc"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "activeBook",
+          "items",
+          "object",
+          "organization",
+          "pharmacy",
+          "provider"
+        ],
+        "additionalProperties": false
+      },
+      "UpdatePharmacyCatalogPricingResponse": {
+        "title": "UpdatePharmacyCatalogPricingResponse",
+        "type": "object",
+        "properties": {
+          "changeCount": {
+            "type": "integer"
+          },
+          "revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "changeCount",
+          "revision"
+        ],
+        "additionalProperties": false
+      },
+      "PublishPharmacyCatalogPricingResponse": {
+        "title": "PublishPharmacyCatalogPricingResponse",
+        "type": "object",
+        "properties": {
+          "changedCostCount": {
+            "type": "integer"
+          },
+          "itemCount": {
+            "type": "integer"
+          },
+          "publishedRevision": {
+            "type": "integer"
+          },
+          "versions": {
+            "type": "object",
+            "properties": {
+              "independentClinic": {
+                "type": "integer"
+              },
+              "telehealth": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "independentClinic",
+              "telehealth"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "changedCostCount",
+          "itemCount",
+          "publishedRevision",
+          "versions"
+        ],
+        "additionalProperties": false
+      },
+      "PublishPharmacyOrganizationPricingResponse": {
+        "title": "PublishPharmacyOrganizationPricingResponse",
+        "type": "object",
+        "properties": {
+          "itemCount": {
+            "type": "integer"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "pharmacy_organization_pricing_publish"
+            ]
+          },
+          "organizationId": {
+            "type": "string",
+            "pattern": "^org_[0-9A-Za-z]{14}$"
+          },
+          "priceBookId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "itemCount",
+          "object",
+          "organizationId",
+          "priceBookId",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "ListFormulationDefaultsResponse": {
+        "title": "ListFormulationDefaultsResponse",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "canonicalFormulationId": {
+              "type": "string",
+              "pattern": "^frm_[a-z0-9]{7}$"
+            },
+            "default": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "approvedByUserId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "canonicalFormulationId": {
+                      "type": "string",
+                      "pattern": "^frm_[a-z0-9]{7}$"
+                    },
+                    "compoundingReason": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "directions": {
+                      "type": "string"
+                    },
+                    "effectiveAt": {
+                      "type": "string"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "free_text",
+                        "structured"
+                      ]
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "sourceReference": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "structuredSig": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "dose": {
+                              "type": "string"
+                            },
+                            "doseUnit": {
+                              "type": "string"
+                            },
+                            "duration": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "frequency": {
+                              "type": "string"
+                            },
+                            "maxDailyUse": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "prn": {
+                              "type": "boolean"
+                            },
+                            "route": {
+                              "type": "string"
+                            },
+                            "titrationSchedule": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "dose",
+                            "doseUnit",
+                            "frequency",
+                            "prn",
+                            "route"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "approvedByUserId",
+                    "canonicalFormulationId",
+                    "compoundingReason",
+                    "directions",
+                    "effectiveAt",
+                    "format",
+                    "id",
+                    "sourceReference",
+                    "structuredSig"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": {
+              "type": "string"
+            },
+            "dosageForm": {
+              "type": "string"
+            },
+            "imageUrl": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "medication": {
+              "type": "string"
+            },
+            "pharmacyDefaults": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "directions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "providerId": {
+                    "type": "string"
+                  },
+                  "providerName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "directions",
+                  "providerId",
+                  "providerName"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "route": {
+              "type": "string"
+            },
+            "strength": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "canonicalFormulationId",
+            "default",
+            "description",
+            "dosageForm",
+            "imageUrl",
+            "medication",
+            "pharmacyDefaults",
+            "route",
+            "strength"
+          ],
+          "additionalProperties": false
+        },
+        "maxItems": 50
+      },
+      "RetireFormulationDefaultResponse": {
+        "title": "RetireFormulationDefaultResponse",
+        "type": "object",
+        "properties": {
+          "canonicalFormulationId": {
+            "type": "string"
+          },
+          "retired": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "canonicalFormulationId",
+          "retired"
+        ],
+        "additionalProperties": false
+      },
+      "UpdatePharmacyCatalogPricingRequest": {
+        "type": "object",
+        "properties": {
+          "baseRevision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "marketplaceUnitPriceCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 10000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "providerItemKey": {
+                  "type": "string"
+                },
+                "vendorCostCents": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 10000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "marketplaceUnitPriceCents",
+                "providerItemKey",
+                "vendorCostCents"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1000
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "merge",
+                  "replace"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sourceReference": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "title": "UpdatePharmacyCatalogPricingRequest"
+      },
+      "ArchivePharmacyOrganizationPricingResponse": {
+        "title": "ArchivePharmacyOrganizationPricingResponse",
+        "type": "object",
+        "properties": {
+          "archived": {
+            "type": "boolean"
+          },
+          "archivedCount": {
+            "type": "integer"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "pharmacy_organization_pricing_archive"
+            ]
+          },
+          "organizationId": {
+            "type": "string",
+            "pattern": "^org_[0-9A-Za-z]{14}$"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": [
+          "archived",
+          "archivedCount",
+          "object",
+          "organizationId",
+          "versions"
+        ],
+        "additionalProperties": false
+      },
+      "PublishFormulationDefaultResponse": {
+        "title": "PublishFormulationDefaultResponse",
+        "type": "object",
+        "properties": {
+          "approvedByUserId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "canonicalFormulationId": {
+            "type": "string",
+            "pattern": "^frm_[a-z0-9]{7}$"
+          },
+          "compoundingReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "directions": {
+            "type": "string"
+          },
+          "effectiveAt": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "free_text",
+              "structured"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "sourceReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "structuredSig": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "dose": {
+                    "type": "string"
+                  },
+                  "doseUnit": {
+                    "type": "string"
+                  },
+                  "duration": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "frequency": {
+                    "type": "string"
+                  },
+                  "maxDailyUse": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "prn": {
+                    "type": "boolean"
+                  },
+                  "route": {
+                    "type": "string"
+                  },
+                  "titrationSchedule": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "dose",
+                  "doseUnit",
+                  "frequency",
+                  "prn",
+                  "route"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "approvedByUserId",
+          "canonicalFormulationId",
+          "compoundingReason",
+          "directions",
+          "effectiveAt",
+          "format",
+          "id",
+          "sourceReference",
+          "structuredSig"
+        ],
+        "additionalProperties": false
+      },
+      "PublishPharmacyCatalogPricingRequest": {
+        "type": "object",
+        "properties": {
+          "baseRevision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "title": "PublishPharmacyCatalogPricingRequest"
+      },
+      "PublishFormulationDefaultRequest": {
+        "type": "object",
+        "properties": {
+          "compoundingReason": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "directions": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "directions"
+        ],
+        "additionalProperties": false,
+        "title": "PublishFormulationDefaultRequest"
+      },
+      "Problem": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "status": {
+            "maximum": 599,
+            "minimum": 400,
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "type": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "code",
+          "requestId"
+        ],
+        "type": "object"
+      }
+    }
+  }
+}

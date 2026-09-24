@@ -1,11 +1,11 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 55 typed operations and runtime schemas from Affinity's OpenAPI document.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 83 typed operations and runtime schemas: 74 public operations from the deployed API contract and the 9 existing internal pricing and formulation operations.
 
 ## Install
 
 ```sh
-bun add @affinity-health/effect-sdk effect@rc
+bun add @affinity-health/effect-sdk effect@4.0.0-rc.112
 ```
 
 Set the API key in the process environment. The CLI never accepts secrets as flags.
@@ -113,15 +113,10 @@ affinity run update-practice.ts \
 
 The mode flag governs the runner's policy. The API key and server remain responsible for authorization and the actual Test or Live data boundary.
 
-An Affinity internal-service key with `formulation_defaults:write` can set both defaults in one
-operation:
-
-```sh
-affinity eval 'await affinity.publishFormulationDefault({ canonicalFormulationId: "frm_example", directions: "Inject 0.25 mL subcutaneously once weekly.", compoundingReason: "Commercially available strengths do not meet this patient-specific dose." })' \
-  --mode live \
-  --apply \
-  --confirm-live LIVE
-```
+The public contract includes `previewOrder`, `createOrder`, `signOrder`, `submitOrder`, and
+`signAndSubmitOrder`. Creation uses one patient and a `prescriptions` array. Use
+`--apply --allow-clinical` for order mutations. Fetch current versions and obtain the clinician's
+attestation before signing. See the [headless workflow](https://docs.joinaffinityai.com/guides/choose-an-integration/).
 
 Each session permits 100 operations by default, with a 30-second timeout per operation. Use `--max-requests` and `--timeout` to lower or raise those limits.
 

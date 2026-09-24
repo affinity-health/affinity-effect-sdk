@@ -45,17 +45,19 @@
   },
   "scripts": {
     "build": "vp pack",
-    "check": "bun run generate:check && vp check && bun test && bun run build && bun run package:check",
+    "check": "bun run generate:check && vp check && bun test && bun run build && bun run package:check && bun run package:consumer-check",
     "clean": "rm -rf dist",
     "convert": "bun scripts/convert.ts",
     "generate": "bun run convert && bun scripts/generate.ts && bun scripts/generate-code.ts",
     "generate:check": "bun scripts/generate-check.ts",
     "package:check": "bun scripts/check-package.ts",
-    "prepublishOnly": "bun run check"
+    "prepublishOnly": "bun run check",
+    "package:consumer-check": "bun scripts/check-consumer.ts"
   },
   "dependencies": {
     "@distilled.cloud/core": "1.0.0-rc.8",
-    "@effect/platform-bun": "4.0.0-rc.112"
+    "@effect/platform-bun": "4.0.0-rc.112",
+    "@effect/platform-node-shared": "4.0.0-rc.112"
   },
   "devDependencies": {
     "@types/bun": "1.4.0",
@@ -65,7 +67,7 @@
     "vite-plus": "0.3.0"
   },
   "peerDependencies": {
-    "effect": ">=4.0.0-rc.112 || >=4.0.0"
+    "effect": "4.0.0-rc.112"
   },
   "engines": {
     "node": ">=20"

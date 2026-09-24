@@ -2,9 +2,12 @@
 
 ## Unreleased
 
-### Added
+### Fixed
 
-- Typed CLI and SDK operations for listing, publishing, and retiring formulation SIG and compounding-reason defaults with an internal admin key.
+- Pin the compatible Effect runtime and platform dependencies so the CLI works without consumer overrides.
+- Regenerate 74 public operations from the deployed 2026-08-11 API contract, including preview, create, sign, submit, and sign-and-submit.
+- Retain the existing internal pricing and formulation operations. Replace retired user, membership, and provider-mapping operations with the current practice team API.
+- Keep signing, submission, and prescription edits behind the CLI's clinical mutation permission.
 
 ## [0.3.1] - 2026-08-31
 

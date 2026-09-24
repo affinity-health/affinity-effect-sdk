@@ -36,7 +36,7 @@ describe("affinity CLI", () => {
     expect(JSON.parse(result.stdout)).toMatchObject({
       authentication: { deviceAuthorization: "rfc8628" },
       execution: { defaults: { maxRequests: 100, operationTimeoutMs: 30_000 } },
-      operations: { counts: { total: 55 } },
+      operations: { counts: { total: 83 } },
     });
     expect(result.stderr).toBe("");
   });
@@ -46,7 +46,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: undefined,
     });
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toHaveLength(55);
+    expect(JSON.parse(result.stdout)).toHaveLength(83);
     expect(result.stderr).toBe("");
   });
 
@@ -65,7 +65,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: "aff_test_secret",
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe("55\n");
+    expect(result.stdout).toBe("83\n");
     expect(result.stderr).toBe("");
   });
 
@@ -88,7 +88,7 @@ describe("affinity CLI", () => {
       AFFINITY_API_KEY: "aff_test_secret",
     });
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toEqual({ operationCount: 55 });
+    expect(JSON.parse(result.stdout)).toEqual({ operationCount: 83 });
     expect(result.stderr).toBe("");
   });
 
