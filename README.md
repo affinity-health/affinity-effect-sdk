@@ -1,6 +1,6 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 83 typed operations and runtime schemas: 74 public operations from the deployed API contract and the 9 existing internal pricing and formulation operations.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 81 typed operations and runtime schemas: 72 public operations from the pinned API contract and the 9 existing internal pricing and formulation operations.
 
 ## Install
 

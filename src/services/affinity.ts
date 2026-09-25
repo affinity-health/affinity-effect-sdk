@@ -468,21 +468,21 @@ export const ArchivePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
 }) as any as S.Schema<ArchivePatientAddressRequest>;
 
 export interface ArchivePatientAddressResponseAddress {
-  city: string;
-  country?: string | null;
-  line1: string;
-  line2?: string | null;
-  postalCode: string;
-  state: string;
+  city: unknown;
+  country?: unknown | null;
+  line1: unknown;
+  line2?: unknown | null;
+  postalCode: unknown;
+  state: unknown;
 }
 export const ArchivePatientAddressResponseAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    country: S.optional(S.NullOr(S.String)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
-    postalCode: S.String,
-    state: S.String,
+    city: S.Unknown,
+    country: S.optional(S.NullOr(S.Unknown)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
+    postalCode: S.Unknown,
+    state: S.Unknown,
   }),
 ).annotate({
   identifier: "ArchivePatientAddressResponseAddress",
@@ -493,7 +493,7 @@ export interface ArchivePatientAddressResponse {
   address: ArchivePatientAddressResponseAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
   archivedAt: string | null;
 }
 export const ArchivePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
@@ -502,7 +502,7 @@ export const ArchivePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
     address: ArchivePatientAddressResponseAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
     archivedAt: S.NullOr(S.String),
   }),
 ).annotate({
@@ -1126,6 +1126,7 @@ export interface CancelOrderResponse {
   patientExternalId: string | null;
   patientId: string;
   patientName: string;
+  /** The patient's current clinical state. This is not the saved delivery state; use each prescription's deliveryAddress for shipping. */
   patientState: string;
   practiceId: string;
   prescriberName: string | null;
@@ -1162,170 +1163,6 @@ export const CancelOrderResponse = /*@__PURE__*/ S.suspend(() =>
     cancellation: CancelOrderResponseCancellation,
   }),
 ).annotate({ identifier: "CancelOrderResponse" }) as any as S.Schema<CancelOrderResponse>;
-
-export interface CreateComponentSessionRequestComponentsPrescriptionComposerFeatures {
-  changePatient?: boolean | null;
-  createDraft?: boolean | null;
-}
-export const CreateComponentSessionRequestComponentsPrescriptionComposerFeatures =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      changePatient: S.optional(S.NullOr(S.Boolean)),
-      createDraft: S.optional(S.NullOr(S.Boolean)),
-    }),
-  ).annotate({
-    identifier: "CreateComponentSessionRequestComponentsPrescriptionComposerFeatures",
-  }) as any as S.Schema<CreateComponentSessionRequestComponentsPrescriptionComposerFeatures>;
-
-export interface CreateComponentSessionRequestComponentsPrescriptionComposer {
-  enabled: boolean;
-  features: CreateComponentSessionRequestComponentsPrescriptionComposerFeatures;
-}
-export const CreateComponentSessionRequestComponentsPrescriptionComposer = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      enabled: S.Boolean,
-      features: CreateComponentSessionRequestComponentsPrescriptionComposerFeatures,
-    }),
-).annotate({
-  identifier: "CreateComponentSessionRequestComponentsPrescriptionComposer",
-}) as any as S.Schema<CreateComponentSessionRequestComponentsPrescriptionComposer>;
-
-export interface CreateComponentSessionRequestComponents {
-  prescriptionComposer?: CreateComponentSessionRequestComponentsPrescriptionComposer | null;
-}
-export const CreateComponentSessionRequestComponents = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    prescriptionComposer: S.optional(
-      S.NullOr(CreateComponentSessionRequestComponentsPrescriptionComposer),
-    ),
-  }),
-).annotate({
-  identifier: "CreateComponentSessionRequestComponents",
-}) as any as S.Schema<CreateComponentSessionRequestComponents>;
-
-export interface CreateComponentSessionRequestConsent {
-  authorizedProviderAccess: boolean;
-  minimumNecessaryPhi: boolean;
-  recordedAt: string;
-}
-export const CreateComponentSessionRequestConsent = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    authorizedProviderAccess: S.Boolean,
-    minimumNecessaryPhi: S.Boolean,
-    recordedAt: S.String,
-  }),
-).annotate({
-  identifier: "CreateComponentSessionRequestConsent",
-}) as any as S.Schema<CreateComponentSessionRequestConsent>;
-
-export type CreateComponentSessionRequestContextPatientSelection = "fixed" | "initial" | "search";
-export const CreateComponentSessionRequestContextPatientSelection = /*@__PURE__*/ S.String;
-
-export interface CreateComponentSessionRequestContext {
-  encounterExternalId?: string | null;
-  patientExternalId?: string | null;
-  patientId?: string | null;
-  patientSelection?: CreateComponentSessionRequestContextPatientSelection | (string & {}) | null;
-}
-export const CreateComponentSessionRequestContext = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    encounterExternalId: S.optional(S.NullOr(S.String)),
-    patientExternalId: S.optional(S.NullOr(S.String)),
-    patientId: S.optional(S.NullOr(S.String)),
-    patientSelection: S.optional(S.NullOr(CreateComponentSessionRequestContextPatientSelection)),
-  }),
-).annotate({
-  identifier: "CreateComponentSessionRequestContext",
-}) as any as S.Schema<CreateComponentSessionRequestContext>;
-
-export interface CreateComponentSessionRequest {
-  idempotencyKey: string;
-  allowedOrigin: string;
-  components: CreateComponentSessionRequestComponents;
-  consent: CreateComponentSessionRequestConsent;
-  context: CreateComponentSessionRequestContext;
-  practiceId: string;
-  userId: string;
-}
-export const CreateComponentSessionRequest = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
-    allowedOrigin: S.String,
-    components: CreateComponentSessionRequestComponents,
-    consent: CreateComponentSessionRequestConsent,
-    context: CreateComponentSessionRequestContext,
-    practiceId: S.String,
-    userId: S.String,
-  }).pipe(T.Http({ method: "POST", uri: "/v1/component-sessions", code: 200 })),
-).annotate({
-  identifier: "CreateComponentSessionRequest",
-}) as any as S.Schema<CreateComponentSessionRequest>;
-
-export type CreateComponentSessionResponseObject = "component_session";
-export const CreateComponentSessionResponseObject = /*@__PURE__*/ S.String;
-
-export interface CreateComponentSessionResponse {
-  clientSecret: string;
-  expiresAt: string;
-  id: string;
-  object: CreateComponentSessionResponseObject;
-}
-export const CreateComponentSessionResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    clientSecret: S.String.pipe(T.SensitiveValue({})),
-    expiresAt: S.String,
-    id: S.String,
-    object: CreateComponentSessionResponseObject,
-  }),
-).annotate({
-  identifier: "CreateComponentSessionResponse",
-}) as any as S.Schema<CreateComponentSessionResponse>;
-
-export type CreateHostedSessionRequestFlow = "order_review";
-export const CreateHostedSessionRequestFlow = /*@__PURE__*/ S.String;
-
-export interface CreateHostedSessionRequest {
-  idempotencyKey: string;
-  flow: CreateHostedSessionRequestFlow | (string & {});
-  orderId: string;
-  practiceId: string;
-  returnUrl?: string | null;
-  /** An optional Team integration identity whose accepted Affinity account must open this review. */
-  userId?: string | null;
-}
-export const CreateHostedSessionRequest = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
-    flow: CreateHostedSessionRequestFlow,
-    orderId: S.String,
-    practiceId: S.String,
-    returnUrl: S.optional(S.NullOr(S.String)),
-    userId: S.optional(S.NullOr(S.String)),
-  }).pipe(T.Http({ method: "POST", uri: "/v1/hosted-sessions", code: 200 })),
-).annotate({
-  identifier: "CreateHostedSessionRequest",
-}) as any as S.Schema<CreateHostedSessionRequest>;
-
-export type CreateHostedSessionResponseObject = "hosted_session";
-export const CreateHostedSessionResponseObject = /*@__PURE__*/ S.String;
-
-export interface CreateHostedSessionResponse {
-  expiresAt: string;
-  id: string;
-  object: CreateHostedSessionResponseObject;
-  url: string;
-}
-export const CreateHostedSessionResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    expiresAt: S.String,
-    id: S.String,
-    object: CreateHostedSessionResponseObject,
-    url: S.String,
-  }),
-).annotate({
-  identifier: "CreateHostedSessionResponse",
-}) as any as S.Schema<CreateHostedSessionResponse>;
 
 export interface CreateOrderRequestPrescriberProfile {
   email?: string | null;
@@ -1391,18 +1228,18 @@ export type CreateOrderRequestPatientAddressCountry = "US";
 export const CreateOrderRequestPatientAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreateOrderRequestPatientAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: CreateOrderRequestPatientAddressCountry | (string & {}) | null;
 }
 export const CreateOrderRequestPatientAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(CreateOrderRequestPatientAddressCountry)),
@@ -1480,19 +1317,19 @@ export type CreateOrderRequestPatientAddressesItemAddressCountry = "US";
 export const CreateOrderRequestPatientAddressesItemAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreateOrderRequestPatientAddressesItemAddress {
-  city: string;
+  city: unknown;
   country?: CreateOrderRequestPatientAddressesItemAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const CreateOrderRequestPatientAddressesItemAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(CreateOrderRequestPatientAddressesItemAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -1505,7 +1342,7 @@ export interface CreateOrderRequestPatientAddressesItem {
   address: CreateOrderRequestPatientAddressesItemAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
 }
 export const CreateOrderRequestPatientAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -1513,7 +1350,7 @@ export const CreateOrderRequestPatientAddressesItem = /*@__PURE__*/ S.suspend(()
     address: CreateOrderRequestPatientAddressesItemAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
   }),
 ).annotate({
   identifier: "CreateOrderRequestPatientAddressesItem",
@@ -1599,17 +1436,17 @@ export const CreateOrderRequestPatientMeasurementsList = /*@__PURE__*/ S.Array(
 ) as any as S.Schema<CreateOrderRequestPatientMeasurementsList>;
 
 export interface CreateOrderRequestPatientName {
-  first: string;
-  last: string;
-  middle?: string | null;
-  preferred?: string | null;
+  first: unknown;
+  last: unknown;
+  middle?: unknown | null;
+  preferred?: unknown | null;
 }
 export const CreateOrderRequestPatientName = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    first: S.String,
-    last: S.String,
-    middle: S.optional(S.NullOr(S.String)),
-    preferred: S.optional(S.NullOr(S.String)),
+    first: S.Unknown,
+    last: S.Unknown,
+    middle: S.optional(S.NullOr(S.Unknown)),
+    preferred: S.optional(S.NullOr(S.Unknown)),
   }),
 ).annotate({
   identifier: "CreateOrderRequestPatientName",
@@ -2090,18 +1927,18 @@ export type CreateOrderBatchRequestOrdersItemPatientAddressCountry = "US";
 export const CreateOrderBatchRequestOrdersItemPatientAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreateOrderBatchRequestOrdersItemPatientAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: CreateOrderBatchRequestOrdersItemPatientAddressCountry | (string & {}) | null;
 }
 export const CreateOrderBatchRequestOrdersItemPatientAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(CreateOrderBatchRequestOrdersItemPatientAddressCountry)),
@@ -2181,25 +2018,25 @@ export const CreateOrderBatchRequestOrdersItemPatientAddressesItemAddressCountry
   /*@__PURE__*/ S.String;
 
 export interface CreateOrderBatchRequestOrdersItemPatientAddressesItemAddress {
-  city: string;
+  city: unknown;
   country?:
     | CreateOrderBatchRequestOrdersItemPatientAddressesItemAddressCountry
     | (string & {})
     | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const CreateOrderBatchRequestOrdersItemPatientAddressesItemAddress = /*@__PURE__*/ S.suspend(
   () =>
     S.Struct({
-      city: S.String,
+      city: S.Unknown,
       country: S.optional(
         S.NullOr(CreateOrderBatchRequestOrdersItemPatientAddressesItemAddressCountry),
       ),
-      line1: S.String,
-      line2: S.optional(S.NullOr(S.String)),
+      line1: S.Unknown,
+      line2: S.optional(S.NullOr(S.Unknown)),
       postalCode: S.String,
       state: S.String,
     }),
@@ -2212,7 +2049,7 @@ export interface CreateOrderBatchRequestOrdersItemPatientAddressesItem {
   address: CreateOrderBatchRequestOrdersItemPatientAddressesItemAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
 }
 export const CreateOrderBatchRequestOrdersItemPatientAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -2220,7 +2057,7 @@ export const CreateOrderBatchRequestOrdersItemPatientAddressesItem = /*@__PURE__
     address: CreateOrderBatchRequestOrdersItemPatientAddressesItemAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
   }),
 ).annotate({
   identifier: "CreateOrderBatchRequestOrdersItemPatientAddressesItem",
@@ -2810,18 +2647,18 @@ export type CreatePatientRequestAddressCountry = "US";
 export const CreatePatientRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreatePatientRequestAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: CreatePatientRequestAddressCountry | (string & {}) | null;
 }
 export const CreatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(CreatePatientRequestAddressCountry)),
@@ -2885,19 +2722,19 @@ export type CreatePatientRequestAddressesItemAddressCountry = "US";
 export const CreatePatientRequestAddressesItemAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreatePatientRequestAddressesItemAddress {
-  city: string;
+  city: unknown;
   country?: CreatePatientRequestAddressesItemAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const CreatePatientRequestAddressesItemAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(CreatePatientRequestAddressesItemAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -2910,7 +2747,7 @@ export interface CreatePatientRequestAddressesItem {
   address: CreatePatientRequestAddressesItemAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
 }
 export const CreatePatientRequestAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -2918,7 +2755,7 @@ export const CreatePatientRequestAddressesItem = /*@__PURE__*/ S.suspend(() =>
     address: CreatePatientRequestAddressesItemAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
   }),
 ).annotate({
   identifier: "CreatePatientRequestAddressesItem",
@@ -3131,15 +2968,23 @@ export const CreatePatientResponseClinicalProfile = /*@__PURE__*/ S.suspend(() =
   identifier: "CreatePatientResponseClinicalProfile",
 }) as any as S.Schema<CreatePatientResponseClinicalProfile>;
 
-export type CreatePatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
-export const CreatePatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+export interface CreatePatientResponseExternalIdentitiesItem {
+  source: unknown;
+  value: unknown;
+}
+export const CreatePatientResponseExternalIdentitiesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    source: S.Unknown,
+    value: S.Unknown,
+  }),
+).annotate({
+  identifier: "CreatePatientResponseExternalIdentitiesItem",
+}) as any as S.Schema<CreatePatientResponseExternalIdentitiesItem>;
 
 export type CreatePatientResponseExternalIdentitiesList =
-  Array<CreateOrderRequestPatientExternalIdentitiesItem>;
+  Array<CreatePatientResponseExternalIdentitiesItem>;
 export const CreatePatientResponseExternalIdentitiesList = /*@__PURE__*/ S.Array(
-  CreateOrderRequestPatientExternalIdentitiesItem,
+  CreatePatientResponseExternalIdentitiesItem,
 ) as any as S.Schema<CreatePatientResponseExternalIdentitiesList>;
 
 export type CreatePatientResponseAddressesItemAddress = ArchivePatientAddressResponseAddress;
@@ -3148,18 +2993,18 @@ export const CreatePatientResponseAddressesItemAddress = ArchivePatientAddressRe
 export interface CreatePatientResponseAddressesItem {
   id: unknown;
   address: ArchivePatientAddressResponseAddress;
-  label: string;
+  label: unknown;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
   archivedAt: string | null;
 }
 export const CreatePatientResponseAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.Unknown,
     address: ArchivePatientAddressResponseAddress,
-    label: S.String,
+    label: S.Unknown,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
     archivedAt: S.NullOr(S.String),
   }),
 ).annotate({
@@ -3174,15 +3019,15 @@ export const CreatePatientResponseAddressesList = /*@__PURE__*/ S.Array(
 export interface CreatePatientResponseEncountersItem {
   notes: unknown | null;
   occurredAt: string;
-  providerName: string | null;
-  type: string;
+  providerName: unknown | null;
+  type: unknown;
 }
 export const CreatePatientResponseEncountersItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     notes: S.NullOr(S.Unknown),
     occurredAt: S.String,
-    providerName: S.NullOr(S.String),
-    type: S.String,
+    providerName: S.NullOr(S.Unknown),
+    type: S.Unknown,
   }),
 ).annotate({
   identifier: "CreatePatientResponseEncountersItem",
@@ -3243,14 +3088,14 @@ export const CreatePatientResponseMeasurementsItemWeightKilograms =
 export interface CreatePatientResponseMeasurementsItem {
   heightCentimeters: CreatePatientResponseMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
-  source: string;
+  source: unknown;
   weightKilograms: CreatePatientResponseMeasurementsItemWeightKilograms | null;
 }
 export const CreatePatientResponseMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     heightCentimeters: S.NullOr(CreatePatientResponseMeasurementsItemHeightCentimeters),
     recordedAt: S.String,
-    source: S.String,
+    source: S.Unknown,
     weightKilograms: S.NullOr(CreatePatientResponseMeasurementsItemWeightKilograms),
   }),
 ).annotate({
@@ -3287,14 +3132,14 @@ export const CreatePatientResponseProgramsItemStatus = /*@__PURE__*/ S.String;
 
 export interface CreatePatientResponseProgramsItem {
   endedAt: string | null;
-  name: string;
+  name: unknown;
   startedAt: string;
   status: CreatePatientResponseProgramsItemStatus;
 }
 export const CreatePatientResponseProgramsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endedAt: S.NullOr(S.String),
-    name: S.String,
+    name: S.Unknown,
     startedAt: S.String,
     status: CreatePatientResponseProgramsItemStatus,
   }),
@@ -3320,7 +3165,7 @@ export interface CreatePatientResponse {
   clinicalProfile: CreatePatientResponseClinicalProfile;
   dateOfBirth: string;
   email: string | null;
-  externalId: string | null;
+  externalId: unknown | null;
   externalIdentities: CreatePatientResponseExternalIdentitiesList;
   addresses: CreatePatientResponseAddressesList;
   encounters: CreatePatientResponseEncountersList;
@@ -3351,7 +3196,7 @@ export const CreatePatientResponse = /*@__PURE__*/ S.suspend(() =>
     clinicalProfile: CreatePatientResponseClinicalProfile,
     dateOfBirth: S.String,
     email: S.NullOr(S.String),
-    externalId: S.NullOr(S.String),
+    externalId: S.NullOr(S.Unknown),
     externalIdentities: CreatePatientResponseExternalIdentitiesList,
     addresses: CreatePatientResponseAddressesList,
     encounters: CreatePatientResponseEncountersList,
@@ -3377,19 +3222,19 @@ export type CreatePatientAddressRequestAddressCountry = "US";
 export const CreatePatientAddressRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface CreatePatientAddressRequestAddress {
-  city: string;
+  city: unknown;
   country?: CreatePatientAddressRequestAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const CreatePatientAddressRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(CreatePatientAddressRequestAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -3404,7 +3249,7 @@ export interface CreatePatientAddressRequest {
   address: CreatePatientAddressRequestAddress;
   label?: string | null;
   preferredShipping?: boolean | null;
-  recipientName?: string | null;
+  recipientName?: unknown | null;
 }
 export const CreatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -3414,7 +3259,7 @@ export const CreatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
     address: CreatePatientAddressRequestAddress,
     label: S.optional(S.NullOr(S.String)),
     preferredShipping: S.optional(S.NullOr(S.Boolean)),
-    recipientName: S.optional(S.NullOr(S.String)),
+    recipientName: S.optional(S.NullOr(S.Unknown)),
   }).pipe(
     T.Http({
       method: "POST",
@@ -3434,7 +3279,7 @@ export interface CreatePatientAddressResponse {
   address: ArchivePatientAddressResponseAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
   archivedAt: string | null;
 }
 export const CreatePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
@@ -3443,7 +3288,7 @@ export const CreatePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
     address: ArchivePatientAddressResponseAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
     archivedAt: S.NullOr(S.String),
   }),
 ).annotate({
@@ -4032,22 +3877,15 @@ export const GetAccountResponseAccount = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetAccountResponseAccount",
 }) as any as S.Schema<GetAccountResponseAccount>;
 
-export type GetAccountResponseMembershipPermissionsItem =
-  | "billing:manage"
-  | "billing:read"
-  | "manage_api"
-  | "manage_orders"
-  | "manage_practices"
-  | "manage_organization"
-  | "read_catalog"
-  | "read_orders"
-  | "review_orders";
-export const GetAccountResponseMembershipPermissionsItem = /*@__PURE__*/ S.String;
+export type GetAccountResponseScopesList = Array<string>;
+export const GetAccountResponseScopesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<GetAccountResponseScopesList>;
 
-export type GetAccountResponseMembershipPermissionsList =
-  Array<GetAccountResponseMembershipPermissionsItem>;
+/** Effective API scopes for a service key; dashboard permissions for a signed-in member. */
+export type GetAccountResponseMembershipPermissionsList = Array<string>;
 export const GetAccountResponseMembershipPermissionsList = /*@__PURE__*/ S.Array(
-  GetAccountResponseMembershipPermissionsItem,
+  S.String,
 ) as any as S.Schema<GetAccountResponseMembershipPermissionsList>;
 
 export type GetAccountResponseMembershipRole =
@@ -4056,13 +3894,15 @@ export type GetAccountResponseMembershipRole =
   | "developer"
   | "operations"
   | "owner"
-  | "viewer";
+  | "viewer"
+  | "service_key";
 export const GetAccountResponseMembershipRole = /*@__PURE__*/ S.String;
 
 export type GetAccountResponseMembershipStatus = "active" | "disabled" | "invited";
 export const GetAccountResponseMembershipStatus = /*@__PURE__*/ S.String;
 
 export interface GetAccountResponseMembership {
+  /** Effective API scopes for a service key; dashboard permissions for a signed-in member. */
   permissions: GetAccountResponseMembershipPermissionsList;
   role: GetAccountResponseMembershipRole;
   roleName: string;
@@ -4079,6 +3919,7 @@ export const GetAccountResponseMembership = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetAccountResponseMembership",
 }) as any as S.Schema<GetAccountResponseMembership>;
 
+/** The organization's Live-access status, independent of this request's livemode. */
 export type GetAccountResponseOperatingMode =
   | "production"
   | "production_pending"
@@ -4107,13 +3948,20 @@ export const GetAccountResponseUser = /*@__PURE__*/ S.suspend(() =>
 
 export interface GetAccountResponse {
   account: GetAccountResponseAccount;
+  /** True for a Live request; false for a Test request. */
+  livemode: boolean;
+  /** Effective scopes of the authenticated API key. Null for a dashboard session; use membership.permissions for that session. */
+  scopes: GetAccountResponseScopesList | null;
   membership: GetAccountResponseMembership;
+  /** The organization's Live-access status, independent of this request's livemode. */
   operatingMode: GetAccountResponseOperatingMode;
   user: GetAccountResponseUser;
 }
 export const GetAccountResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     account: GetAccountResponseAccount,
+    livemode: S.Boolean,
+    scopes: S.NullOr(GetAccountResponseScopesList),
     membership: GetAccountResponseMembership,
     operatingMode: GetAccountResponseOperatingMode,
     user: GetAccountResponseUser,
@@ -4605,6 +4453,7 @@ export interface GetOrderResponse {
   patientExternalId: string | null;
   patientId: string;
   patientName: string;
+  /** The patient's current clinical state. This is not the saved delivery state; use each prescription's deliveryAddress for shipping. */
   patientState: string;
   practiceId: string;
   prescriberName: string | null;
@@ -4767,15 +4616,13 @@ export const GetPatientResponseClinicalProfile = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetPatientResponseClinicalProfile",
 }) as any as S.Schema<GetPatientResponseClinicalProfile>;
 
-export type GetPatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
-export const GetPatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+export type GetPatientResponseExternalIdentitiesItem = CreatePatientResponseExternalIdentitiesItem;
+export const GetPatientResponseExternalIdentitiesItem = CreatePatientResponseExternalIdentitiesItem;
 
 export type GetPatientResponseExternalIdentitiesList =
-  Array<CreateOrderRequestPatientExternalIdentitiesItem>;
+  Array<CreatePatientResponseExternalIdentitiesItem>;
 export const GetPatientResponseExternalIdentitiesList = /*@__PURE__*/ S.Array(
-  CreateOrderRequestPatientExternalIdentitiesItem,
+  CreatePatientResponseExternalIdentitiesItem,
 ) as any as S.Schema<GetPatientResponseExternalIdentitiesList>;
 
 export type GetPatientResponseAddressesItemAddress = ArchivePatientAddressResponseAddress;
@@ -4847,14 +4694,14 @@ export const GetPatientResponseMeasurementsItemWeightKilograms =
 export interface GetPatientResponseMeasurementsItem {
   heightCentimeters: GetPatientResponseMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
-  source: string;
+  source: unknown;
   weightKilograms: GetPatientResponseMeasurementsItemWeightKilograms | null;
 }
 export const GetPatientResponseMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     heightCentimeters: S.NullOr(GetPatientResponseMeasurementsItemHeightCentimeters),
     recordedAt: S.String,
-    source: S.String,
+    source: S.Unknown,
     weightKilograms: S.NullOr(GetPatientResponseMeasurementsItemWeightKilograms),
   }),
 ).annotate({
@@ -4877,14 +4724,14 @@ export const GetPatientResponseProgramsItemStatus = /*@__PURE__*/ S.String;
 
 export interface GetPatientResponseProgramsItem {
   endedAt: string | null;
-  name: string;
+  name: unknown;
   startedAt: string;
   status: GetPatientResponseProgramsItemStatus;
 }
 export const GetPatientResponseProgramsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endedAt: S.NullOr(S.String),
-    name: S.String,
+    name: S.Unknown,
     startedAt: S.String,
     status: GetPatientResponseProgramsItemStatus,
   }),
@@ -4910,7 +4757,7 @@ export interface GetPatientResponse {
   clinicalProfile: GetPatientResponseClinicalProfile;
   dateOfBirth: string;
   email: string | null;
-  externalId: string | null;
+  externalId: unknown | null;
   externalIdentities: GetPatientResponseExternalIdentitiesList;
   addresses: GetPatientResponseAddressesList;
   encounters: GetPatientResponseEncountersList;
@@ -4941,7 +4788,7 @@ export const GetPatientResponse = /*@__PURE__*/ S.suspend(() =>
     clinicalProfile: GetPatientResponseClinicalProfile,
     dateOfBirth: S.String,
     email: S.NullOr(S.String),
-    externalId: S.NullOr(S.String),
+    externalId: S.NullOr(S.Unknown),
     externalIdentities: GetPatientResponseExternalIdentitiesList,
     addresses: GetPatientResponseAddressesList,
     encounters: GetPatientResponseEncountersList,
@@ -8348,6 +8195,7 @@ export interface ListOrdersResponseDataItem {
   patientExternalId: string | null;
   patientId: string;
   patientName: string;
+  /** The patient's current clinical state. This is not the saved delivery state; use each prescription's deliveryAddress for shipping. */
   patientState: string;
   practiceId: string;
   prescriberName: string | null;
@@ -8589,14 +8437,14 @@ export const ListPatientsResponseDataItemClinicalProfile = /*@__PURE__*/ S.suspe
 }) as any as S.Schema<ListPatientsResponseDataItemClinicalProfile>;
 
 export type ListPatientsResponseDataItemExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+  CreatePatientResponseExternalIdentitiesItem;
 export const ListPatientsResponseDataItemExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+  CreatePatientResponseExternalIdentitiesItem;
 
 export type ListPatientsResponseDataItemExternalIdentitiesList =
-  Array<CreateOrderRequestPatientExternalIdentitiesItem>;
+  Array<CreatePatientResponseExternalIdentitiesItem>;
 export const ListPatientsResponseDataItemExternalIdentitiesList = /*@__PURE__*/ S.Array(
-  CreateOrderRequestPatientExternalIdentitiesItem,
+  CreatePatientResponseExternalIdentitiesItem,
 ) as any as S.Schema<ListPatientsResponseDataItemExternalIdentitiesList>;
 
 export type ListPatientsResponseDataItemAddressesItemAddress = ArchivePatientAddressResponseAddress;
@@ -8671,14 +8519,14 @@ export const ListPatientsResponseDataItemMeasurementsItemWeightKilograms =
 export interface ListPatientsResponseDataItemMeasurementsItem {
   heightCentimeters: ListPatientsResponseDataItemMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
-  source: string;
+  source: unknown;
   weightKilograms: ListPatientsResponseDataItemMeasurementsItemWeightKilograms | null;
 }
 export const ListPatientsResponseDataItemMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     heightCentimeters: S.NullOr(ListPatientsResponseDataItemMeasurementsItemHeightCentimeters),
     recordedAt: S.String,
-    source: S.String,
+    source: S.Unknown,
     weightKilograms: S.NullOr(ListPatientsResponseDataItemMeasurementsItemWeightKilograms),
   }),
 ).annotate({
@@ -8702,14 +8550,14 @@ export const ListPatientsResponseDataItemProgramsItemStatus = /*@__PURE__*/ S.St
 
 export interface ListPatientsResponseDataItemProgramsItem {
   endedAt: string | null;
-  name: string;
+  name: unknown;
   startedAt: string;
   status: ListPatientsResponseDataItemProgramsItemStatus;
 }
 export const ListPatientsResponseDataItemProgramsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endedAt: S.NullOr(S.String),
-    name: S.String,
+    name: S.Unknown,
     startedAt: S.String,
     status: ListPatientsResponseDataItemProgramsItemStatus,
   }),
@@ -8736,7 +8584,7 @@ export interface ListPatientsResponseDataItem {
   clinicalProfile: ListPatientsResponseDataItemClinicalProfile;
   dateOfBirth: string;
   email: string | null;
-  externalId: string | null;
+  externalId: unknown | null;
   externalIdentities: ListPatientsResponseDataItemExternalIdentitiesList;
   addresses: ListPatientsResponseDataItemAddressesList;
   encounters: ListPatientsResponseDataItemEncountersList;
@@ -8767,7 +8615,7 @@ export const ListPatientsResponseDataItem = /*@__PURE__*/ S.suspend(() =>
     clinicalProfile: ListPatientsResponseDataItemClinicalProfile,
     dateOfBirth: S.String,
     email: S.NullOr(S.String),
-    externalId: S.NullOr(S.String),
+    externalId: S.NullOr(S.Unknown),
     externalIdentities: ListPatientsResponseDataItemExternalIdentitiesList,
     addresses: ListPatientsResponseDataItemAddressesList,
     encounters: ListPatientsResponseDataItemEncountersList,
@@ -10409,18 +10257,18 @@ export type PreviewOrderRequestPatientAddressCountry = "US";
 export const PreviewOrderRequestPatientAddressCountry = /*@__PURE__*/ S.String;
 
 export interface PreviewOrderRequestPatientAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: PreviewOrderRequestPatientAddressCountry | (string & {}) | null;
 }
 export const PreviewOrderRequestPatientAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(PreviewOrderRequestPatientAddressCountry)),
@@ -10491,19 +10339,19 @@ export type PreviewOrderRequestPatientAddressesItemAddressCountry = "US";
 export const PreviewOrderRequestPatientAddressesItemAddressCountry = /*@__PURE__*/ S.String;
 
 export interface PreviewOrderRequestPatientAddressesItemAddress {
-  city: string;
+  city: unknown;
   country?: PreviewOrderRequestPatientAddressesItemAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const PreviewOrderRequestPatientAddressesItemAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(PreviewOrderRequestPatientAddressesItemAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -10516,7 +10364,7 @@ export interface PreviewOrderRequestPatientAddressesItem {
   address: PreviewOrderRequestPatientAddressesItemAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
 }
 export const PreviewOrderRequestPatientAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -10524,7 +10372,7 @@ export const PreviewOrderRequestPatientAddressesItem = /*@__PURE__*/ S.suspend((
     address: PreviewOrderRequestPatientAddressesItemAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
   }),
 ).annotate({
   identifier: "PreviewOrderRequestPatientAddressesItem",
@@ -11625,18 +11473,18 @@ export type PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry = "US"
 export const PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry = /*@__PURE__*/ S.String;
 
 export interface PreviewOrderResponseCase0OrderInputCase1PatientAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry | null;
 }
 export const PreviewOrderResponseCase0OrderInputCase1PatientAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry)),
@@ -11736,7 +11584,7 @@ export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeig
 export interface PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem {
   heightCentimeters: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
-  source: string;
+  source: unknown;
   weightKilograms: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms | null;
 }
 export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem =
@@ -11746,7 +11594,7 @@ export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem =
         PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters,
       ),
       recordedAt: S.String,
-      source: S.String,
+      source: S.Unknown,
       weightKilograms: S.NullOr(
         PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms,
       ),
@@ -11774,7 +11622,7 @@ export const PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus =
 
 export interface PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem {
   endedAt: string | null;
-  name: string;
+  name: unknown;
   startedAt: string;
   status: PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus;
 }
@@ -11782,7 +11630,7 @@ export const PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem = /*@__
   () =>
     S.Struct({
       endedAt: S.NullOr(S.String),
-      name: S.String,
+      name: S.Unknown,
       startedAt: S.String,
       status: PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus,
     }),
@@ -11801,14 +11649,14 @@ export interface PreviewOrderResponseCase0OrderInputCase1Patient {
   clinicalProfile?: PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile | null;
   dateOfBirth: unknown;
   email?: string | null;
-  externalId?: string | null;
+  externalId?: unknown | null;
   externalIdentities?: unknown | null;
   addresses?: unknown | null;
   encounters?: PreviewOrderResponseCase0OrderInputCase1PatientEncountersList | null;
   gender?: PreviewOrderResponseCase0OrderInputCase1PatientGender | null;
   locationId?: unknown | null;
   metadata?: unknown | null;
-  medicalRecordNumber?: string | null;
+  medicalRecordNumber?: unknown | null;
   measurements?: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList | null;
   name: CreateOrderRequestPatientName;
   phone?: string | null;
@@ -11822,14 +11670,14 @@ export const PreviewOrderResponseCase0OrderInputCase1Patient = /*@__PURE__*/ S.s
     ),
     dateOfBirth: S.Unknown,
     email: S.optional(S.NullOr(S.String)),
-    externalId: S.optional(S.NullOr(S.String)),
+    externalId: S.optional(S.NullOr(S.Unknown)),
     externalIdentities: S.optional(S.NullOr(S.Unknown)),
     addresses: S.optional(S.NullOr(S.Unknown)),
     encounters: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientEncountersList)),
     gender: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientGender)),
     locationId: S.optional(S.NullOr(S.Unknown)),
     metadata: S.optional(S.NullOr(S.Unknown)),
-    medicalRecordNumber: S.optional(S.NullOr(S.String)),
+    medicalRecordNumber: S.optional(S.NullOr(S.Unknown)),
     measurements: S.optional(
       S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList),
     ),
@@ -15479,7 +15327,7 @@ export interface SetDefaultPatientAddressResponse {
   address: ArchivePatientAddressResponseAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
   archivedAt: string | null;
 }
 export const SetDefaultPatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
@@ -15488,7 +15336,7 @@ export const SetDefaultPatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
     address: ArchivePatientAddressResponseAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
     archivedAt: S.NullOr(S.String),
   }),
 ).annotate({
@@ -16142,18 +15990,18 @@ export type UpdatePatientRequestAddressCountry = "US";
 export const UpdatePatientRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientRequestAddress {
-  city: string;
-  line1: string;
-  line2?: string | null;
+  city: unknown;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
   country?: UpdatePatientRequestAddressCountry | (string & {}) | null;
 }
 export const UpdatePatientRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    city: S.Unknown,
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
     country: S.optional(S.NullOr(UpdatePatientRequestAddressCountry)),
@@ -16219,19 +16067,19 @@ export type UpdatePatientRequestAddressesItemAddressCountry = "US";
 export const UpdatePatientRequestAddressesItemAddressCountry = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientRequestAddressesItemAddress {
-  city: string;
+  city: unknown;
   country?: UpdatePatientRequestAddressesItemAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const UpdatePatientRequestAddressesItemAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(UpdatePatientRequestAddressesItemAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -16244,7 +16092,7 @@ export interface UpdatePatientRequestAddressesItem {
   address: UpdatePatientRequestAddressesItemAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
 }
 export const UpdatePatientRequestAddressesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -16252,7 +16100,7 @@ export const UpdatePatientRequestAddressesItem = /*@__PURE__*/ S.suspend(() =>
     address: UpdatePatientRequestAddressesItemAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
   }),
 ).annotate({
   identifier: "UpdatePatientRequestAddressesItem",
@@ -16321,17 +16169,17 @@ export const UpdatePatientRequestMeasurementsList = /*@__PURE__*/ S.Array(
 ) as any as S.Schema<UpdatePatientRequestMeasurementsList>;
 
 export interface UpdatePatientRequestName {
-  first?: string | null;
-  last?: string | null;
-  middle?: string | null;
-  preferred?: string | null;
+  first?: unknown | null;
+  last?: unknown | null;
+  middle?: unknown | null;
+  preferred?: unknown | null;
 }
 export const UpdatePatientRequestName = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    first: S.optional(S.NullOr(S.String)),
-    last: S.optional(S.NullOr(S.String)),
-    middle: S.optional(S.NullOr(S.String)),
-    preferred: S.optional(S.NullOr(S.String)),
+    first: S.optional(S.NullOr(S.Unknown)),
+    last: S.optional(S.NullOr(S.Unknown)),
+    middle: S.optional(S.NullOr(S.Unknown)),
+    preferred: S.optional(S.NullOr(S.Unknown)),
   }),
 ).annotate({ identifier: "UpdatePatientRequestName" }) as any as S.Schema<UpdatePatientRequestName>;
 
@@ -16477,14 +16325,14 @@ export const UpdatePatientResponseClinicalProfile = /*@__PURE__*/ S.suspend(() =
 }) as any as S.Schema<UpdatePatientResponseClinicalProfile>;
 
 export type UpdatePatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+  CreatePatientResponseExternalIdentitiesItem;
 export const UpdatePatientResponseExternalIdentitiesItem =
-  CreateOrderRequestPatientExternalIdentitiesItem;
+  CreatePatientResponseExternalIdentitiesItem;
 
 export type UpdatePatientResponseExternalIdentitiesList =
-  Array<CreateOrderRequestPatientExternalIdentitiesItem>;
+  Array<CreatePatientResponseExternalIdentitiesItem>;
 export const UpdatePatientResponseExternalIdentitiesList = /*@__PURE__*/ S.Array(
-  CreateOrderRequestPatientExternalIdentitiesItem,
+  CreatePatientResponseExternalIdentitiesItem,
 ) as any as S.Schema<UpdatePatientResponseExternalIdentitiesList>;
 
 export type UpdatePatientResponseAddressesItemAddress = ArchivePatientAddressResponseAddress;
@@ -16556,14 +16404,14 @@ export const UpdatePatientResponseMeasurementsItemWeightKilograms =
 export interface UpdatePatientResponseMeasurementsItem {
   heightCentimeters: UpdatePatientResponseMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
-  source: string;
+  source: unknown;
   weightKilograms: UpdatePatientResponseMeasurementsItemWeightKilograms | null;
 }
 export const UpdatePatientResponseMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     heightCentimeters: S.NullOr(UpdatePatientResponseMeasurementsItemHeightCentimeters),
     recordedAt: S.String,
-    source: S.String,
+    source: S.Unknown,
     weightKilograms: S.NullOr(UpdatePatientResponseMeasurementsItemWeightKilograms),
   }),
 ).annotate({
@@ -16586,14 +16434,14 @@ export const UpdatePatientResponseProgramsItemStatus = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientResponseProgramsItem {
   endedAt: string | null;
-  name: string;
+  name: unknown;
   startedAt: string;
   status: UpdatePatientResponseProgramsItemStatus;
 }
 export const UpdatePatientResponseProgramsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     endedAt: S.NullOr(S.String),
-    name: S.String,
+    name: S.Unknown,
     startedAt: S.String,
     status: UpdatePatientResponseProgramsItemStatus,
   }),
@@ -16619,7 +16467,7 @@ export interface UpdatePatientResponse {
   clinicalProfile: UpdatePatientResponseClinicalProfile;
   dateOfBirth: string;
   email: string | null;
-  externalId: string | null;
+  externalId: unknown | null;
   externalIdentities: UpdatePatientResponseExternalIdentitiesList;
   addresses: UpdatePatientResponseAddressesList;
   encounters: UpdatePatientResponseEncountersList;
@@ -16650,7 +16498,7 @@ export const UpdatePatientResponse = /*@__PURE__*/ S.suspend(() =>
     clinicalProfile: UpdatePatientResponseClinicalProfile,
     dateOfBirth: S.String,
     email: S.NullOr(S.String),
-    externalId: S.NullOr(S.String),
+    externalId: S.NullOr(S.Unknown),
     externalIdentities: UpdatePatientResponseExternalIdentitiesList,
     addresses: UpdatePatientResponseAddressesList,
     encounters: UpdatePatientResponseEncountersList,
@@ -16676,19 +16524,19 @@ export type UpdatePatientAddressRequestAddressCountry = "US";
 export const UpdatePatientAddressRequestAddressCountry = /*@__PURE__*/ S.String;
 
 export interface UpdatePatientAddressRequestAddress {
-  city: string;
+  city: unknown;
   country?: UpdatePatientAddressRequestAddressCountry | (string & {}) | null;
-  line1: string;
-  line2?: string | null;
+  line1: unknown;
+  line2?: unknown | null;
   postalCode: string;
   state: string;
 }
 export const UpdatePatientAddressRequestAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    city: S.String,
+    city: S.Unknown,
     country: S.optional(S.NullOr(UpdatePatientAddressRequestAddressCountry)),
-    line1: S.String,
-    line2: S.optional(S.NullOr(S.String)),
+    line1: S.Unknown,
+    line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
   }),
@@ -16703,7 +16551,7 @@ export interface UpdatePatientAddressRequest {
   idempotencyKey: string;
   address?: UpdatePatientAddressRequestAddress | null;
   label?: string | null;
-  recipientName?: string | null;
+  recipientName?: unknown | null;
   preferredShipping?: boolean | null;
 }
 export const UpdatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
@@ -16714,7 +16562,7 @@ export const UpdatePatientAddressRequest = /*@__PURE__*/ S.suspend(() =>
     idempotencyKey: S.String.pipe(T.Header("Idempotency-Key")),
     address: S.optional(S.NullOr(UpdatePatientAddressRequestAddress)),
     label: S.optional(S.NullOr(S.String)),
-    recipientName: S.optional(S.NullOr(S.String)),
+    recipientName: S.optional(S.NullOr(S.Unknown)),
     preferredShipping: S.optional(S.NullOr(S.Boolean)),
   }).pipe(
     T.Http({
@@ -16735,7 +16583,7 @@ export interface UpdatePatientAddressResponse {
   address: ArchivePatientAddressResponseAddress;
   label: string;
   preferredShipping: boolean;
-  recipientName: string | null;
+  recipientName: unknown | null;
   archivedAt: string | null;
 }
 export const UpdatePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
@@ -16744,7 +16592,7 @@ export const UpdatePatientAddressResponse = /*@__PURE__*/ S.suspend(() =>
     address: ArchivePatientAddressResponseAddress,
     label: S.String,
     preferredShipping: S.Boolean,
-    recipientName: S.NullOr(S.String),
+    recipientName: S.NullOr(S.Unknown),
     archivedAt: S.NullOr(S.String),
   }),
 ).annotate({
@@ -17604,48 +17452,6 @@ export const cancelOrder: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type CreateComponentSessionError =
-  | BadRequest
-  | Forbidden
-  | NotFound
-  | Conflict
-  | UnprocessableEntity
-  | AffinityOpError;
-/** Create component session Creates a one-time, origin-bound Affinity Elements client secret. The platform API key must stay on the server. */
-export const createComponentSession: API.OperationMethod<
-  CreateComponentSessionRequest,
-  CreateComponentSessionResponse,
-  CreateComponentSessionError,
-  AffinityOpContext
-> = /*@__PURE__*/ API.make(() => ({
-  input: CreateComponentSessionRequest,
-  output: CreateComponentSessionResponse,
-  errors: [BadRequest, Forbidden, NotFound, Conflict, UnprocessableEntity],
-  protocol: AffinityProtocol,
-  retry: Retry.Retry,
-}));
-
-export type CreateHostedSessionError =
-  | BadRequest
-  | Forbidden
-  | NotFound
-  | Conflict
-  | UnprocessableEntity
-  | AffinityOpError;
-/** Create hosted session Creates a hosted workflow URL that expires after 15 minutes. Use order_review to open an existing draft for clinician signing in Clinic. Opening the page does not change order state; no review request or approval step is required. The clinician must sign in and have current prescribing access; the link grants no signing authority. Keep the practice or platform API key on the server. */
-export const createHostedSession: API.OperationMethod<
-  CreateHostedSessionRequest,
-  CreateHostedSessionResponse,
-  CreateHostedSessionError,
-  AffinityOpContext
-> = /*@__PURE__*/ API.make(() => ({
-  input: CreateHostedSessionRequest,
-  output: CreateHostedSessionResponse,
-  errors: [BadRequest, Forbidden, NotFound, Conflict, UnprocessableEntity],
-  protocol: AffinityProtocol,
-  retry: Retry.Retry,
-}));
-
 export type CreateOrderError =
   | BadRequest
   | Forbidden
@@ -17860,7 +17666,7 @@ export type GetAccountError =
   | Conflict
   | UnprocessableEntity
   | AffinityOpError;
-/** Read account Returns the platform organization and the current role. */
+/** Read account Returns the platform organization, request livemode, and effective access. API keys report scopes and the service_key role; dashboard sessions report membership permissions. operatingMode describes organization Live access, not the credential's Test/Live mode. */
 export const getAccount: API.OperationMethod<
   GetAccountRequest,
   GetAccountResponse,
@@ -18055,7 +17861,7 @@ export type GetPracticeTeamMemberError =
   | NotFound
   | Conflict
   | AffinityOpError;
-/** Get member Requires team:read. Returns current account membership, roles, location access, and prescriber connection. The member ID identifies practice access; it is not the integration user ID used by orders or sessions. */
+/** Get member Requires team:read. Returns current account membership, roles, location access, and prescriber connection. The member ID identifies practice access; it is not the integration user ID used by orders. */
 export const getPracticeTeamMember: API.OperationMethod<
   GetPracticeTeamMemberRequest,
   GetPracticeTeamMemberResponse,

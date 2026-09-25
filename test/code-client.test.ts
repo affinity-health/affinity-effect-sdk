@@ -92,7 +92,7 @@ describe("agent code client", () => {
   });
 
   test("generates a registry for every OpenAPI operation", () => {
-    expect(Object.keys(operationRegistry)).toHaveLength(83);
+    expect(Object.keys(operationRegistry)).toHaveLength(81);
     expect(operationRegistry.previewOrder.kind).toBe("write");
     expect(operationRegistry.registerUser.kind).toBe("write");
     expect(operationRegistry.getAccount.kind).toBe("read");
