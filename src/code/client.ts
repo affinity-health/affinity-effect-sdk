@@ -5,6 +5,7 @@ import * as Result from "effect/Result";
 import type { CredentialsOptions } from "../credentials.ts";
 import { layer } from "../client.ts";
 import { operationRegistry, type OperationKind, type OperationName } from "./registry.ts";
+import { resolveCodeMode } from "./mode.ts";
 
 type AnyOperation = (input: any) => Effect.Effect<any, any, any>;
 type AnyCodeOperation = (input: any) => Promise<any>;
@@ -92,6 +93,7 @@ export class AgentOperationError extends Error {
 }
 
 export interface AffinityCodeSession {
+  readonly mode: "test" | "live";
   readonly affinity: AffinityCodeClient;
   readonly dispose: () => Promise<void>;
   readonly operations: typeof operationRegistry;
@@ -121,7 +123,7 @@ const positiveInteger = (value: number, name: string): number => {
 export const createCodeSession = (options: CodeClientOptions): AffinityCodeSession => {
   const maxRequests = positiveInteger(options.maxRequests ?? 100, "maxRequests");
   const timeoutMs = positiveInteger(options.timeoutMs ?? 30_000, "timeoutMs");
-  const mode = options.mode ?? "test";
+  const mode = resolveCodeMode(options.apiKey, options.mode);
   const runtime = ManagedRuntime.make(layer(options));
   let requestCount = 0;
 
@@ -196,6 +198,7 @@ export const createCodeSession = (options: CodeClientOptions): AffinityCodeSessi
   }
 
   return {
+    mode,
     affinity: client as unknown as AffinityCodeClient,
     dispose: () => runtime.dispose(),
     operations: operationRegistry,

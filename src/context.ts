@@ -59,7 +59,7 @@ export const affinityAgentContext = {
   },
   policy: {
     clinical: "Order and signing operations additionally require --allow-clinical.",
-    live: "Live mutations additionally require --mode live --confirm-live LIVE.",
+    live: "Mode is inferred from the API key. Live mutations additionally require --confirm-live LIVE; an explicit --mode must match the key.",
     mutations: "Sessions are read-only unless --apply is present.",
     runner:
       "Agent programs execute with the local operating-system user's permissions; code mode is not a sandbox.",

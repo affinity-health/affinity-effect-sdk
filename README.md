@@ -111,7 +111,7 @@ affinity run update-practice.ts \
   --confirm-live LIVE
 ```
 
-The mode flag governs the runner's policy. The API key and server remain responsible for authorization and the actual Test or Live data boundary.
+The runner derives Test or Live mode from the API key. If supplied, `--mode` or `AFFINITY_MODE` must match that key. Live mutations require `--confirm-live LIVE` even when the mode flag is omitted. The server enforces authorization and data isolation.
 
 The public contract includes `previewOrder`, `createOrder`, `signOrder`, `submitOrder`, and
 `signAndSubmitOrder`. Creation uses one patient and a `prescriptions` array. Use

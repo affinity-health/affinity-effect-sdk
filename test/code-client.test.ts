@@ -3,6 +3,50 @@ import { AgentPolicyError, createCodeSession } from "../src/code/client.ts";
 import { operationRegistry } from "../src/code/registry.ts";
 
 describe("agent code client", () => {
+  test("Live credential inference blocks HTTP writes until confirmed", async () => {
+    let requests = 0;
+    const server = Bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      fetch() {
+        requests += 1;
+        return Response.json({ detail: "Synthetic missing practice" }, { status: 404 });
+      },
+    });
+    const options = {
+      apiKey: "sk_live_synthetic",
+      apiBaseUrl: server.url.origin,
+      allowMutations: true,
+    };
+    const blocked = createCodeSession(options);
+    const confirmed = createCodeSession({ ...options, confirmLive: true });
+    try {
+      expect(blocked.mode).toBe("live");
+      await expect(
+        blocked.affinity.createPracticeLocation({
+          practiceId: "prac_synthetic",
+          name: "Synthetic",
+        }),
+      ).rejects.toBeInstanceOf(AgentPolicyError);
+      expect(requests).toBe(0);
+      await expect(
+        confirmed.affinity.createPracticeLocation({
+          practiceId: "prac_synthetic",
+          name: "Synthetic",
+        }),
+      ).rejects.toThrow();
+      expect(requests).toBe(1);
+      expect(() => createCodeSession({ ...options, mode: "test" })).toThrow("mode was requested");
+      expect(() => createCodeSession({ ...options, apiKey: "unknown", mode: "test" })).toThrow(
+        "Cannot determine",
+      );
+      expect(requests).toBe(1);
+    } finally {
+      await blocked.dispose();
+      await confirmed.dispose();
+      server.stop(true);
+    }
+  });
   test("sends stable idempotency keys through retries and honors explicit replay keys", async () => {
     const requests: Array<{ key: string | null; body: unknown }> = [];
     let rejectFirst = true;
@@ -61,7 +105,7 @@ describe("agent code client", () => {
   });
 
   test("blocks mutations unless the session enables them", async () => {
-    const session = createCodeSession({ apiKey: "aff_test_secret" });
+    const session = createCodeSession({ apiKey: "sk_test_synthetic" });
     try {
       await expect(session.affinity.createPractice({} as never)).rejects.toBeInstanceOf(
         AgentPolicyError,
@@ -73,7 +117,7 @@ describe("agent code client", () => {
 
   test("requires separate clinical access", async () => {
     const session = createCodeSession({
-      apiKey: "aff_test_secret",
+      apiKey: "sk_test_synthetic",
       allowMutations: true,
     });
     try {
@@ -89,7 +133,7 @@ describe("agent code client", () => {
 
   test("requires exact confirmation for Live mutations", async () => {
     const session = createCodeSession({
-      apiKey: "aff_live_secret",
+      apiKey: "sk_live_synthetic",
       allowMutations: true,
       mode: "live",
     });

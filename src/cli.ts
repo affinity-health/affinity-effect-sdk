@@ -23,6 +23,7 @@ import {
   type AgentProgramContext,
 } from "./code/index.ts";
 import { operationRegistry } from "./code/registry.ts";
+import { resolveCodeMode } from "./code/mode.ts";
 import {
   affinityAgentContext,
   DEFAULT_MAX_REQUESTS,
@@ -38,7 +39,13 @@ class CliError extends Schema.TaggedError<CliError>()("CliError", {
   message: Schema.String,
 }) {}
 
-const modeDefault = process.env.AFFINITY_MODE === "live" ? "live" : "test";
+function requestedMode(root: RootOptions) {
+  const value = Option.getOrUndefined(root.mode) ?? process.env.AFFINITY_MODE;
+  if (value !== undefined && value !== "test" && value !== "live") {
+    throw new TypeError("AFFINITY_MODE must be test or live");
+  }
+  return value;
+}
 
 const affinity = Command.make("affinity").pipe(
   Command.withDescription("Run agent-authored code against the Affinity API"),
@@ -64,8 +71,8 @@ const affinity = Command.make("affinity").pipe(
       Flag.withDefault(DEFAULT_MAX_REQUESTS),
     ),
     mode: Flag.choice("mode", ["test", "live"]).pipe(
-      Flag.withDescription("Policy mode for this execution"),
-      Flag.withDefault(modeDefault),
+      Flag.withDescription("Require this credential mode; defaults to the key’s actual mode"),
+      Flag.optional,
     ),
     organization: Flag.string("organization").pipe(
       Flag.withDescription("Organization ID for this invocation"),
@@ -88,7 +95,7 @@ interface RootOptions {
   readonly confirmLive: Option.Option<string>;
   readonly json: boolean;
   readonly maxRequests: number;
-  readonly mode: "test" | "live";
+  readonly mode: Option.Option<"test" | "live">;
   readonly organization: Option.Option<string>;
   readonly timeout: number;
   readonly verbose: boolean;
@@ -189,7 +196,7 @@ const loadSession = Effect.fn("loadSession")(function* (root: RootOptions) {
         allowMutations: root.apply,
         confirmLive: Option.getOrUndefined(root.confirmLive) === "LIVE",
         maxRequests: root.maxRequests,
-        mode: root.mode,
+        mode: requestedMode(root),
         organizationId,
         timeoutMs: root.timeout,
         onOperation: root.verbose
@@ -422,7 +429,7 @@ const authLoginCommand = Command.make(
       try: () =>
         startDeviceAuthorization({
           apiBaseUrl,
-          mode: root.mode,
+          mode: requestedMode(root),
           scopes: access === "write" ? WRITE_DEVICE_SCOPES : undefined,
         }),
       catch: (cause) =>
@@ -546,6 +553,18 @@ const doctorCommand = Command.make(
         : credential
           ? "expired"
           : "missing";
+    const mode = yield* Effect.try({
+      try: () => {
+        const key = process.env.AFFINITY_API_KEY ?? credential?.accessToken;
+        return key ? resolveCodeMode(key, requestedMode(root)) : (requestedMode(root) ?? "test");
+      },
+      catch: (cause) =>
+        new CliError({
+          cause,
+          exitCode: 2,
+          message: cause instanceof Error ? cause.message : "Invalid credential mode",
+        }),
+    });
     const checks = {
       apiBaseUrl:
         process.env.AFFINITY_API_BASE_URL ??
@@ -554,7 +573,7 @@ const doctorCommand = Command.make(
       authentication: credentialStatus,
       apiVersion: process.env.AFFINITY_API_VERSION ?? "2026-08-11",
       bun: Bun.version,
-      mode: root.mode,
+      mode,
       mutationAccess: root.apply,
     };
     yield* printValue(checks, root.json);

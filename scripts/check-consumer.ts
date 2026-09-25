@@ -50,7 +50,7 @@ try {
     join(temporary, "smoke.ts"),
     `import {createCodeSession} from "@affinity-health/effect-sdk/code";
 import * as operations from "@affinity-health/effect-sdk/operations";
-const session=createCodeSession({apiKey:"synthetic"});
+const session=createCodeSession({apiKey:"sk_test_synthetic"});
 if (typeof session.affinity.createOrder !== "function" || typeof operations.signOrder !== "function") throw new Error("Missing order operations");
 await session.dispose();`,
   );
