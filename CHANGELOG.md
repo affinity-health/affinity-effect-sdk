@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## [0.4.2] - 2026-09-25
+
+### Fixed
+
+- Enforce the Live mutation confirmation from the API key's actual mode, including when `--mode` is omitted.
+- Regenerate operations from the deployed contract, including accepted Team member external IDs, partial invitation profiles, and importable order-preview models.
+- Keep unreleased embedded-component permissions out of device authorization.
+
 ## [0.4.1] - 2026-09-24
 
 ### Fixed

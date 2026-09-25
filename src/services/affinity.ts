@@ -3834,11 +3834,6 @@ export const GetAccountRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v1/account", code: 200 })),
 ).annotate({ identifier: "GetAccountRequest" }) as any as S.Schema<GetAccountRequest>;
 
-export type GetAccountResponseAccountAllowedOriginsList = Array<string>;
-export const GetAccountResponseAccountAllowedOriginsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<GetAccountResponseAccountAllowedOriginsList>;
-
 export type GetAccountResponseAccountAllowedReturnUrlsList = Array<string>;
 export const GetAccountResponseAccountAllowedReturnUrlsList = /*@__PURE__*/ S.Array(
   S.String,
@@ -3851,7 +3846,6 @@ export type GetAccountResponseAccountStatus = "active" | "pending" | "suspended"
 export const GetAccountResponseAccountStatus = /*@__PURE__*/ S.String;
 
 export interface GetAccountResponseAccount {
-  allowedOrigins: GetAccountResponseAccountAllowedOriginsList;
   allowedReturnUrls: GetAccountResponseAccountAllowedReturnUrlsList;
   displayName: string;
   id: string;
@@ -3863,7 +3857,6 @@ export interface GetAccountResponseAccount {
 }
 export const GetAccountResponseAccount = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    allowedOrigins: GetAccountResponseAccountAllowedOriginsList,
     allowedReturnUrls: GetAccountResponseAccountAllowedReturnUrlsList,
     displayName: S.String,
     id: S.String,
@@ -5639,6 +5632,8 @@ export const GetPracticeTeamMemberResponseNextActionsList = /*@__PURE__*/ S.Arra
 
 export interface GetPracticeTeamMemberResponse {
   id: string;
+  /** This integration's external ID for the accepted invitee in the API key's mode. Null for members invited outside this integration. */
+  externalId: string | null;
   name: string;
   email: string | null;
   locationIds: GetPracticeTeamMemberResponseLocationIdsList;
@@ -5648,6 +5643,7 @@ export interface GetPracticeTeamMemberResponse {
 export const GetPracticeTeamMemberResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.String,
+    externalId: S.NullOr(S.String),
     name: S.String,
     email: S.NullOr(S.String),
     locationIds: GetPracticeTeamMemberResponseLocationIdsList,
@@ -6053,33 +6049,35 @@ export const InvitePracticeTeamPersonRequestProfileDetailsCertificationsList =
   ) as any as S.Schema<InvitePracticeTeamPersonRequestProfileDetailsCertificationsList>;
 
 export interface InvitePracticeTeamPersonRequestProfileDetails {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  namePrefix: string;
-  nameSuffix: string;
-  fax: string;
-  specialties: InvitePracticeTeamPersonRequestProfileDetailsSpecialtiesList;
-  addresses: InvitePracticeTeamPersonRequestProfileDetailsAddressesList;
-  otherNames: InvitePracticeTeamPersonRequestProfileDetailsOtherNamesList;
-  identifiers: InvitePracticeTeamPersonRequestProfileDetailsIdentifiersList;
-  endpoints: InvitePracticeTeamPersonRequestProfileDetailsEndpointsList;
-  certifications: InvitePracticeTeamPersonRequestProfileDetailsCertificationsList;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
+  namePrefix?: string | null;
+  nameSuffix?: string | null;
+  fax?: string | null;
+  specialties?: InvitePracticeTeamPersonRequestProfileDetailsSpecialtiesList | null;
+  addresses?: InvitePracticeTeamPersonRequestProfileDetailsAddressesList | null;
+  otherNames?: InvitePracticeTeamPersonRequestProfileDetailsOtherNamesList | null;
+  identifiers?: InvitePracticeTeamPersonRequestProfileDetailsIdentifiersList | null;
+  endpoints?: InvitePracticeTeamPersonRequestProfileDetailsEndpointsList | null;
+  certifications?: InvitePracticeTeamPersonRequestProfileDetailsCertificationsList | null;
 }
 export const InvitePracticeTeamPersonRequestProfileDetails = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    firstName: S.String,
-    middleName: S.String,
-    lastName: S.String,
-    namePrefix: S.String,
-    nameSuffix: S.String,
-    fax: S.String,
-    specialties: InvitePracticeTeamPersonRequestProfileDetailsSpecialtiesList,
-    addresses: InvitePracticeTeamPersonRequestProfileDetailsAddressesList,
-    otherNames: InvitePracticeTeamPersonRequestProfileDetailsOtherNamesList,
-    identifiers: InvitePracticeTeamPersonRequestProfileDetailsIdentifiersList,
-    endpoints: InvitePracticeTeamPersonRequestProfileDetailsEndpointsList,
-    certifications: InvitePracticeTeamPersonRequestProfileDetailsCertificationsList,
+    firstName: S.optional(S.NullOr(S.String)),
+    middleName: S.optional(S.NullOr(S.String)),
+    lastName: S.optional(S.NullOr(S.String)),
+    namePrefix: S.optional(S.NullOr(S.String)),
+    nameSuffix: S.optional(S.NullOr(S.String)),
+    fax: S.optional(S.NullOr(S.String)),
+    specialties: S.optional(S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsSpecialtiesList)),
+    addresses: S.optional(S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsAddressesList)),
+    otherNames: S.optional(S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsOtherNamesList)),
+    identifiers: S.optional(S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsIdentifiersList)),
+    endpoints: S.optional(S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsEndpointsList)),
+    certifications: S.optional(
+      S.NullOr(InvitePracticeTeamPersonRequestProfileDetailsCertificationsList),
+    ),
   }),
 ).annotate({
   identifier: "InvitePracticeTeamPersonRequestProfileDetails",
@@ -9542,6 +9540,8 @@ export const ListPracticeTeamMembersResponseDataItemNextActionsList = /*@__PURE_
 
 export interface ListPracticeTeamMembersResponseDataItem {
   id: string;
+  /** This integration's external ID for the accepted invitee in the API key's mode. Null for members invited outside this integration. */
+  externalId: string | null;
   name: string;
   email: string | null;
   locationIds: ListPracticeTeamMembersResponseDataItemLocationIdsList;
@@ -9551,6 +9551,7 @@ export interface ListPracticeTeamMembersResponseDataItem {
 export const ListPracticeTeamMembersResponseDataItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.String,
+    externalId: S.NullOr(S.String),
     name: S.String,
     email: S.NullOr(S.String),
     locationIds: ListPracticeTeamMembersResponseDataItemLocationIdsList,
@@ -10897,88 +10898,149 @@ export const PreviewOrderRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v1/order-previews", code: 200 })),
 ).annotate({ identifier: "PreviewOrderRequest" }) as any as S.Schema<PreviewOrderRequest>;
 
-export interface PreviewOrderResponseCase0ClinicalIssuesItem {
+export interface PreviewOrderResponseClinicalIssuesItem {
   code: string;
   path: string;
   message: string;
 }
-export const PreviewOrderResponseCase0ClinicalIssuesItem = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseClinicalIssuesItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     code: S.String,
     path: S.String,
     message: S.String,
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0ClinicalIssuesItem",
-}) as any as S.Schema<PreviewOrderResponseCase0ClinicalIssuesItem>;
+  identifier: "PreviewOrderResponseClinicalIssuesItem",
+}) as any as S.Schema<PreviewOrderResponseClinicalIssuesItem>;
 
-export type PreviewOrderResponseCase0ClinicalIssuesList =
-  Array<PreviewOrderResponseCase0ClinicalIssuesItem>;
-export const PreviewOrderResponseCase0ClinicalIssuesList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0ClinicalIssuesItem,
-) as any as S.Schema<PreviewOrderResponseCase0ClinicalIssuesList>;
+export type PreviewOrderResponseClinicalIssuesList = Array<PreviewOrderResponseClinicalIssuesItem>;
+export const PreviewOrderResponseClinicalIssuesList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseClinicalIssuesItem,
+) as any as S.Schema<PreviewOrderResponseClinicalIssuesList>;
 
-export type PreviewOrderResponseCase0ClinicalRequirementsItemType =
+export type PreviewOrderResponseClinicalRequirementsItemType =
   | "allergy_review"
   | "medication_review"
   | "diagnosis_review"
   | "diagnosis";
-export const PreviewOrderResponseCase0ClinicalRequirementsItemType = /*@__PURE__*/ S.String;
+export const PreviewOrderResponseClinicalRequirementsItemType = /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0ClinicalRequirementsItemStatus = "missing" | "satisfied";
-export const PreviewOrderResponseCase0ClinicalRequirementsItemStatus = /*@__PURE__*/ S.String;
+export type PreviewOrderResponseClinicalRequirementsItemStatus = "missing" | "satisfied";
+export const PreviewOrderResponseClinicalRequirementsItemStatus = /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0ClinicalRequirementsItem {
+export interface PreviewOrderResponseClinicalRequirementsItem {
   field: string;
   label: string;
-  type: PreviewOrderResponseCase0ClinicalRequirementsItemType;
+  type: PreviewOrderResponseClinicalRequirementsItemType;
   required: boolean;
-  status: PreviewOrderResponseCase0ClinicalRequirementsItemStatus;
+  status: PreviewOrderResponseClinicalRequirementsItemStatus;
 }
-export const PreviewOrderResponseCase0ClinicalRequirementsItem = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseClinicalRequirementsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     field: S.String,
     label: S.String,
-    type: PreviewOrderResponseCase0ClinicalRequirementsItemType,
+    type: PreviewOrderResponseClinicalRequirementsItemType,
     required: S.Boolean,
-    status: PreviewOrderResponseCase0ClinicalRequirementsItemStatus,
+    status: PreviewOrderResponseClinicalRequirementsItemStatus,
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0ClinicalRequirementsItem",
-}) as any as S.Schema<PreviewOrderResponseCase0ClinicalRequirementsItem>;
+  identifier: "PreviewOrderResponseClinicalRequirementsItem",
+}) as any as S.Schema<PreviewOrderResponseClinicalRequirementsItem>;
 
-export type PreviewOrderResponseCase0ClinicalRequirementsList =
-  Array<PreviewOrderResponseCase0ClinicalRequirementsItem>;
-export const PreviewOrderResponseCase0ClinicalRequirementsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0ClinicalRequirementsItem,
-) as any as S.Schema<PreviewOrderResponseCase0ClinicalRequirementsList>;
+export type PreviewOrderResponseClinicalRequirementsList =
+  Array<PreviewOrderResponseClinicalRequirementsItem>;
+export const PreviewOrderResponseClinicalRequirementsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseClinicalRequirementsItem,
+) as any as S.Schema<PreviewOrderResponseClinicalRequirementsList>;
 
-export type PreviewOrderResponseCase0TotalsCurrency = "USD";
-export const PreviewOrderResponseCase0TotalsCurrency = /*@__PURE__*/ S.String;
+export interface PreviewOrderResponseOtcItemsItem {
+  catalogItemId: string;
+  name: string;
+  quantity: number;
+  unitPriceCents: number;
+  subtotalCents: number;
+}
+export const PreviewOrderResponseOtcItemsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    catalogItemId: S.String,
+    name: S.String,
+    quantity: S.Number,
+    unitPriceCents: S.Number,
+    subtotalCents: S.Number,
+  }),
+).annotate({
+  identifier: "PreviewOrderResponseOtcItemsItem",
+}) as any as S.Schema<PreviewOrderResponseOtcItemsItem>;
 
-export interface PreviewOrderResponseCase0Totals {
-  currency: PreviewOrderResponseCase0TotalsCurrency;
+export type PreviewOrderResponseOtcItemsList = Array<PreviewOrderResponseOtcItemsItem>;
+export const PreviewOrderResponseOtcItemsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseOtcItemsItem,
+) as any as S.Schema<PreviewOrderResponseOtcItemsList>;
+
+export type PreviewOrderResponseShippingGroupsItemTemperature = "ambient" | "refrigerated";
+export const PreviewOrderResponseShippingGroupsItemTemperature = /*@__PURE__*/ S.String;
+
+/** Zero-based indexes into the preview prescriptions array. This is an estimated shipping charge group, not a guarantee of one physical package. */
+export type PreviewOrderResponseShippingGroupsItemPrescriptionIndexesList = Array<number>;
+export const PreviewOrderResponseShippingGroupsItemPrescriptionIndexesList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<PreviewOrderResponseShippingGroupsItemPrescriptionIndexesList>;
+
+export interface PreviewOrderResponseShippingGroupsItem {
+  key: string;
+  pharmacy: string;
+  label: string;
+  temperature: PreviewOrderResponseShippingGroupsItemTemperature;
+  amountCents: number;
+  itemCount: number;
+  /** Zero-based indexes into the preview prescriptions array. This is an estimated shipping charge group, not a guarantee of one physical package. */
+  prescriptionIndexes: PreviewOrderResponseShippingGroupsItemPrescriptionIndexesList;
+}
+export const PreviewOrderResponseShippingGroupsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    key: S.String,
+    pharmacy: S.String,
+    label: S.String,
+    temperature: PreviewOrderResponseShippingGroupsItemTemperature,
+    amountCents: S.Number,
+    itemCount: S.Number,
+    prescriptionIndexes: PreviewOrderResponseShippingGroupsItemPrescriptionIndexesList,
+  }),
+).annotate({
+  identifier: "PreviewOrderResponseShippingGroupsItem",
+}) as any as S.Schema<PreviewOrderResponseShippingGroupsItem>;
+
+export type PreviewOrderResponseShippingGroupsList = Array<PreviewOrderResponseShippingGroupsItem>;
+export const PreviewOrderResponseShippingGroupsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseShippingGroupsItem,
+) as any as S.Schema<PreviewOrderResponseShippingGroupsList>;
+
+export type PreviewOrderResponseTotalsCurrency = "USD";
+export const PreviewOrderResponseTotalsCurrency = /*@__PURE__*/ S.String;
+
+export interface PreviewOrderResponseTotals {
+  currency: PreviewOrderResponseTotalsCurrency;
   medicationSubtotalCents: number | null;
   supplySubtotalCents: number | null;
   shippingTotalCents: number | null;
   estimatedTotalCents: number | null;
 }
-export const PreviewOrderResponseCase0Totals = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseTotals = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    currency: PreviewOrderResponseCase0TotalsCurrency,
+    currency: PreviewOrderResponseTotalsCurrency,
     medicationSubtotalCents: S.NullOr(S.Number),
     supplySubtotalCents: S.NullOr(S.Number),
     shippingTotalCents: S.NullOr(S.Number),
     estimatedTotalCents: S.NullOr(S.Number),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0Totals",
-}) as any as S.Schema<PreviewOrderResponseCase0Totals>;
+  identifier: "PreviewOrderResponseTotals",
+}) as any as S.Schema<PreviewOrderResponseTotals>;
 
-export type PreviewOrderResponseCase0Object = "order_preview";
-export const PreviewOrderResponseCase0Object = /*@__PURE__*/ S.String;
+export type PreviewOrderResponseObject = "order_preview";
+export const PreviewOrderResponseObject = /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0PrescriptionsItemStructuredSig {
+export interface PreviewOrderResponsePrescriptionsItemStructuredSig {
   dose: string;
   doseUnit: string;
   frequency: string;
@@ -10989,7 +11051,7 @@ export interface PreviewOrderResponseCase0PrescriptionsItemStructuredSig {
   maxDailyUse?: string | null;
   titrationSchedule?: string | null;
 }
-export const PreviewOrderResponseCase0PrescriptionsItemStructuredSig = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponsePrescriptionsItemStructuredSig = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     dose: S.String,
     doseUnit: S.String,
@@ -11002,109 +11064,150 @@ export const PreviewOrderResponseCase0PrescriptionsItemStructuredSig = /*@__PURE
     titrationSchedule: S.optional(S.NullOr(S.String)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0PrescriptionsItemStructuredSig",
-}) as any as S.Schema<PreviewOrderResponseCase0PrescriptionsItemStructuredSig>;
+  identifier: "PreviewOrderResponsePrescriptionsItemStructuredSig",
+}) as any as S.Schema<PreviewOrderResponsePrescriptionsItemStructuredSig>;
 
-export type PreviewOrderResponseCase0PrescriptionsItemFormat = "structured" | "free_text";
-export const PreviewOrderResponseCase0PrescriptionsItemFormat = /*@__PURE__*/ S.String;
+export type PreviewOrderResponsePrescriptionsItemFormat = "structured" | "free_text";
+export const PreviewOrderResponsePrescriptionsItemFormat = /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0PrescriptionsItemQuantity =
+export type PreviewOrderResponsePrescriptionsItemQuantity =
   PreviewOrderRequestPrescriptionsItemOverridesQuantity;
-export const PreviewOrderResponseCase0PrescriptionsItemQuantity =
+export const PreviewOrderResponsePrescriptionsItemQuantity =
   PreviewOrderRequestPrescriptionsItemOverridesQuantity;
 
-export type PreviewOrderResponseCase0PrescriptionsItemDaysSupplySource =
+export type PreviewOrderResponsePrescriptionsItemDaysSupplySource =
   | "manual"
   | "calculated"
   | "preset"
   | "missing";
-export const PreviewOrderResponseCase0PrescriptionsItemDaysSupplySource = /*@__PURE__*/ S.String;
+export const PreviewOrderResponsePrescriptionsItemDaysSupplySource = /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0PrescriptionsItem {
-  medicationId: unknown;
-  revision: unknown;
+export type PreviewOrderResponsePrescriptionsItemShippingOptionsItemCurrency = "USD";
+export const PreviewOrderResponsePrescriptionsItemShippingOptionsItemCurrency =
+  /*@__PURE__*/ S.String;
+
+export type PreviewOrderResponsePrescriptionsItemShippingOptionsItemTemperature =
+  | "ambient"
+  | "refrigerated";
+export const PreviewOrderResponsePrescriptionsItemShippingOptionsItemTemperature =
+  /*@__PURE__*/ S.String;
+
+export interface PreviewOrderResponsePrescriptionsItemShippingOptionsItem {
+  amountCents: unknown;
+  carrier: string | null;
+  currency: PreviewOrderResponsePrescriptionsItemShippingOptionsItemCurrency;
+  estimatedDaysMax: unknown | null;
+  estimatedDaysMin: unknown | null;
+  id: unknown;
+  label: string;
+  serviceLevel: string;
+  temperature: PreviewOrderResponsePrescriptionsItemShippingOptionsItemTemperature;
+}
+export const PreviewOrderResponsePrescriptionsItemShippingOptionsItem = /*@__PURE__*/ S.suspend(
+  () =>
+    S.Struct({
+      amountCents: S.Unknown,
+      carrier: S.NullOr(S.String),
+      currency: PreviewOrderResponsePrescriptionsItemShippingOptionsItemCurrency,
+      estimatedDaysMax: S.NullOr(S.Unknown),
+      estimatedDaysMin: S.NullOr(S.Unknown),
+      id: S.Unknown,
+      label: S.String,
+      serviceLevel: S.String,
+      temperature: PreviewOrderResponsePrescriptionsItemShippingOptionsItemTemperature,
+    }),
+).annotate({
+  identifier: "PreviewOrderResponsePrescriptionsItemShippingOptionsItem",
+}) as any as S.Schema<PreviewOrderResponsePrescriptionsItemShippingOptionsItem>;
+
+export type PreviewOrderResponsePrescriptionsItemShippingOptionsList =
+  Array<PreviewOrderResponsePrescriptionsItemShippingOptionsItem>;
+export const PreviewOrderResponsePrescriptionsItemShippingOptionsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponsePrescriptionsItemShippingOptionsItem,
+) as any as S.Schema<PreviewOrderResponsePrescriptionsItemShippingOptionsList>;
+
+export interface PreviewOrderResponsePrescriptionsItem {
+  medicationId: string;
+  revision: string;
   directions: string;
-  structuredSig: PreviewOrderResponseCase0PrescriptionsItemStructuredSig | null;
-  format: PreviewOrderResponseCase0PrescriptionsItemFormat;
+  structuredSig: PreviewOrderResponsePrescriptionsItemStructuredSig | null;
+  format: PreviewOrderResponsePrescriptionsItemFormat;
   quantity: PreviewOrderRequestPrescriptionsItemOverridesQuantity | null;
   daysSupply: number | null;
-  daysSupplySource: PreviewOrderResponseCase0PrescriptionsItemDaysSupplySource;
+  daysSupplySource: PreviewOrderResponsePrescriptionsItemDaysSupplySource;
   refills: number;
-  shippingOptions: unknown;
-  shippingOptionId: unknown | null;
+  shippingOptions: PreviewOrderResponsePrescriptionsItemShippingOptionsList;
+  shippingOptionId: string | null;
   medicationSubtotalCents: number | null;
   shippingAmountCents: number | null;
 }
-export const PreviewOrderResponseCase0PrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponsePrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    medicationId: S.Unknown,
-    revision: S.Unknown,
+    medicationId: S.String,
+    revision: S.String,
     directions: S.String,
-    structuredSig: S.NullOr(PreviewOrderResponseCase0PrescriptionsItemStructuredSig),
-    format: PreviewOrderResponseCase0PrescriptionsItemFormat,
+    structuredSig: S.NullOr(PreviewOrderResponsePrescriptionsItemStructuredSig),
+    format: PreviewOrderResponsePrescriptionsItemFormat,
     quantity: S.NullOr(PreviewOrderRequestPrescriptionsItemOverridesQuantity),
     daysSupply: S.NullOr(S.Number),
-    daysSupplySource: PreviewOrderResponseCase0PrescriptionsItemDaysSupplySource,
+    daysSupplySource: PreviewOrderResponsePrescriptionsItemDaysSupplySource,
     refills: S.Number,
-    shippingOptions: S.Unknown,
-    shippingOptionId: S.NullOr(S.Unknown),
+    shippingOptions: PreviewOrderResponsePrescriptionsItemShippingOptionsList,
+    shippingOptionId: S.NullOr(S.String),
     medicationSubtotalCents: S.NullOr(S.Number),
     shippingAmountCents: S.NullOr(S.Number),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0PrescriptionsItem",
-}) as any as S.Schema<PreviewOrderResponseCase0PrescriptionsItem>;
+  identifier: "PreviewOrderResponsePrescriptionsItem",
+}) as any as S.Schema<PreviewOrderResponsePrescriptionsItem>;
 
-export type PreviewOrderResponseCase0PrescriptionsList =
-  Array<PreviewOrderResponseCase0PrescriptionsItem>;
-export const PreviewOrderResponseCase0PrescriptionsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0PrescriptionsItem,
-) as any as S.Schema<PreviewOrderResponseCase0PrescriptionsList>;
+export type PreviewOrderResponsePrescriptionsList = Array<PreviewOrderResponsePrescriptionsItem>;
+export const PreviewOrderResponsePrescriptionsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponsePrescriptionsItem,
+) as any as S.Schema<PreviewOrderResponsePrescriptionsList>;
 
-export type PreviewOrderResponseCase0IssuesItem = PreviewOrderResponseCase0ClinicalIssuesItem;
-export const PreviewOrderResponseCase0IssuesItem = PreviewOrderResponseCase0ClinicalIssuesItem;
+export type PreviewOrderResponseIssuesItem = PreviewOrderResponseClinicalIssuesItem;
+export const PreviewOrderResponseIssuesItem = PreviewOrderResponseClinicalIssuesItem;
 
-export type PreviewOrderResponseCase0IssuesList =
-  Array<PreviewOrderResponseCase0ClinicalIssuesItem>;
-export const PreviewOrderResponseCase0IssuesList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0ClinicalIssuesItem,
-) as any as S.Schema<PreviewOrderResponseCase0IssuesList>;
+export type PreviewOrderResponseIssuesList = Array<PreviewOrderResponseClinicalIssuesItem>;
+export const PreviewOrderResponseIssuesList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseClinicalIssuesItem,
+) as any as S.Schema<PreviewOrderResponseIssuesList>;
 
-export type PreviewOrderResponseCase0Status = "complete";
-export const PreviewOrderResponseCase0Status = /*@__PURE__*/ S.String;
+export type PreviewOrderResponseStatus = "complete" | "incomplete";
+export const PreviewOrderResponseStatus = /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0OrderInputCase0PrescriberProfile {
+export interface PreviewOrderResponseOrderInputPrescriberProfile {
   email?: unknown | null;
   phone?: string | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase0PrescriberProfile = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      email: S.optional(S.NullOr(S.Unknown)),
-      phone: S.optional(S.NullOr(S.String)),
-    }),
+export const PreviewOrderResponseOrderInputPrescriberProfile = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    email: S.optional(S.NullOr(S.Unknown)),
+    phone: S.optional(S.NullOr(S.String)),
+  }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase0PrescriberProfile",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriberProfile>;
+  identifier: "PreviewOrderResponseOrderInputPrescriberProfile",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPrescriberProfile>;
 
-export interface PreviewOrderResponseCase0OrderInputCase0Prescriber {
+export interface PreviewOrderResponseOrderInputPrescriber {
   id?: unknown | null;
   npi?: unknown | null;
   externalId?: string | null;
-  profile?: PreviewOrderResponseCase0OrderInputCase0PrescriberProfile | null;
+  profile?: PreviewOrderResponseOrderInputPrescriberProfile | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase0Prescriber = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseOrderInputPrescriber = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.optional(S.NullOr(S.Unknown)),
     npi: S.optional(S.NullOr(S.Unknown)),
     externalId: S.optional(S.NullOr(S.String)),
-    profile: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase0PrescriberProfile)),
+    profile: S.optional(S.NullOr(PreviewOrderResponseOrderInputPrescriberProfile)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase0Prescriber",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0Prescriber>;
+  identifier: "PreviewOrderResponseOrderInputPrescriber",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPrescriber>;
 
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReasonCategory =
+export type PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReasonCategory =
   | "alcohol_free"
   | "drug_shortage"
   | "commercial_product_discontinued"
@@ -11120,824 +11223,406 @@ export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCom
   | "no_approved_product_available"
   | "no_rationale_required"
   | "other_patient_specific_need";
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReasonCategory =
+export const PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReasonCategory =
   /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason {
-  category?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReasonCategory | null;
+export interface PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason {
+  category?: PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReasonCategory | null;
   context?: string | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason =
+export const PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason =
   /*@__PURE__*/ S.suspend(() =>
     S.Struct({
       category: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReasonCategory,
-        ),
+        S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReasonCategory),
       ),
       context: S.optional(S.NullOr(S.String)),
     }),
   ).annotate({
-    identifier:
-      "PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason>;
+    identifier: "PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason",
+  }) as any as S.Schema<PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason>;
 
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalMedicationReviewStatus =
+export type PreviewOrderResponseOrderInputPrescriptionsItemClinicalMedicationReviewStatus =
   | "not_reviewed"
   | "none"
   | "recorded";
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalMedicationReviewStatus =
+export const PreviewOrderResponseOrderInputPrescriptionsItemClinicalMedicationReviewStatus =
   /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalDiagnosisReviewStatus =
+export type PreviewOrderResponseOrderInputPrescriptionsItemClinicalDiagnosisReviewStatus =
   | "not_reviewed"
   | "none"
   | "recorded";
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalDiagnosisReviewStatus =
+export const PreviewOrderResponseOrderInputPrescriptionsItemClinicalDiagnosisReviewStatus =
   /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical {
-  compoundingReason?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason | null;
-  medicationReviewStatus?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalMedicationReviewStatus | null;
-  diagnosisReviewStatus?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalDiagnosisReviewStatus | null;
+export interface PreviewOrderResponseOrderInputPrescriptionsItemClinical {
+  compoundingReason?: PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason | null;
+  medicationReviewStatus?: PreviewOrderResponseOrderInputPrescriptionsItemClinicalMedicationReviewStatus | null;
+  diagnosisReviewStatus?: PreviewOrderResponseOrderInputPrescriptionsItemClinicalDiagnosisReviewStatus | null;
   currentMedications?: unknown | null;
   diagnoses?: unknown | null;
   observations?: unknown | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      compoundingReason: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalCompoundingReason,
-        ),
-      ),
-      medicationReviewStatus: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalMedicationReviewStatus,
-        ),
-      ),
-      diagnosisReviewStatus: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinicalDiagnosisReviewStatus,
-        ),
-      ),
-      currentMedications: S.optional(S.NullOr(S.Unknown)),
-      diagnoses: S.optional(S.NullOr(S.Unknown)),
-      observations: S.optional(S.NullOr(S.Unknown)),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical>;
-
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensingShippingDestinationType =
-  "patient";
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensingShippingDestinationType =
-  /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing {
-  dispenseUponAcceptance?: boolean | null;
-  shippingOptionId?: unknown | null;
-  /** Reviewed customer shipping rate for the selected service. Preview supplies this value. Shared group rates must not be summed per prescription. */
-  shippingAmountCents?: unknown | null;
-  shippingDestinationType?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensingShippingDestinationType | null;
-  pharmacyNotes?: string | null;
-  requestedFillDate?: unknown | null;
-  substitutionPermitted?: boolean | null;
-}
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      dispenseUponAcceptance: S.optional(S.NullOr(S.Boolean)),
-      shippingOptionId: S.optional(S.NullOr(S.Unknown)),
-      shippingAmountCents: S.optional(S.NullOr(S.Unknown)),
-      shippingDestinationType: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensingShippingDestinationType,
-        ),
-      ),
-      pharmacyNotes: S.optional(S.NullOr(S.String)),
-      requestedFillDate: S.optional(S.NullOr(S.Unknown)),
-      substitutionPermitted: S.optional(S.NullOr(S.Boolean)),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing>;
-
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemStructuredSig =
-  AddOrderPrescriptionRequestPrescriptionStructuredSig;
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemStructuredSig =
-  AddOrderPrescriptionRequestPrescriptionStructuredSig;
-
-export interface PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem {
-  externalPrescriptionId?: unknown | null;
-  clinical?: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical | null;
-  pharmacyId?: unknown | null;
-  daysSupply: unknown;
-  dispensing: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing;
-  directions: string;
-  medicationId: unknown;
-  quantity: number;
-  quantityUnit: string;
-  refills: unknown;
-  structuredSig?: AddOrderPrescriptionRequestPrescriptionStructuredSig | null;
-}
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      externalPrescriptionId: S.optional(S.NullOr(S.Unknown)),
-      clinical: S.optional(
-        S.NullOr(PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemClinical),
-      ),
-      pharmacyId: S.optional(S.NullOr(S.Unknown)),
-      daysSupply: S.Unknown,
-      dispensing: PreviewOrderResponseCase0OrderInputCase0PrescriptionsItemDispensing,
-      directions: S.String,
-      medicationId: S.Unknown,
-      quantity: S.Number,
-      quantityUnit: S.String,
-      refills: S.Unknown,
-      structuredSig: S.optional(S.NullOr(AddOrderPrescriptionRequestPrescriptionStructuredSig)),
-    }),
-).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem>;
-
-export type PreviewOrderResponseCase0OrderInputCase0PrescriptionsList =
-  Array<PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem>;
-export const PreviewOrderResponseCase0OrderInputCase0PrescriptionsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0OrderInputCase0PrescriptionsItem,
-) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0PrescriptionsList>;
-
-export interface PreviewOrderResponseCase0OrderInputCase0 {
-  otcItems?: unknown | null;
-  practiceId: string;
-  userId?: unknown | null;
-  prescriber?: PreviewOrderResponseCase0OrderInputCase0Prescriber | null;
-  shippingAddressId?: unknown | null;
-  externalOrderId?: unknown | null;
-  prescriptions: PreviewOrderResponseCase0OrderInputCase0PrescriptionsList;
-  patientId: string;
-}
-export const PreviewOrderResponseCase0OrderInputCase0 = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseOrderInputPrescriptionsItemClinical = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    otcItems: S.optional(S.NullOr(S.Unknown)),
-    practiceId: S.String,
-    userId: S.optional(S.NullOr(S.Unknown)),
-    prescriber: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase0Prescriber)),
-    shippingAddressId: S.optional(S.NullOr(S.Unknown)),
-    externalOrderId: S.optional(S.NullOr(S.Unknown)),
-    prescriptions: PreviewOrderResponseCase0OrderInputCase0PrescriptionsList,
-    patientId: S.String,
+    compoundingReason: S.optional(
+      S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemClinicalCompoundingReason),
+    ),
+    medicationReviewStatus: S.optional(
+      S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemClinicalMedicationReviewStatus),
+    ),
+    diagnosisReviewStatus: S.optional(
+      S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemClinicalDiagnosisReviewStatus),
+    ),
+    currentMedications: S.optional(S.NullOr(S.Unknown)),
+    diagnoses: S.optional(S.NullOr(S.Unknown)),
+    observations: S.optional(S.NullOr(S.Unknown)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase0",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase0>;
+  identifier: "PreviewOrderResponseOrderInputPrescriptionsItemClinical",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPrescriptionsItemClinical>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PrescriberProfile =
-  PreviewOrderResponseCase0OrderInputCase0PrescriberProfile;
-export const PreviewOrderResponseCase0OrderInputCase1PrescriberProfile =
-  PreviewOrderResponseCase0OrderInputCase0PrescriberProfile;
-
-export type PreviewOrderResponseCase0OrderInputCase1Prescriber =
-  PreviewOrderResponseCase0OrderInputCase0Prescriber;
-export const PreviewOrderResponseCase0OrderInputCase1Prescriber =
-  PreviewOrderResponseCase0OrderInputCase0Prescriber;
-
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReasonCategory =
-  | "alcohol_free"
-  | "drug_shortage"
-  | "commercial_product_discontinued"
-  | "modified_release"
-  | "inactive_ingredient_sensitivity"
-  | "inactive_ingredient_toxicity"
-  | "concentration_adjustment"
-  | "alternate_route"
-  | "dosage_form_unavailable"
-  | "flavor_adjustment"
-  | "tablet_burden"
-  | "patient_cannot_use_commercial_product"
-  | "no_approved_product_available"
-  | "no_rationale_required"
-  | "other_patient_specific_need";
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReasonCategory =
-  /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason {
-  category?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReasonCategory | null;
-  context?: string | null;
-}
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      category: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReasonCategory,
-        ),
-      ),
-      context: S.optional(S.NullOr(S.String)),
-    }),
-  ).annotate({
-    identifier:
-      "PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason>;
-
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalMedicationReviewStatus =
-  | "not_reviewed"
-  | "none"
-  | "recorded";
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalMedicationReviewStatus =
-  /*@__PURE__*/ S.String;
-
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalDiagnosisReviewStatus =
-  | "not_reviewed"
-  | "none"
-  | "recorded";
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalDiagnosisReviewStatus =
-  /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical {
-  compoundingReason?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason | null;
-  medicationReviewStatus?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalMedicationReviewStatus | null;
-  diagnosisReviewStatus?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalDiagnosisReviewStatus | null;
-  currentMedications?: unknown | null;
-  diagnoses?: unknown | null;
-  observations?: unknown | null;
-}
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      compoundingReason: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalCompoundingReason,
-        ),
-      ),
-      medicationReviewStatus: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalMedicationReviewStatus,
-        ),
-      ),
-      diagnosisReviewStatus: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinicalDiagnosisReviewStatus,
-        ),
-      ),
-      currentMedications: S.optional(S.NullOr(S.Unknown)),
-      diagnoses: S.optional(S.NullOr(S.Unknown)),
-      observations: S.optional(S.NullOr(S.Unknown)),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical>;
-
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensingShippingDestinationType =
+export type PreviewOrderResponseOrderInputPrescriptionsItemDispensingShippingDestinationType =
   "patient";
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensingShippingDestinationType =
+export const PreviewOrderResponseOrderInputPrescriptionsItemDispensingShippingDestinationType =
   /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing {
+export interface PreviewOrderResponseOrderInputPrescriptionsItemDispensing {
   dispenseUponAcceptance?: boolean | null;
-  shippingOptionId?: unknown | null;
+  shippingOptionId?: string | null;
   /** Reviewed customer shipping rate for the selected service. Preview supplies this value. Shared group rates must not be summed per prescription. */
-  shippingAmountCents?: unknown | null;
-  shippingDestinationType?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensingShippingDestinationType | null;
+  shippingAmountCents?: number | null;
+  shippingDestinationType?: PreviewOrderResponseOrderInputPrescriptionsItemDispensingShippingDestinationType | null;
   pharmacyNotes?: string | null;
-  requestedFillDate?: unknown | null;
+  requestedFillDate?: string | null;
   substitutionPermitted?: boolean | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      dispenseUponAcceptance: S.optional(S.NullOr(S.Boolean)),
-      shippingOptionId: S.optional(S.NullOr(S.Unknown)),
-      shippingAmountCents: S.optional(S.NullOr(S.Unknown)),
-      shippingDestinationType: S.optional(
-        S.NullOr(
-          PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensingShippingDestinationType,
-        ),
-      ),
-      pharmacyNotes: S.optional(S.NullOr(S.String)),
-      requestedFillDate: S.optional(S.NullOr(S.Unknown)),
-      substitutionPermitted: S.optional(S.NullOr(S.Boolean)),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing>;
-
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemStructuredSig =
-  AddOrderPrescriptionRequestPrescriptionStructuredSig;
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemStructuredSig =
-  AddOrderPrescriptionRequestPrescriptionStructuredSig;
-
-export interface PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem {
-  externalPrescriptionId?: unknown | null;
-  clinical?: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical | null;
-  pharmacyId?: unknown | null;
-  daysSupply: unknown;
-  dispensing: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing;
-  directions: string;
-  medicationId: unknown;
-  quantity: number;
-  quantityUnit: string;
-  refills: unknown;
-  structuredSig?: AddOrderPrescriptionRequestPrescriptionStructuredSig | null;
-}
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem = /*@__PURE__*/ S.suspend(
+export const PreviewOrderResponseOrderInputPrescriptionsItemDispensing = /*@__PURE__*/ S.suspend(
   () =>
     S.Struct({
-      externalPrescriptionId: S.optional(S.NullOr(S.Unknown)),
-      clinical: S.optional(
-        S.NullOr(PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemClinical),
+      dispenseUponAcceptance: S.optional(S.NullOr(S.Boolean)),
+      shippingOptionId: S.optional(S.NullOr(S.String)),
+      shippingAmountCents: S.optional(S.NullOr(S.Number)),
+      shippingDestinationType: S.optional(
+        S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemDispensingShippingDestinationType),
       ),
-      pharmacyId: S.optional(S.NullOr(S.Unknown)),
-      daysSupply: S.Unknown,
-      dispensing: PreviewOrderResponseCase0OrderInputCase1PrescriptionsItemDispensing,
-      directions: S.String,
-      medicationId: S.Unknown,
-      quantity: S.Number,
-      quantityUnit: S.String,
-      refills: S.Unknown,
-      structuredSig: S.optional(S.NullOr(AddOrderPrescriptionRequestPrescriptionStructuredSig)),
+      pharmacyNotes: S.optional(S.NullOr(S.String)),
+      requestedFillDate: S.optional(S.NullOr(S.String)),
+      substitutionPermitted: S.optional(S.NullOr(S.Boolean)),
     }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem>;
+  identifier: "PreviewOrderResponseOrderInputPrescriptionsItemDispensing",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPrescriptionsItemDispensing>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PrescriptionsList =
-  Array<PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem>;
-export const PreviewOrderResponseCase0OrderInputCase1PrescriptionsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0OrderInputCase1PrescriptionsItem,
-) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PrescriptionsList>;
+export type PreviewOrderResponseOrderInputPrescriptionsItemStructuredSig =
+  AddOrderPrescriptionRequestPrescriptionStructuredSig;
+export const PreviewOrderResponseOrderInputPrescriptionsItemStructuredSig =
+  AddOrderPrescriptionRequestPrescriptionStructuredSig;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry = "US";
-export const PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry = /*@__PURE__*/ S.String;
+export interface PreviewOrderResponseOrderInputPrescriptionsItem {
+  externalPrescriptionId?: unknown | null;
+  clinical?: PreviewOrderResponseOrderInputPrescriptionsItemClinical | null;
+  pharmacyId?: unknown | null;
+  daysSupply: number;
+  dispensing: PreviewOrderResponseOrderInputPrescriptionsItemDispensing;
+  directions: string;
+  medicationId: string;
+  quantity: number;
+  quantityUnit: string;
+  refills: number;
+  structuredSig?: AddOrderPrescriptionRequestPrescriptionStructuredSig | null;
+}
+export const PreviewOrderResponseOrderInputPrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    externalPrescriptionId: S.optional(S.NullOr(S.Unknown)),
+    clinical: S.optional(S.NullOr(PreviewOrderResponseOrderInputPrescriptionsItemClinical)),
+    pharmacyId: S.optional(S.NullOr(S.Unknown)),
+    daysSupply: S.Number,
+    dispensing: PreviewOrderResponseOrderInputPrescriptionsItemDispensing,
+    directions: S.String,
+    medicationId: S.String,
+    quantity: S.Number,
+    quantityUnit: S.String,
+    refills: S.Number,
+    structuredSig: S.optional(S.NullOr(AddOrderPrescriptionRequestPrescriptionStructuredSig)),
+  }),
+).annotate({
+  identifier: "PreviewOrderResponseOrderInputPrescriptionsItem",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPrescriptionsItem>;
 
-export interface PreviewOrderResponseCase0OrderInputCase1PatientAddress {
+export type PreviewOrderResponseOrderInputPrescriptionsList =
+  Array<PreviewOrderResponseOrderInputPrescriptionsItem>;
+export const PreviewOrderResponseOrderInputPrescriptionsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseOrderInputPrescriptionsItem,
+) as any as S.Schema<PreviewOrderResponseOrderInputPrescriptionsList>;
+
+export type PreviewOrderResponseOrderInputPatientAddressCountry = "US";
+export const PreviewOrderResponseOrderInputPatientAddressCountry = /*@__PURE__*/ S.String;
+
+export interface PreviewOrderResponseOrderInputPatientAddress {
   city: unknown;
   line1: unknown;
   line2?: unknown | null;
   postalCode: string;
   state: string;
-  country?: PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry | null;
+  country?: PreviewOrderResponseOrderInputPatientAddressCountry | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1PatientAddress = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseOrderInputPatientAddress = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     city: S.Unknown,
     line1: S.Unknown,
     line2: S.optional(S.NullOr(S.Unknown)),
     postalCode: S.String,
     state: S.String,
-    country: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientAddressCountry)),
+    country: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientAddressCountry)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase1PatientAddress",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientAddress>;
+  identifier: "PreviewOrderResponseOrderInputPatientAddress",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPatientAddress>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInchesCase1 =
+export type PreviewOrderResponseOrderInputPatientClinicalProfileHeightInchesCase1 =
   | "Infinity"
   | "-Infinity"
   | "NaN";
-export const PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInchesCase1 =
+export const PreviewOrderResponseOrderInputPatientClinicalProfileHeightInchesCase1 =
   /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInches =
+export type PreviewOrderResponseOrderInputPatientClinicalProfileHeightInches =
   | unknown
-  | PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInchesCase1;
-export const PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInches =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInches>;
+  | PreviewOrderResponseOrderInputPatientClinicalProfileHeightInchesCase1;
+export const PreviewOrderResponseOrderInputPatientClinicalProfileHeightInches =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseOrderInputPatientClinicalProfileHeightInches>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPoundsCase1 =
+export type PreviewOrderResponseOrderInputPatientClinicalProfileWeightPoundsCase1 =
   | "Infinity"
   | "-Infinity"
   | "NaN";
-export const PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPoundsCase1 =
+export const PreviewOrderResponseOrderInputPatientClinicalProfileWeightPoundsCase1 =
   /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPounds =
+export type PreviewOrderResponseOrderInputPatientClinicalProfileWeightPounds =
   | unknown
-  | PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPoundsCase1;
-export const PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPounds =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPounds>;
+  | PreviewOrderResponseOrderInputPatientClinicalProfileWeightPoundsCase1;
+export const PreviewOrderResponseOrderInputPatientClinicalProfileWeightPounds =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseOrderInputPatientClinicalProfileWeightPounds>;
 
-export interface PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile {
+export interface PreviewOrderResponseOrderInputPatientClinicalProfile {
   currentMedications: unknown;
-  heightInches?: PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInches | null;
+  heightInches?: PreviewOrderResponseOrderInputPatientClinicalProfileHeightInches | null;
   reviewedAt?: string | null;
-  weightPounds?: PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPounds | null;
+  weightPounds?: PreviewOrderResponseOrderInputPatientClinicalProfileWeightPounds | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      currentMedications: S.Unknown,
-      heightInches: S.optional(
-        S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileHeightInches),
-      ),
-      reviewedAt: S.optional(S.NullOr(S.String)),
-      weightPounds: S.optional(
-        S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfileWeightPounds),
-      ),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile>;
+export const PreviewOrderResponseOrderInputPatientClinicalProfile = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    currentMedications: S.Unknown,
+    heightInches: S.optional(
+      S.NullOr(PreviewOrderResponseOrderInputPatientClinicalProfileHeightInches),
+    ),
+    reviewedAt: S.optional(S.NullOr(S.String)),
+    weightPounds: S.optional(
+      S.NullOr(PreviewOrderResponseOrderInputPatientClinicalProfileWeightPounds),
+    ),
+  }),
+).annotate({
+  identifier: "PreviewOrderResponseOrderInputPatientClinicalProfile",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPatientClinicalProfile>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientEncountersItem =
+export type PreviewOrderResponseOrderInputPatientEncountersItem =
   CreatePatientResponseEncountersItem;
-export const PreviewOrderResponseCase0OrderInputCase1PatientEncountersItem =
+export const PreviewOrderResponseOrderInputPatientEncountersItem =
   CreatePatientResponseEncountersItem;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientEncountersList =
+export type PreviewOrderResponseOrderInputPatientEncountersList =
   Array<CreatePatientResponseEncountersItem>;
-export const PreviewOrderResponseCase0OrderInputCase1PatientEncountersList = /*@__PURE__*/ S.Array(
+export const PreviewOrderResponseOrderInputPatientEncountersList = /*@__PURE__*/ S.Array(
   CreatePatientResponseEncountersItem,
-) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientEncountersList>;
+) as any as S.Schema<PreviewOrderResponseOrderInputPatientEncountersList>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientGender = "f" | "m" | "o" | "u";
-export const PreviewOrderResponseCase0OrderInputCase1PatientGender = /*@__PURE__*/ S.String;
+export type PreviewOrderResponseOrderInputPatientGender = "f" | "m" | "o" | "u";
+export const PreviewOrderResponseOrderInputPatientGender = /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimetersCase1 =
+export type PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimetersCase1 =
   | "Infinity"
   | "-Infinity"
   | "NaN";
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimetersCase1 =
+export const PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimetersCase1 =
   /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters =
+export type PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimeters =
   | unknown
-  | PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimetersCase1;
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters>;
+  | PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimetersCase1;
+export const PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimeters =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimeters>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilogramsCase1 =
+export type PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilogramsCase1 =
   | "Infinity"
   | "-Infinity"
   | "NaN";
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilogramsCase1 =
+export const PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilogramsCase1 =
   /*@__PURE__*/ S.String;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms =
+export type PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilograms =
   | unknown
-  | PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilogramsCase1;
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms>;
+  | PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilogramsCase1;
+export const PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilograms =
+  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilograms>;
 
-export interface PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem {
-  heightCentimeters: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters | null;
+export interface PreviewOrderResponseOrderInputPatientMeasurementsItem {
+  heightCentimeters: PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimeters | null;
   recordedAt: string;
   source: unknown;
-  weightKilograms: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms | null;
+  weightKilograms: PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilograms | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem =
-  /*@__PURE__*/ S.suspend(() =>
-    S.Struct({
-      heightCentimeters: S.NullOr(
-        PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemHeightCentimeters,
-      ),
-      recordedAt: S.String,
-      source: S.Unknown,
-      weightKilograms: S.NullOr(
-        PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItemWeightKilograms,
-      ),
-    }),
-  ).annotate({
-    identifier: "PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem",
-  }) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem>;
+export const PreviewOrderResponseOrderInputPatientMeasurementsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    heightCentimeters: S.NullOr(
+      PreviewOrderResponseOrderInputPatientMeasurementsItemHeightCentimeters,
+    ),
+    recordedAt: S.String,
+    source: S.Unknown,
+    weightKilograms: S.NullOr(PreviewOrderResponseOrderInputPatientMeasurementsItemWeightKilograms),
+  }),
+).annotate({
+  identifier: "PreviewOrderResponseOrderInputPatientMeasurementsItem",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPatientMeasurementsItem>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList =
-  Array<PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem>;
-export const PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList =
-  /*@__PURE__*/ S.Array(
-    PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsItem,
-  ) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList>;
+export type PreviewOrderResponseOrderInputPatientMeasurementsList =
+  Array<PreviewOrderResponseOrderInputPatientMeasurementsItem>;
+export const PreviewOrderResponseOrderInputPatientMeasurementsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseOrderInputPatientMeasurementsItem,
+) as any as S.Schema<PreviewOrderResponseOrderInputPatientMeasurementsList>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientName = CreateOrderRequestPatientName;
-export const PreviewOrderResponseCase0OrderInputCase1PatientName = CreateOrderRequestPatientName;
+export type PreviewOrderResponseOrderInputPatientName = CreateOrderRequestPatientName;
+export const PreviewOrderResponseOrderInputPatientName = CreateOrderRequestPatientName;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus =
+export type PreviewOrderResponseOrderInputPatientProgramsItemStatus =
   | "active"
   | "completed"
   | "paused";
-export const PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus =
-  /*@__PURE__*/ S.String;
+export const PreviewOrderResponseOrderInputPatientProgramsItemStatus = /*@__PURE__*/ S.String;
 
-export interface PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem {
+export interface PreviewOrderResponseOrderInputPatientProgramsItem {
   endedAt: string | null;
   name: unknown;
   startedAt: string;
-  status: PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus;
+  status: PreviewOrderResponseOrderInputPatientProgramsItemStatus;
 }
-export const PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem = /*@__PURE__*/ S.suspend(
-  () =>
-    S.Struct({
-      endedAt: S.NullOr(S.String),
-      name: S.Unknown,
-      startedAt: S.String,
-      status: PreviewOrderResponseCase0OrderInputCase1PatientProgramsItemStatus,
-    }),
+export const PreviewOrderResponseOrderInputPatientProgramsItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    endedAt: S.NullOr(S.String),
+    name: S.Unknown,
+    startedAt: S.String,
+    status: PreviewOrderResponseOrderInputPatientProgramsItemStatus,
+  }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem>;
+  identifier: "PreviewOrderResponseOrderInputPatientProgramsItem",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPatientProgramsItem>;
 
-export type PreviewOrderResponseCase0OrderInputCase1PatientProgramsList =
-  Array<PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem>;
-export const PreviewOrderResponseCase0OrderInputCase1PatientProgramsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0OrderInputCase1PatientProgramsItem,
-) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1PatientProgramsList>;
+export type PreviewOrderResponseOrderInputPatientProgramsList =
+  Array<PreviewOrderResponseOrderInputPatientProgramsItem>;
+export const PreviewOrderResponseOrderInputPatientProgramsList = /*@__PURE__*/ S.Array(
+  PreviewOrderResponseOrderInputPatientProgramsItem,
+) as any as S.Schema<PreviewOrderResponseOrderInputPatientProgramsList>;
 
-export interface PreviewOrderResponseCase0OrderInputCase1Patient {
-  address?: PreviewOrderResponseCase0OrderInputCase1PatientAddress | null;
-  clinicalProfile?: PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile | null;
+export interface PreviewOrderResponseOrderInputPatient {
+  address?: PreviewOrderResponseOrderInputPatientAddress | null;
+  clinicalProfile?: PreviewOrderResponseOrderInputPatientClinicalProfile | null;
   dateOfBirth: unknown;
   email?: string | null;
   externalId?: unknown | null;
   externalIdentities?: unknown | null;
   addresses?: unknown | null;
-  encounters?: PreviewOrderResponseCase0OrderInputCase1PatientEncountersList | null;
-  gender?: PreviewOrderResponseCase0OrderInputCase1PatientGender | null;
+  encounters?: PreviewOrderResponseOrderInputPatientEncountersList | null;
+  gender?: PreviewOrderResponseOrderInputPatientGender | null;
   locationId?: unknown | null;
   metadata?: unknown | null;
   medicalRecordNumber?: unknown | null;
-  measurements?: PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList | null;
+  measurements?: PreviewOrderResponseOrderInputPatientMeasurementsList | null;
   name: CreateOrderRequestPatientName;
   phone?: string | null;
-  programs?: PreviewOrderResponseCase0OrderInputCase1PatientProgramsList | null;
+  programs?: PreviewOrderResponseOrderInputPatientProgramsList | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1Patient = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseOrderInputPatient = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    address: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientAddress)),
-    clinicalProfile: S.optional(
-      S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientClinicalProfile),
-    ),
+    address: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientAddress)),
+    clinicalProfile: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientClinicalProfile)),
     dateOfBirth: S.Unknown,
     email: S.optional(S.NullOr(S.String)),
     externalId: S.optional(S.NullOr(S.Unknown)),
     externalIdentities: S.optional(S.NullOr(S.Unknown)),
     addresses: S.optional(S.NullOr(S.Unknown)),
-    encounters: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientEncountersList)),
-    gender: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientGender)),
+    encounters: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientEncountersList)),
+    gender: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientGender)),
     locationId: S.optional(S.NullOr(S.Unknown)),
     metadata: S.optional(S.NullOr(S.Unknown)),
     medicalRecordNumber: S.optional(S.NullOr(S.Unknown)),
-    measurements: S.optional(
-      S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientMeasurementsList),
-    ),
+    measurements: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientMeasurementsList)),
     name: CreateOrderRequestPatientName,
     phone: S.optional(S.NullOr(S.String)),
-    programs: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase1PatientProgramsList)),
+    programs: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatientProgramsList)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase1Patient",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1Patient>;
+  identifier: "PreviewOrderResponseOrderInputPatient",
+}) as any as S.Schema<PreviewOrderResponseOrderInputPatient>;
 
-export interface PreviewOrderResponseCase0OrderInputCase1 {
+export interface PreviewOrderResponseOrderInput {
   otcItems?: unknown | null;
   practiceId: string;
   userId?: unknown | null;
-  prescriber?: PreviewOrderResponseCase0OrderInputCase0Prescriber | null;
+  prescriber?: PreviewOrderResponseOrderInputPrescriber | null;
   shippingAddressId?: unknown | null;
   externalOrderId?: unknown | null;
-  prescriptions: PreviewOrderResponseCase0OrderInputCase1PrescriptionsList;
-  patient: PreviewOrderResponseCase0OrderInputCase1Patient;
+  prescriptions: PreviewOrderResponseOrderInputPrescriptionsList;
+  patientId?: string | null;
+  patient?: PreviewOrderResponseOrderInputPatient | null;
 }
-export const PreviewOrderResponseCase0OrderInputCase1 = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponseOrderInput = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     otcItems: S.optional(S.NullOr(S.Unknown)),
     practiceId: S.String,
     userId: S.optional(S.NullOr(S.Unknown)),
-    prescriber: S.optional(S.NullOr(PreviewOrderResponseCase0OrderInputCase0Prescriber)),
+    prescriber: S.optional(S.NullOr(PreviewOrderResponseOrderInputPrescriber)),
     shippingAddressId: S.optional(S.NullOr(S.Unknown)),
     externalOrderId: S.optional(S.NullOr(S.Unknown)),
-    prescriptions: PreviewOrderResponseCase0OrderInputCase1PrescriptionsList,
-    patient: PreviewOrderResponseCase0OrderInputCase1Patient,
+    prescriptions: PreviewOrderResponseOrderInputPrescriptionsList,
+    patientId: S.optional(S.NullOr(S.String)),
+    patient: S.optional(S.NullOr(PreviewOrderResponseOrderInputPatient)),
   }),
 ).annotate({
-  identifier: "PreviewOrderResponseCase0OrderInputCase1",
-}) as any as S.Schema<PreviewOrderResponseCase0OrderInputCase1>;
+  identifier: "PreviewOrderResponseOrderInput",
+}) as any as S.Schema<PreviewOrderResponseOrderInput>;
 
-export type PreviewOrderResponseCase0OrderInput =
-  | PreviewOrderResponseCase0OrderInputCase0
-  | PreviewOrderResponseCase0OrderInputCase1;
-export const PreviewOrderResponseCase0OrderInput =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponseCase0OrderInput>;
-
-export interface PreviewOrderResponseCase0 {
+export interface PreviewOrderResponse {
   clinicalRequirementsSatisfied: boolean;
-  clinicalIssues: PreviewOrderResponseCase0ClinicalIssuesList;
-  clinicalRequirements: PreviewOrderResponseCase0ClinicalRequirementsList;
-  otcItems: unknown;
-  shippingGroups: unknown;
-  totals: PreviewOrderResponseCase0Totals;
-  object: PreviewOrderResponseCase0Object;
+  clinicalIssues: PreviewOrderResponseClinicalIssuesList;
+  clinicalRequirements: PreviewOrderResponseClinicalRequirementsList;
+  otcItems: PreviewOrderResponseOtcItemsList;
+  shippingGroups: PreviewOrderResponseShippingGroupsList;
+  totals: PreviewOrderResponseTotals;
+  object: PreviewOrderResponseObject;
   livemode: boolean;
-  prescriptions: PreviewOrderResponseCase0PrescriptionsList;
-  issues: PreviewOrderResponseCase0IssuesList;
-  status: PreviewOrderResponseCase0Status;
-  orderInput: PreviewOrderResponseCase0OrderInput;
+  prescriptions: PreviewOrderResponsePrescriptionsList;
+  issues: PreviewOrderResponseIssuesList;
+  status: PreviewOrderResponseStatus;
+  orderInput: PreviewOrderResponseOrderInput | null;
 }
-export const PreviewOrderResponseCase0 = /*@__PURE__*/ S.suspend(() =>
+export const PreviewOrderResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     clinicalRequirementsSatisfied: S.Boolean,
-    clinicalIssues: PreviewOrderResponseCase0ClinicalIssuesList,
-    clinicalRequirements: PreviewOrderResponseCase0ClinicalRequirementsList,
-    otcItems: S.Unknown,
-    shippingGroups: S.Unknown,
-    totals: PreviewOrderResponseCase0Totals,
-    object: PreviewOrderResponseCase0Object,
+    clinicalIssues: PreviewOrderResponseClinicalIssuesList,
+    clinicalRequirements: PreviewOrderResponseClinicalRequirementsList,
+    otcItems: PreviewOrderResponseOtcItemsList,
+    shippingGroups: PreviewOrderResponseShippingGroupsList,
+    totals: PreviewOrderResponseTotals,
+    object: PreviewOrderResponseObject,
     livemode: S.Boolean,
-    prescriptions: PreviewOrderResponseCase0PrescriptionsList,
-    issues: PreviewOrderResponseCase0IssuesList,
-    status: PreviewOrderResponseCase0Status,
-    orderInput: PreviewOrderResponseCase0OrderInput,
+    prescriptions: PreviewOrderResponsePrescriptionsList,
+    issues: PreviewOrderResponseIssuesList,
+    status: PreviewOrderResponseStatus,
+    orderInput: S.NullOr(PreviewOrderResponseOrderInput),
   }),
-).annotate({
-  identifier: "PreviewOrderResponseCase0",
-}) as any as S.Schema<PreviewOrderResponseCase0>;
-
-export type PreviewOrderResponseCase1ClinicalIssuesItem =
-  PreviewOrderResponseCase0ClinicalIssuesItem;
-export const PreviewOrderResponseCase1ClinicalIssuesItem =
-  PreviewOrderResponseCase0ClinicalIssuesItem;
-
-export type PreviewOrderResponseCase1ClinicalIssuesList =
-  Array<PreviewOrderResponseCase0ClinicalIssuesItem>;
-export const PreviewOrderResponseCase1ClinicalIssuesList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0ClinicalIssuesItem,
-) as any as S.Schema<PreviewOrderResponseCase1ClinicalIssuesList>;
-
-export type PreviewOrderResponseCase1ClinicalRequirementsItemType =
-  | "allergy_review"
-  | "medication_review"
-  | "diagnosis_review"
-  | "diagnosis";
-export const PreviewOrderResponseCase1ClinicalRequirementsItemType = /*@__PURE__*/ S.String;
-
-export type PreviewOrderResponseCase1ClinicalRequirementsItemStatus = "missing" | "satisfied";
-export const PreviewOrderResponseCase1ClinicalRequirementsItemStatus = /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase1ClinicalRequirementsItem {
-  field: string;
-  label: string;
-  type: PreviewOrderResponseCase1ClinicalRequirementsItemType;
-  required: boolean;
-  status: PreviewOrderResponseCase1ClinicalRequirementsItemStatus;
-}
-export const PreviewOrderResponseCase1ClinicalRequirementsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    field: S.String,
-    label: S.String,
-    type: PreviewOrderResponseCase1ClinicalRequirementsItemType,
-    required: S.Boolean,
-    status: PreviewOrderResponseCase1ClinicalRequirementsItemStatus,
-  }),
-).annotate({
-  identifier: "PreviewOrderResponseCase1ClinicalRequirementsItem",
-}) as any as S.Schema<PreviewOrderResponseCase1ClinicalRequirementsItem>;
-
-export type PreviewOrderResponseCase1ClinicalRequirementsList =
-  Array<PreviewOrderResponseCase1ClinicalRequirementsItem>;
-export const PreviewOrderResponseCase1ClinicalRequirementsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase1ClinicalRequirementsItem,
-) as any as S.Schema<PreviewOrderResponseCase1ClinicalRequirementsList>;
-
-export type PreviewOrderResponseCase1TotalsCurrency = "USD";
-export const PreviewOrderResponseCase1TotalsCurrency = /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase1Totals {
-  currency: PreviewOrderResponseCase1TotalsCurrency;
-  medicationSubtotalCents: number | null;
-  supplySubtotalCents: number | null;
-  shippingTotalCents: number | null;
-  estimatedTotalCents: number | null;
-}
-export const PreviewOrderResponseCase1Totals = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    currency: PreviewOrderResponseCase1TotalsCurrency,
-    medicationSubtotalCents: S.NullOr(S.Number),
-    supplySubtotalCents: S.NullOr(S.Number),
-    shippingTotalCents: S.NullOr(S.Number),
-    estimatedTotalCents: S.NullOr(S.Number),
-  }),
-).annotate({
-  identifier: "PreviewOrderResponseCase1Totals",
-}) as any as S.Schema<PreviewOrderResponseCase1Totals>;
-
-export type PreviewOrderResponseCase1Object = "order_preview";
-export const PreviewOrderResponseCase1Object = /*@__PURE__*/ S.String;
-
-export type PreviewOrderResponseCase1PrescriptionsItemStructuredSig =
-  PreviewOrderResponseCase0PrescriptionsItemStructuredSig;
-export const PreviewOrderResponseCase1PrescriptionsItemStructuredSig =
-  PreviewOrderResponseCase0PrescriptionsItemStructuredSig;
-
-export type PreviewOrderResponseCase1PrescriptionsItemFormat = "structured" | "free_text";
-export const PreviewOrderResponseCase1PrescriptionsItemFormat = /*@__PURE__*/ S.String;
-
-export type PreviewOrderResponseCase1PrescriptionsItemQuantity =
-  PreviewOrderRequestPrescriptionsItemOverridesQuantity;
-export const PreviewOrderResponseCase1PrescriptionsItemQuantity =
-  PreviewOrderRequestPrescriptionsItemOverridesQuantity;
-
-export type PreviewOrderResponseCase1PrescriptionsItemDaysSupplySource =
-  | "manual"
-  | "calculated"
-  | "preset"
-  | "missing";
-export const PreviewOrderResponseCase1PrescriptionsItemDaysSupplySource = /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase1PrescriptionsItem {
-  medicationId: unknown;
-  revision: unknown;
-  directions: string;
-  structuredSig: PreviewOrderResponseCase0PrescriptionsItemStructuredSig | null;
-  format: PreviewOrderResponseCase1PrescriptionsItemFormat;
-  quantity: PreviewOrderRequestPrescriptionsItemOverridesQuantity | null;
-  daysSupply: number | null;
-  daysSupplySource: PreviewOrderResponseCase1PrescriptionsItemDaysSupplySource;
-  refills: number;
-  shippingOptions: unknown;
-  shippingOptionId: unknown | null;
-  medicationSubtotalCents: number | null;
-  shippingAmountCents: number | null;
-}
-export const PreviewOrderResponseCase1PrescriptionsItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    medicationId: S.Unknown,
-    revision: S.Unknown,
-    directions: S.String,
-    structuredSig: S.NullOr(PreviewOrderResponseCase0PrescriptionsItemStructuredSig),
-    format: PreviewOrderResponseCase1PrescriptionsItemFormat,
-    quantity: S.NullOr(PreviewOrderRequestPrescriptionsItemOverridesQuantity),
-    daysSupply: S.NullOr(S.Number),
-    daysSupplySource: PreviewOrderResponseCase1PrescriptionsItemDaysSupplySource,
-    refills: S.Number,
-    shippingOptions: S.Unknown,
-    shippingOptionId: S.NullOr(S.Unknown),
-    medicationSubtotalCents: S.NullOr(S.Number),
-    shippingAmountCents: S.NullOr(S.Number),
-  }),
-).annotate({
-  identifier: "PreviewOrderResponseCase1PrescriptionsItem",
-}) as any as S.Schema<PreviewOrderResponseCase1PrescriptionsItem>;
-
-export type PreviewOrderResponseCase1PrescriptionsList =
-  Array<PreviewOrderResponseCase1PrescriptionsItem>;
-export const PreviewOrderResponseCase1PrescriptionsList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase1PrescriptionsItem,
-) as any as S.Schema<PreviewOrderResponseCase1PrescriptionsList>;
-
-export type PreviewOrderResponseCase1IssuesItem = PreviewOrderResponseCase0ClinicalIssuesItem;
-export const PreviewOrderResponseCase1IssuesItem = PreviewOrderResponseCase0ClinicalIssuesItem;
-
-export type PreviewOrderResponseCase1IssuesList =
-  Array<PreviewOrderResponseCase0ClinicalIssuesItem>;
-export const PreviewOrderResponseCase1IssuesList = /*@__PURE__*/ S.Array(
-  PreviewOrderResponseCase0ClinicalIssuesItem,
-) as any as S.Schema<PreviewOrderResponseCase1IssuesList>;
-
-export type PreviewOrderResponseCase1Status = "incomplete";
-export const PreviewOrderResponseCase1Status = /*@__PURE__*/ S.String;
-
-export interface PreviewOrderResponseCase1 {
-  clinicalRequirementsSatisfied: boolean;
-  clinicalIssues: PreviewOrderResponseCase1ClinicalIssuesList;
-  clinicalRequirements: PreviewOrderResponseCase1ClinicalRequirementsList;
-  otcItems: unknown;
-  shippingGroups: unknown;
-  totals: PreviewOrderResponseCase1Totals;
-  object: PreviewOrderResponseCase1Object;
-  livemode: boolean;
-  prescriptions: PreviewOrderResponseCase1PrescriptionsList;
-  issues: PreviewOrderResponseCase1IssuesList;
-  status: PreviewOrderResponseCase1Status;
-  orderInput: unknown | null;
-}
-export const PreviewOrderResponseCase1 = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    clinicalRequirementsSatisfied: S.Boolean,
-    clinicalIssues: PreviewOrderResponseCase1ClinicalIssuesList,
-    clinicalRequirements: PreviewOrderResponseCase1ClinicalRequirementsList,
-    otcItems: S.Unknown,
-    shippingGroups: S.Unknown,
-    totals: PreviewOrderResponseCase1Totals,
-    object: PreviewOrderResponseCase1Object,
-    livemode: S.Boolean,
-    prescriptions: PreviewOrderResponseCase1PrescriptionsList,
-    issues: PreviewOrderResponseCase1IssuesList,
-    status: PreviewOrderResponseCase1Status,
-    orderInput: S.NullOr(S.Unknown),
-  }),
-).annotate({
-  identifier: "PreviewOrderResponseCase1",
-}) as any as S.Schema<PreviewOrderResponseCase1>;
-
-export type PreviewOrderResponse = PreviewOrderResponseCase0 | PreviewOrderResponseCase1;
-export const PreviewOrderResponse =
-  /*@__PURE__*/ S.Unknown as any as S.Schema<PreviewOrderResponse>;
-
-export type PreviewOrderResponse2 = PreviewOrderResponse;
-export const PreviewOrderResponse2 = /*@__PURE__*/ S.suspend(() =>
-  PreviewOrderResponse.pipe(T.RawResponseRoot()),
-).annotate({ identifier: "PreviewOrderResponse2" }) as any as S.Schema<PreviewOrderResponse2>;
+).annotate({ identifier: "PreviewOrderResponse" }) as any as S.Schema<PreviewOrderResponse>;
 
 export interface PublishFormulationDefaultRequest {
   canonicalFormulationId: string;
@@ -12459,33 +12144,33 @@ export const RegisterUserRequestProfileDetailsCertificationsList = /*@__PURE__*/
 ) as any as S.Schema<RegisterUserRequestProfileDetailsCertificationsList>;
 
 export interface RegisterUserRequestProfileDetails {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  namePrefix: string;
-  nameSuffix: string;
-  fax: string;
-  specialties: RegisterUserRequestProfileDetailsSpecialtiesList;
-  addresses: RegisterUserRequestProfileDetailsAddressesList;
-  otherNames: RegisterUserRequestProfileDetailsOtherNamesList;
-  identifiers: RegisterUserRequestProfileDetailsIdentifiersList;
-  endpoints: RegisterUserRequestProfileDetailsEndpointsList;
-  certifications: RegisterUserRequestProfileDetailsCertificationsList;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
+  namePrefix?: string | null;
+  nameSuffix?: string | null;
+  fax?: string | null;
+  specialties?: RegisterUserRequestProfileDetailsSpecialtiesList | null;
+  addresses?: RegisterUserRequestProfileDetailsAddressesList | null;
+  otherNames?: RegisterUserRequestProfileDetailsOtherNamesList | null;
+  identifiers?: RegisterUserRequestProfileDetailsIdentifiersList | null;
+  endpoints?: RegisterUserRequestProfileDetailsEndpointsList | null;
+  certifications?: RegisterUserRequestProfileDetailsCertificationsList | null;
 }
 export const RegisterUserRequestProfileDetails = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    firstName: S.String,
-    middleName: S.String,
-    lastName: S.String,
-    namePrefix: S.String,
-    nameSuffix: S.String,
-    fax: S.String,
-    specialties: RegisterUserRequestProfileDetailsSpecialtiesList,
-    addresses: RegisterUserRequestProfileDetailsAddressesList,
-    otherNames: RegisterUserRequestProfileDetailsOtherNamesList,
-    identifiers: RegisterUserRequestProfileDetailsIdentifiersList,
-    endpoints: RegisterUserRequestProfileDetailsEndpointsList,
-    certifications: RegisterUserRequestProfileDetailsCertificationsList,
+    firstName: S.optional(S.NullOr(S.String)),
+    middleName: S.optional(S.NullOr(S.String)),
+    lastName: S.optional(S.NullOr(S.String)),
+    namePrefix: S.optional(S.NullOr(S.String)),
+    nameSuffix: S.optional(S.NullOr(S.String)),
+    fax: S.optional(S.NullOr(S.String)),
+    specialties: S.optional(S.NullOr(RegisterUserRequestProfileDetailsSpecialtiesList)),
+    addresses: S.optional(S.NullOr(RegisterUserRequestProfileDetailsAddressesList)),
+    otherNames: S.optional(S.NullOr(RegisterUserRequestProfileDetailsOtherNamesList)),
+    identifiers: S.optional(S.NullOr(RegisterUserRequestProfileDetailsIdentifiersList)),
+    endpoints: S.optional(S.NullOr(RegisterUserRequestProfileDetailsEndpointsList)),
+    certifications: S.optional(S.NullOr(RegisterUserRequestProfileDetailsCertificationsList)),
   }),
 ).annotate({
   identifier: "RegisterUserRequestProfileDetails",
@@ -14787,9 +14472,9 @@ export type RetrievePrescribingOptionsResponsePresetsItemFormat = "structured" |
 export const RetrievePrescribingOptionsResponsePresetsItemFormat = /*@__PURE__*/ S.String;
 
 export type RetrievePrescribingOptionsResponsePresetsItemStructuredSig =
-  PreviewOrderResponseCase0PrescriptionsItemStructuredSig;
+  PreviewOrderResponsePrescriptionsItemStructuredSig;
 export const RetrievePrescribingOptionsResponsePresetsItemStructuredSig =
-  PreviewOrderResponseCase0PrescriptionsItemStructuredSig;
+  PreviewOrderResponsePrescriptionsItemStructuredSig;
 
 export type RetrievePrescribingOptionsResponsePresetsItemQuantity =
   PreviewOrderRequestPrescriptionsItemOverridesQuantity;
@@ -14802,7 +14487,7 @@ export interface RetrievePrescribingOptionsResponsePresetsItem {
   source: RetrievePrescribingOptionsResponsePresetsItemSource;
   directions: string;
   format: RetrievePrescribingOptionsResponsePresetsItemFormat;
-  structuredSig: PreviewOrderResponseCase0PrescriptionsItemStructuredSig | null;
+  structuredSig: PreviewOrderResponsePrescriptionsItemStructuredSig | null;
   quantity: PreviewOrderRequestPrescriptionsItemOverridesQuantity | null;
   daysSupply: number | null;
   refills: number;
@@ -14814,7 +14499,7 @@ export const RetrievePrescribingOptionsResponsePresetsItem = /*@__PURE__*/ S.sus
     source: RetrievePrescribingOptionsResponsePresetsItemSource,
     directions: S.String,
     format: RetrievePrescribingOptionsResponsePresetsItemFormat,
-    structuredSig: S.NullOr(PreviewOrderResponseCase0PrescriptionsItemStructuredSig),
+    structuredSig: S.NullOr(PreviewOrderResponsePrescriptionsItemStructuredSig),
     quantity: S.NullOr(PreviewOrderRequestPrescriptionsItemOverridesQuantity),
     daysSupply: S.NullOr(S.Number),
     refills: S.Number,
@@ -17114,6 +16799,8 @@ export const UpdatePracticeTeamMemberResponseNextActionsList = /*@__PURE__*/ S.A
 
 export interface UpdatePracticeTeamMemberResponse {
   id: string;
+  /** This integration's external ID for the accepted invitee in the API key's mode. Null for members invited outside this integration. */
+  externalId: string | null;
   name: string;
   email: string | null;
   locationIds: UpdatePracticeTeamMemberResponseLocationIdsList;
@@ -17123,6 +16810,7 @@ export interface UpdatePracticeTeamMemberResponse {
 export const UpdatePracticeTeamMemberResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.String,
+    externalId: S.NullOr(S.String),
     name: S.String,
     email: S.NullOr(S.String),
     locationIds: UpdatePracticeTeamMemberResponseLocationIdsList,
@@ -18303,12 +17991,12 @@ export type PreviewOrderError = BadRequest | Forbidden | NotFound | Conflict | A
 /** Preview an order Requires orders:write and catalog:read. Supply exactly one of patientId, patientExternalId, or inline patient details. External-ID lookup additionally requires patients:read; inline details require patients:write. Resolves defaults and explicit edits for 1–20 prescriptions. Reuses stored patient details when identifiers match; otherwise previews inline details without creating a patient. Complete previews contain an orders.create input. Does not create records, reserve prices, sign, charge or transmit. No idempotency key is required. Creation and signing recheck current requirements. */
 export const previewOrder: API.OperationMethod<
   PreviewOrderRequest,
-  PreviewOrderResponse2,
+  PreviewOrderResponse,
   PreviewOrderError,
   AffinityOpContext
 > = /*@__PURE__*/ API.make(() => ({
   input: PreviewOrderRequest,
-  output: PreviewOrderResponse2,
+  output: PreviewOrderResponse,
   errors: [BadRequest, Forbidden, NotFound, Conflict],
   protocol: AffinityProtocol,
   retry: Retry.Retry,
