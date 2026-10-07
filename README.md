@@ -1,6 +1,6 @@
 # Affinity Effect SDK
 
-Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 81 typed operations and runtime schemas: 72 public operations from the pinned API contract and the 9 existing internal pricing and formulation operations.
+Effect-native TypeScript SDK and local code runner for the Affinity API. The repository generates 82 typed operations and runtime schemas: 73 public operations from the pinned API contract and the 9 existing internal pricing and formulation operations.
 
 ## Install
 
@@ -116,7 +116,7 @@ The runner derives Test or Live mode from the API key. If supplied, `--mode` or 
 The public contract includes `previewOrder`, `createOrder`, `signOrder`, `submitOrder`, and
 `signAndSubmitOrder`. Creation uses one patient and a `prescriptions` array. Use
 `--apply --allow-clinical` for order mutations. Fetch current versions and obtain the clinician's
-attestation before signing. See the [headless workflow](https://docs.joinaffinityai.com/guides/choose-an-integration/).
+attestation before signing. See the [headless workflow](https://docs.affinityrx.com/guides/choose-an-integration/).
 
 The CLI and code client generate a separate idempotency key for each mutation and keep it through automatic retries. To replay an operation across calls or process restarts, supply the same `idempotencyKey` in its input. Effect-native operations require that input explicitly where the API requires it.
 
@@ -182,8 +182,8 @@ Operations have typed success, failure, and service requirements. Credentials re
 The library accepts:
 
 - `apiKey`, required
-- `apiBaseUrl`, defaulting to `https://api.joinaffinityai.com`
-- `apiVersion`, defaulting to `2026-08-11`
+- `apiBaseUrl`, defaulting to `https://api.affinityrx.com`
+- `apiVersion`, defaulting to `2026-09-28`
 - `actor`, an optional provider or user attribution
 
 The CLI reads `AFFINITY_API_KEY`, `AFFINITY_API_BASE_URL`, `AFFINITY_API_VERSION`, `AFFINITY_ACTOR_ID`, `AFFINITY_ACTOR_TYPE`, and `AFFINITY_MODE`. Invocation flags take precedence over environment defaults for non-secret settings.

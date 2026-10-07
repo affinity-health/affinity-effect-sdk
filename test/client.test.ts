@@ -17,8 +17,8 @@ describe("credentials", () => {
 
     expect(Redacted.value(config.apiKey)).toBe("aff_test_secret");
     expect(String(config.apiKey)).not.toContain("aff_test_secret");
-    expect(config.apiBaseUrl).toBe("https://api.joinaffinityai.com");
-    expect(config.apiVersion).toBe("2026-08-11");
+    expect(config.apiBaseUrl).toBe("https://api.affinityrx.com");
+    expect(config.apiVersion).toBe("2026-09-28");
   });
 });
 
@@ -107,7 +107,7 @@ describe("generated operations", () => {
 
     expect(request?.url).toBe("https://example.test/v1/account");
     expect(request?.headers.get("authorization")).toBe("Bearer aff_test_secret");
-    expect(request?.headers.get("affinity-version")).toBe("2026-08-11");
+    expect(request?.headers.get("affinity-version")).toBe("2026-09-28");
     expect(request?.headers.get("affinity-actor-id")).toBe("usr_test");
     expect(request?.headers.get("affinity-actor-type")).toBe("user");
   });

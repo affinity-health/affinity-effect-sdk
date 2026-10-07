@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [0.5.0] - 2026-10-07
+
+### Changed
+
+- Target api.affinityrx.com and API version 2026-09-28 by default.
+- Regenerate public operations and models from the deployed API, including presentation-price reads, practice API keys, prescribing presets, and current Test simulation inputs.
+- Remove customer purchase-price writes; Affinity manages purchase prices.
+- Preserve separately pinned internal operator operations.
+
 ## [0.4.2] - 2026-09-25
 
 ### Fixed

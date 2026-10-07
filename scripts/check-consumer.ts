@@ -37,6 +37,7 @@ try {
     ]),
   );
   for (const name of [
+    "platformPublicApiSellingPricesReadPresentationPrice",
     "previewOrder",
     "createOrder",
     "signOrder",

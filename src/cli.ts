@@ -31,7 +31,7 @@ import {
   renderAffinityAgentContext,
 } from "./context.ts";
 
-const VERSION = "0.4.2";
+const VERSION = "0.5.0";
 
 class CliError extends Schema.TaggedError<CliError>()("CliError", {
   cause: Schema.optional(Schema.Unknown),
@@ -567,11 +567,9 @@ const doctorCommand = Command.make(
     });
     const checks = {
       apiBaseUrl:
-        process.env.AFFINITY_API_BASE_URL ??
-        credential?.apiBaseUrl ??
-        "https://api.joinaffinityai.com",
+        process.env.AFFINITY_API_BASE_URL ?? credential?.apiBaseUrl ?? "https://api.affinityrx.com",
       authentication: credentialStatus,
-      apiVersion: process.env.AFFINITY_API_VERSION ?? "2026-08-11",
+      apiVersion: process.env.AFFINITY_API_VERSION ?? "2026-09-28",
       bun: Bun.version,
       mode,
       mutationAccess: root.apply,

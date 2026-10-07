@@ -4,8 +4,8 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 
-export const DEFAULT_API_BASE_URL = "https://api.joinaffinityai.com";
-export const DEFAULT_API_VERSION = "2026-08-11";
+export const DEFAULT_API_BASE_URL = "https://api.affinityrx.com";
+export const DEFAULT_API_VERSION = "2026-09-28";
 
 export interface Actor {
   readonly id: string;

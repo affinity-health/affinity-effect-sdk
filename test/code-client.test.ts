@@ -91,8 +91,45 @@ describe("agent code client", () => {
     }
   });
 
+  test("reads presentation prices without enabling writes", async () => {
+    const requests: Array<{ method: string; url: string }> = [];
+    const server = Bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      fetch(request) {
+        requests.push({ method: request.method, url: request.url });
+        return Response.json({ detail: "Synthetic missing catalog item" }, { status: 404 });
+      },
+    });
+    const session = createCodeSession({
+      apiKey: "sk_test_synthetic",
+      apiBaseUrl: server.url.origin,
+    });
+    try {
+      await expect(
+        session.affinity.platformPublicApiSellingPricesReadPresentationPrice({
+          catalogItemId: "cat_synthetic",
+          practiceId: "prac_synthetic",
+        }),
+      ).rejects.toThrow();
+      expect(requests).toHaveLength(1);
+      expect(requests[0]!.method).toBe("GET");
+      const url = new URL(requests[0]!.url);
+      expect(url.pathname).toBe("/v1/catalog/items/cat_synthetic/presentation-price");
+      expect(url.searchParams.get("practiceId")).toBe("prac_synthetic");
+      expect(
+        Object.values(operationRegistry).some(
+          (operation) => operation.method === "PUT" && operation.path.endsWith("/selling-price"),
+        ),
+      ).toBe(false);
+    } finally {
+      await session.dispose();
+      server.stop(true);
+    }
+  });
+
   test("generates a registry for every OpenAPI operation", () => {
-    expect(Object.keys(operationRegistry)).toHaveLength(81);
+    expect(Object.keys(operationRegistry)).toHaveLength(82);
     expect(operationRegistry.previewOrder.kind).toBe("write");
     expect(operationRegistry.registerUser.kind).toBe("write");
     expect(operationRegistry.getAccount.kind).toBe("read");
